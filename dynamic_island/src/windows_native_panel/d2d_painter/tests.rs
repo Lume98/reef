@@ -170,9 +170,9 @@ fn expanded_paint_job() -> WindowsNativePanelShellPaintJob {
             card_count: 2,
             cards: vec![
                 NativePanelVisualCardInput {
-                    style: echoisland_ui::native_panel_ui::presentation::NativePanelVisualCardStyle::Settings,
+                    style: reef_ui::native_panel_ui::presentation::NativePanelVisualCardStyle::Settings,
                     title: "Settings".to_string(),
-                    subtitle: Some("EchoIsland v0.6.1".to_string()),
+                    subtitle: Some("Reef UI v0.6.1".to_string()),
                     body: None,
                     badge: None,
                     source_badge: None,
@@ -190,7 +190,7 @@ fn expanded_paint_job() -> WindowsNativePanelShellPaintJob {
                     removing: false,
                 },
                 NativePanelVisualCardInput {
-                    style: echoisland_ui::native_panel_ui::presentation::NativePanelVisualCardStyle::Completion,
+                    style: reef_ui::native_panel_ui::presentation::NativePanelVisualCardStyle::Completion,
                     title: "Done".to_string(),
                     subtitle: Some("#abcdef now".to_string()),
                     body: Some("Task complete".to_string()),
@@ -260,14 +260,14 @@ fn direct2d_painter_skeleton_consumes_shared_visual_plan() {
     assert!(plan.primitives.iter().any(|primitive| matches!(
             primitive,
             crate::windows_native_panel::paint_backend::WindowsNativePanelPaintPrimitive::CompactShoulder {
-                side: echoisland_ui::native_panel_ui::visual::NativePanelVisualShoulderSide::Left,
+                side: reef_ui::native_panel_ui::visual::NativePanelVisualShoulderSide::Left,
                 ..
             }
         )));
     assert!(plan.primitives.iter().any(|primitive| matches!(
             primitive,
             crate::windows_native_panel::paint_backend::WindowsNativePanelPaintPrimitive::CompactShoulder {
-                side: echoisland_ui::native_panel_ui::visual::NativePanelVisualShoulderSide::Right,
+                side: reef_ui::native_panel_ui::visual::NativePanelVisualShoulderSide::Right,
                 ..
             }
         )));
@@ -289,24 +289,24 @@ fn direct2d_painter_skeleton_routes_compact_text_to_directwrite_requests() {
     assert!(requests.iter().any(|request| {
         request.text == "Codex ready"
             && request.weight
-                == echoisland_ui::native_panel_ui::visual::NativePanelVisualTextWeight::Semibold
+                == reef_ui::native_panel_ui::visual::NativePanelVisualTextWeight::Semibold
             && request.alignment
-                == echoisland_ui::native_panel_ui::visual::NativePanelVisualTextAlignment::Center
+                == reef_ui::native_panel_ui::visual::NativePanelVisualTextAlignment::Center
     }));
     assert!(requests.iter().any(|request| {
         request.text == "1"
             && request.alignment
-                == echoisland_ui::native_panel_ui::visual::NativePanelVisualTextAlignment::Right
+                == reef_ui::native_panel_ui::visual::NativePanelVisualTextAlignment::Right
     }));
     assert!(requests.iter().any(|request| {
         request.text == "/"
             && request.alignment
-                == echoisland_ui::native_panel_ui::visual::NativePanelVisualTextAlignment::Center
+                == reef_ui::native_panel_ui::visual::NativePanelVisualTextAlignment::Center
     }));
     assert!(requests.iter().any(|request| {
         request.text == "3"
             && request.alignment
-                == echoisland_ui::native_panel_ui::visual::NativePanelVisualTextAlignment::Left
+                == reef_ui::native_panel_ui::visual::NativePanelVisualTextAlignment::Left
     }));
     assert!(requests.iter().all(|request| {
         request.fonts.primary == "Noto Sans SC" && request.fonts.fallback == "Segoe UI Variable"
@@ -419,7 +419,7 @@ fn direct2d_coordinate_space_flips_text_origin_with_text_height() {
 
 #[test]
 fn direct2d_text_box_height_matches_compact_label_metrics() {
-    assert_eq!(native_panel_visual_text_box_height("EchoIsland", 13), 24.0);
+    assert_eq!(native_panel_visual_text_box_height("Reef UI", 13), 24.0);
     assert_eq!(native_panel_visual_text_box_height("1", 15), 24.0);
     assert_eq!(native_panel_visual_text_box_height("2", 8), 16.0);
     assert_eq!(
@@ -437,7 +437,7 @@ fn compact_shoulder_path_matches_mac_style_corner_curve() {
             width: 6.0,
             height: 6.0,
         },
-        echoisland_ui::native_panel_ui::visual::NativePanelVisualShoulderSide::Left,
+        reef_ui::native_panel_ui::visual::NativePanelVisualShoulderSide::Left,
         0.0,
     )
     .expect("visible shoulder path");

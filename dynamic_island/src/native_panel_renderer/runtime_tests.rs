@@ -229,7 +229,7 @@ mod tests {
                 width: 280.0,
                 height: 160.0,
             },
-            headline_text: "EchoIsland".to_string(),
+            headline_text: "Reef UI".to_string(),
             headline_emphasized: false,
             active_count: "1".to_string(),
             active_count_elapsed_ms: 0,

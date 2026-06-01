@@ -350,7 +350,7 @@ mod tests {
                     role: NativePanelVisualTextRole::CompactHeadline,
                     origin: PanelPoint { x: 12.0, y: 14.0 },
                     max_width: 120.0,
-                    text: "EchoIsland".to_string(),
+                    text: "Reef UI".to_string(),
                     color: NativePanelVisualColor::rgb(230, 235, 245),
                     size: 13,
                     weight: super::NativePanelVisualTextWeight::Semibold,
@@ -459,7 +459,7 @@ mod tests {
 
     #[test]
     fn visual_text_box_height_is_shared_for_platform_text_rendering() {
-        assert_eq!(native_panel_visual_text_box_height("EchoIsland", 13), 24.0);
+        assert_eq!(native_panel_visual_text_box_height("Reef UI", 13), 24.0);
         assert_eq!(native_panel_visual_text_box_height("2", 8), 16.0);
         assert_eq!(
             native_panel_visual_text_box_height("line one\nline two", 10),
@@ -488,7 +488,7 @@ mod tests {
         assert_eq!(
             native_panel_visual_text_box_height_for_role(
                 NativePanelVisualTextRole::CompactHeadline,
-                "EchoIsland",
+                "Reef UI",
                 13
             ),
             24.0

@@ -1,7 +1,7 @@
 {
   "version": 1,
-  "id": "echoisland-default-white",
-  "name": "EchoIsland White Assistant",
+  "id": "reef-ui-default-white",
+  "name": "Reef UI White Assistant",
   "sprite": {
     "file": "spritesheet.png",
     "columns": 10,

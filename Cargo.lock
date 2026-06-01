@@ -883,10 +883,10 @@ dependencies = [
  "chrono",
  "dirs 5.0.1",
  "echoisland-runtime",
- "echoisland-ui",
  "insta",
  "log",
  "once_cell",
+ "reef-ui",
  "serde",
  "serde_json",
  "tauri",
@@ -904,20 +904,6 @@ version = "0.1.0"
 dependencies = [
  "chrono",
  "serde",
-]
-
-[[package]]
-name = "echoisland-ui"
-version = "0.1.0"
-dependencies = [
- "chrono",
- "echoisland-runtime",
- "insta",
- "log",
- "serde",
- "serde_json",
- "tauri",
- "tauri-plugin-opener",
 ]
 
 [[package]]
@@ -2810,6 +2796,20 @@ dependencies = [
  "getrandom 0.2.17",
  "libredox",
  "thiserror 2.0.18",
+]
+
+[[package]]
+name = "reef-ui"
+version = "0.1.0"
+dependencies = [
+ "chrono",
+ "echoisland-runtime",
+ "insta",
+ "log",
+ "serde",
+ "serde_json",
+ "tauri",
+ "tauri-plugin-opener",
 ]
 
 [[package]]

@@ -492,7 +492,7 @@ fn build_settings_card(settings_surface: &SettingsSurfaceScene) -> SceneCard {
         version: SceneBadge {
             text: settings_surface
                 .version_text
-                .strip_prefix("EchoIsland ")
+                .strip_prefix("Reef UI ")
                 .unwrap_or(&settings_surface.version_text)
                 .to_string(),
             emphasized: false,

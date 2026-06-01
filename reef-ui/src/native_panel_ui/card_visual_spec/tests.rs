@@ -8,7 +8,7 @@ fn session() -> SessionSnapshotView {
     SessionSnapshotView {
         session_id: "session-123456".to_string(),
         source: "claude".to_string(),
-        project_name: Some("EchoIsland".to_string()),
+        project_name: Some("Reef UI".to_string()),
         cwd: None,
         model: None,
         terminal_app: None,
@@ -40,7 +40,7 @@ fn session_card_spec_preserves_mac_header_badges_and_chat_lines() {
     let spec = card_visual_spec_from_scene_card_with_height(
         &SceneCard::Session {
             session: session.clone(),
-            title: "EchoIsland".to_string(),
+            title: "Reef UI".to_string(),
             status: SceneBadge {
                 text: "Running".to_string(),
                 emphasized: true,
@@ -50,7 +50,7 @@ fn session_card_spec_preserves_mac_header_badges_and_chat_lines() {
         96.0,
     );
 
-    assert_eq!(spec.title, "EchoIsland");
+    assert_eq!(spec.title, "Reef UI");
     assert!(spec.subtitle.as_deref().unwrap_or_default().contains("#"));
     assert_eq!(
         spec.badges,

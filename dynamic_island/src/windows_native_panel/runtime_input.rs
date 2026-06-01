@@ -9,7 +9,7 @@ use crate::{
     native_panel_core::{PanelDisplayGeometry, PanelRect},
     native_panel_scene_input::native_panel_runtime_input_descriptor_from_display_options_with_screen_frame,
 };
-use echoisland_ui::native_panel_ui::descriptor::NativePanelRuntimeInputDescriptor;
+use reef_ui::native_panel_ui::descriptor::NativePanelRuntimeInputDescriptor;
 
 use super::dpi::{resolve_windows_system_dpi_scale, WindowsDpiScale};
 
@@ -103,7 +103,7 @@ mod tests {
         native_panel_scene_input::native_panel_runtime_input_descriptor_from_context,
         windows_native_panel::dpi::WindowsDpiScale,
     };
-    use echoisland_ui::native_panel_ui::descriptor::NativePanelRuntimeInputContext;
+    use reef_ui::native_panel_ui::descriptor::NativePanelRuntimeInputContext;
 
     #[test]
     fn standalone_screen_frame_uses_logical_size_from_dpi_scale() {

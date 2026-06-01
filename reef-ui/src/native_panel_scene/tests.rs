@@ -32,7 +32,7 @@ fn session(status: &str) -> SessionSnapshotView {
     SessionSnapshotView {
         session_id: "session-1".to_string(),
         source: "claude".to_string(),
-        project_name: Some("EchoIsland".to_string()),
+        project_name: Some("Reef UI".to_string()),
         cwd: None,
         model: None,
         terminal_app: None,
@@ -509,7 +509,7 @@ fn scene_builder_emits_settings_rows_and_value_badges() {
     assert_eq!(rows[4].value.text, "Off");
     assert_eq!(rows[5].action, PanelHitAction::OpenReleasePage);
     assert_eq!(scene.settings_surface.title, "Settings");
-    assert_eq!(scene.settings_surface.version_text, "EchoIsland v0.6.1");
+    assert_eq!(scene.settings_surface.version_text, "Reef UI v0.6.1");
     assert_eq!(scene.settings_surface.rows[0].id, "island_display");
     assert_eq!(scene.settings_surface.rows[0].value_text, "2/3");
     assert_eq!(
@@ -887,7 +887,7 @@ fn scene_card_height_input_preserves_variant_payload_semantics() {
     assert!(matches!(
         resolve_scene_card_height_input(&SceneCard::Session {
             session: session.clone(),
-            title: "EchoIsland".to_string(),
+            title: "Reef UI".to_string(),
             status: SceneBadge {
                 text: "Running".to_string(),
                 emphasized: false,

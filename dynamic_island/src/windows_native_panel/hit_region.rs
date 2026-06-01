@@ -1,5 +1,5 @@
 use crate::native_panel_core::PanelPoint;
-use echoisland_ui::native_panel_ui::descriptor::{
+use reef_ui::native_panel_ui::descriptor::{
     NativePanelInteractionPlan, NativePanelPointerRegion,
 };
 
@@ -23,7 +23,7 @@ pub(super) fn resolve_windows_native_panel_hit_test(
 #[cfg(test)]
 mod tests {
     use crate::native_panel_core::PanelRect;
-    use echoisland_ui::native_panel_ui::descriptor::{
+    use reef_ui::native_panel_ui::descriptor::{
         NativePanelPointerRegion, NativePanelPointerRegionKind,
     };
 

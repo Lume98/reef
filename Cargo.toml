@@ -2,7 +2,7 @@
 members = [
     "dynamic_island",
     "echoisland-runtime",
-    "echoisland-ui",
+    "reef-ui",
 ]
 resolver = "2"
 

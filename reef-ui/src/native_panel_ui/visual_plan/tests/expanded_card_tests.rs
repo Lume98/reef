@@ -43,7 +43,7 @@ fn expanded_visual_plan_draws_card_content_from_shared_inputs() {
         )));
     assert!(plan.primitives.iter().any(|primitive| matches!(
         primitive,
-        NativePanelVisualPrimitive::Text { text, .. } if text == "EchoIsland v0.6.1"
+        NativePanelVisualPrimitive::Text { text, .. } if text == "Reef UI v0.6.1"
     )));
     assert!(plan.primitives.iter().any(|primitive| matches!(
         primitive,
@@ -175,7 +175,7 @@ fn expanded_visual_plan_uses_mac_chat_line_tones_for_default_and_completion_card
     input.card_stack_content_height = 76.0;
     input.cards = vec![NativePanelVisualCardInput {
         style: crate::native_panel_ui::presentation::NativePanelVisualCardStyle::Default,
-        title: "EchoIsland".to_string(),
+        title: "Reef UI".to_string(),
         subtitle: Some("#c1d5-7 · now".to_string()),
         body: Some("Assistant reply".to_string()),
         badge: Some(NativePanelVisualCardBadgeInput {
@@ -328,7 +328,7 @@ fn expanded_visual_plan_draws_session_reply_and_prompt_lines() {
     input.card_stack_content_height = 112.0;
     input.cards = vec![NativePanelVisualCardInput {
         style: crate::native_panel_ui::presentation::NativePanelVisualCardStyle::Default,
-        title: "EchoIsland".to_string(),
+        title: "Reef UI".to_string(),
         subtitle: Some("#c1d5-7 路 7m".to_string()),
         body: Some("Assistant reply".to_string() + "\n" + "User prompt"),
         badge: Some(NativePanelVisualCardBadgeInput {
@@ -387,7 +387,7 @@ fn expanded_visual_plan_aligns_body_prefix_to_first_wrapped_text_line() {
     input.card_stack_content_height = 118.0;
     input.cards = vec![NativePanelVisualCardInput {
         style: crate::native_panel_ui::presentation::NativePanelVisualCardStyle::Default,
-        title: "EchoIsland".to_string(),
+        title: "Reef UI".to_string(),
         subtitle: Some("#c1d5-7".to_string()),
         body: None,
         badge: Some(NativePanelVisualCardBadgeInput {
@@ -580,7 +580,7 @@ fn expanded_visual_plan_centers_empty_card_prompt() {
         style: crate::native_panel_ui::presentation::NativePanelVisualCardStyle::Empty,
         title: "No active sessions".to_string(),
         subtitle: None,
-        body: Some("EchoIsland is watching for new activity.".to_string()),
+        body: Some("Reef UI is watching for new activity.".to_string()),
         badge: None,
         source_badge: None,
         body_prefix: None,
@@ -622,7 +622,7 @@ fn expanded_visual_plan_keeps_single_empty_card_when_viewport_is_shorter_than_em
         style: crate::native_panel_ui::presentation::NativePanelVisualCardStyle::Empty,
         title: "No active sessions".to_string(),
         subtitle: None,
-        body: Some("EchoIsland is watching for new activity.".to_string()),
+        body: Some("Reef UI is watching for new activity.".to_string()),
         badge: None,
         source_badge: None,
         body_prefix: None,

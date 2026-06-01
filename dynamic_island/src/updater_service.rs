@@ -1,5 +1,5 @@
 #[allow(unused_imports)]
-pub use echoisland_ui::{AppUpdatePhase, AppUpdateStatus};
+pub use reef_ui::{AppUpdatePhase, AppUpdateStatus};
 
 pub fn current_update_status() -> AppUpdateStatus {
     AppUpdateStatus::idle()

@@ -502,7 +502,7 @@ pub fn card_visual_spec_from_scene_card_with_height(
             vec![CardVisualBodySpec {
                 role: CardVisualBodyRole::Plain,
                 prefix: None,
-                text: "EchoIsland is watching for new activity.".to_string(),
+                text: "Reef UI is watching for new activity.".to_string(),
                 max_lines: 1,
             }],
             None,

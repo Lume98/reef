@@ -36,7 +36,7 @@ mod tests {
         native_panel_core::PanelRect,
         windows_native_panel::host_window::WindowsNativePanelDrawFrame,
     };
-    use echoisland_ui::native_panel_ui::descriptor::{
+    use reef_ui::native_panel_ui::descriptor::{
         NativePanelHostWindowState, NativePanelPointerRegion,
     };
 

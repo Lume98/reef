@@ -1,6 +1,6 @@
 //! 面板场景输入适配层。
 //!
-//! 这里把应用设置、显示器列表和平台运行时上下文整理成 `echoisland-ui` 能消费的
+//! 这里把应用设置、显示器列表和平台运行时上下文整理成 `reef-ui` 能消费的
 //! `PanelSceneBuildInput` / `NativePanelRuntimeInputDescriptor`。这样场景构建逻辑不需要直接
 //! 依赖应用配置文件或平台显示器结构。
 
@@ -14,7 +14,7 @@ use crate::{
         PanelDisplayOptionState, PanelSceneBuildInput,
     },
 };
-use echoisland_ui::native_panel_ui::descriptor::{
+use reef_ui::native_panel_ui::descriptor::{
     NativePanelRuntimeInputContext, NativePanelRuntimeInputDescriptor,
 };
 
@@ -237,7 +237,7 @@ mod tests {
         resolve_panel_selected_display_index, resolve_selected_display_index_from_display_options,
     };
     use crate::{app_settings::AppSettings, display_settings::DisplayOption};
-    use echoisland_ui::native_panel_ui::descriptor::NativePanelRuntimeInputContext;
+    use reef_ui::native_panel_ui::descriptor::NativePanelRuntimeInputContext;
 
     #[test]
     fn scene_build_input_clamps_display_count_and_projects_settings() {

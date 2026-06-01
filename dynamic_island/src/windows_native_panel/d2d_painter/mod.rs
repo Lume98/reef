@@ -8,8 +8,8 @@ use super::{
 };
 use crate::native_panel_core::{PanelPoint, PanelRect};
 #[cfg(all(windows, not(test)))]
-use echoisland_ui::native_panel_ui::visual::native_panel_visual_text_box_height_for_role;
-use echoisland_ui::native_panel_ui::visual::NativePanelVisualShoulderSide;
+use reef_ui::native_panel_ui::visual::native_panel_visual_text_box_height_for_role;
+use reef_ui::native_panel_ui::visual::NativePanelVisualShoulderSide;
 
 #[cfg(all(windows, not(test)))]
 use super::{
@@ -43,7 +43,7 @@ pub(super) fn directwrite_text_requests_from_paint_plan(
     plan.primitives
         .iter()
         .filter_map(|primitive| match primitive {
-            echoisland_ui::native_panel_ui::visual::NativePanelVisualPrimitive::Text {
+            reef_ui::native_panel_ui::visual::NativePanelVisualPrimitive::Text {
                 text,
                 max_width,
                 size,
@@ -51,7 +51,7 @@ pub(super) fn directwrite_text_requests_from_paint_plan(
                 alignment,
                 ..
             }
-            | echoisland_ui::native_panel_ui::visual::NativePanelVisualPrimitive::MascotText {
+            | reef_ui::native_panel_ui::visual::NativePanelVisualPrimitive::MascotText {
                 text,
                 max_width,
                 size,
@@ -475,7 +475,7 @@ impl Direct2DWindowsNativePanelPainter {
                             .CreateSolidColorBrush(&d2d_color_with_alpha(color, alpha), None)
                             .map_err(|error| error.to_string())?;
                         if job.display_mode
-                            == echoisland_ui::native_panel_ui::presentation::NativePanelVisualDisplayMode::Compact
+                            == reef_ui::native_panel_ui::presentation::NativePanelVisualDisplayMode::Compact
                             && frame == job.compact_bar_frame
                         {
                             let geometry = d2d_compact_pill_geometry(
@@ -772,7 +772,7 @@ fn draw_completion_glow_image(
     use windows::Win32::Graphics::Direct2D::D2D1_BITMAP_INTERPOLATION_MODE_LINEAR;
 
     for slice in
-        echoisland_ui::native_panel_ui::presentation::resolve_completion_glow_image_slices(frame)
+        reef_ui::native_panel_ui::presentation::resolve_completion_glow_image_slices(frame)
     {
         let dest = slice.dest;
         let source = slice.source;

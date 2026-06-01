@@ -1,5 +1,5 @@
 use crate::native_panel_core::{PanelPoint, PanelRect};
-use echoisland_ui::native_panel_ui::descriptor::NativePanelPointerRegion;
+use reef_ui::native_panel_ui::descriptor::NativePanelPointerRegion;
 
 const WINDOWS_BASE_DPI: u32 = 96;
 
@@ -120,7 +120,7 @@ pub(super) fn resolve_windows_dpi_scale_for_window(
 mod tests {
     use super::{resolve_windows_dpi_scale_for_window, WindowsDpiScale, WindowsPhysicalRect};
     use crate::native_panel_core::PanelRect;
-    use echoisland_ui::native_panel_ui::descriptor::{
+    use reef_ui::native_panel_ui::descriptor::{
         NativePanelPointerRegion, NativePanelPointerRegionKind,
     };
 

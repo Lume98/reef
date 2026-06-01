@@ -230,7 +230,7 @@ mod tests {
         SessionSnapshotView {
             session_id: "session-1".to_string(),
             source: "codex".to_string(),
-            project_name: Some("EchoIsland".to_string()),
+            project_name: Some("Reef UI".to_string()),
             cwd: None,
             model: None,
             terminal_app: None,

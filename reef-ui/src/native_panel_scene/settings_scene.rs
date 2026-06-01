@@ -75,7 +75,7 @@ pub fn build_settings_surface_scene(
     let texts = settings_texts(settings.language);
     SettingsSurfaceScene {
         title: texts.title.to_string(),
-        version_text: format!("EchoIsland v{app_version}"),
+        version_text: format!("Reef UI v{app_version}"),
         rows: vec![
             SettingsSurfaceRowScene {
                 id: "island_display".to_string(),

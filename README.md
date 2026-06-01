@@ -4,7 +4,7 @@
 
 - `dynamic_island`：灵动岛原生窗口扩展，带可执行入口 `island-ui`
 - `echoisland-runtime`：共享运行时类型定义
-- `echoisland-ui`：灵动岛 UI 模型与场景包
+- `reef-ui`：Reef UI 模型与场景包
 
 ## 目录结构
 
@@ -13,7 +13,7 @@ island/
   Cargo.toml
   dynamic_island/
   echoisland-runtime/
-  echoisland-ui/
+  reef-ui/
 ```
 
 ## 运行

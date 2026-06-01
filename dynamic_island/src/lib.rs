@@ -1,7 +1,7 @@
 //! 灵动岛 Tauri 扩展入口。
 //!
 //! 这个 crate 串起应用设置、显示器选择、运行时快照、平台无关 UI 场景和 Windows
-//! 原生窗口实现。`echoisland-ui` 负责纯 UI 模型，当前 crate 负责生命周期和平台桥接。
+//! 原生窗口实现。`reef-ui` 负责纯 UI 模型，当前 crate 负责生命周期和平台桥接。
 
 pub use echoisland_runtime;
 
@@ -24,9 +24,9 @@ mod updater_service;
 #[cfg(feature = "tauri-host")]
 mod window_operations;
 
-// 对外暴露平台无关的面板核心类型，避免调用方直接依赖 echoisland-ui crate 路径。
+// 对外暴露平台无关的面板核心类型，避免调用方直接依赖 reef-ui crate 路径。
 pub mod native_panel_core {
-    pub use echoisland_ui::native_panel_core::*;
+    pub use reef_ui::native_panel_core::*;
 }
 
 // 原生渲染协调层：把场景模型转换为渲染命令，并处理运行时交互。
@@ -34,7 +34,7 @@ mod native_panel_renderer;
 
 // 对外暴露平台无关的场景类型，供扩展内外共享 UI 结构。
 pub mod native_panel_scene {
-    pub use echoisland_ui::native_panel_scene::*;
+    pub use reef_ui::native_panel_scene::*;
 }
 
 // 应用设置/显示器信息到场景构建输入的适配层。

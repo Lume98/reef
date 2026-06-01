@@ -246,7 +246,7 @@ pub(crate) struct WindowsNativePanelRuntime {
     pub(super) platform_loop: WindowsNativePanelPlatformLoopState,
     pub(super) scene_cache: NativePanelRuntimeSceneCache,
     pub(super) animation_scheduler:
-        echoisland_ui::native_panel_ui::render::NativePanelAnimationFrameScheduler,
+        reef_ui::native_panel_ui::render::NativePanelAnimationFrameScheduler,
     pub(super) next_animation_wake_at: Option<Instant>,
     pub(super) last_animation_descriptor: Option<PanelAnimationDescriptor>,
     pub(super) last_transition_request: Option<NativePanelTransitionRequest>,
@@ -585,7 +585,7 @@ impl WindowsNativePanelRuntime {
     pub(super) fn advance_animation_frame_at(
         &mut self,
         now: Instant,
-    ) -> Result<Option<echoisland_ui::native_panel_ui::render::NativePanelAnimationFrame>, String>
+    ) -> Result<Option<reef_ui::native_panel_ui::render::NativePanelAnimationFrame>, String>
     {
         if let Some(request) = self.last_transition_request.take() {
             // If this transition is anything other than Close, any in-flight
@@ -643,7 +643,7 @@ impl WindowsNativePanelRuntime {
 
     fn apply_animation_frame(
         &mut self,
-        frame: echoisland_ui::native_panel_ui::render::NativePanelAnimationFrame,
+        frame: reef_ui::native_panel_ui::render::NativePanelAnimationFrame,
     ) -> Result<(), String> {
         self.host.apply_timeline_descriptor(frame.plan.timeline)?;
         self.last_animation_descriptor = Some(frame.plan.timeline.animation);
@@ -666,7 +666,7 @@ impl WindowsNativePanelRuntime {
     fn resolve_animation_target(
         &self,
         request: NativePanelTransitionRequest,
-    ) -> echoisland_ui::native_panel_ui::render::NativePanelAnimationTarget {
+    ) -> reef_ui::native_panel_ui::render::NativePanelAnimationTarget {
         let start_height = self
             .host
             .renderer
@@ -679,7 +679,7 @@ impl WindowsNativePanelRuntime {
                 self.resolved_expanded_target_height()
             }
         };
-        echoisland_ui::native_panel_ui::render::NativePanelAnimationTarget {
+        reef_ui::native_panel_ui::render::NativePanelAnimationTarget {
             request,
             start_height,
             target_height,

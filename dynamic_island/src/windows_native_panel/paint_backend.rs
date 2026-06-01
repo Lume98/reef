@@ -1,4 +1,4 @@
-use echoisland_ui::native_panel_ui::visual::{
+use reef_ui::native_panel_ui::visual::{
     NativePanelVisualColor, NativePanelVisualPlan, NativePanelVisualPrimitive,
     NativePanelVisualTextAlignment, NativePanelVisualTextRole, NativePanelVisualTextWeight,
 };
@@ -97,7 +97,7 @@ pub(super) enum WindowsNativePanelPaintOperation {
     },
     FillCompactShoulder {
         frame: PanelRect,
-        side: echoisland_ui::native_panel_ui::visual::NativePanelVisualShoulderSide,
+        side: reef_ui::native_panel_ui::visual::NativePanelVisualShoulderSide,
         progress: f64,
         fill: WindowsNativePanelPaintColor,
         border: WindowsNativePanelPaintColor,
@@ -145,7 +145,7 @@ pub(super) fn resolve_windows_native_panel_hit_test_blocker_operations(
     job: &WindowsNativePanelShellPaintJob,
 ) -> Vec<WindowsNativePanelPaintOperation> {
     if job.display_mode
-        != echoisland_ui::native_panel_ui::presentation::NativePanelVisualDisplayMode::Expanded
+        != reef_ui::native_panel_ui::presentation::NativePanelVisualDisplayMode::Expanded
     {
         return Vec::new();
     }
@@ -526,7 +526,7 @@ pub(super) fn paint_windows_native_panel_job_with_gdi(
                         top: origin.y.round() as i32,
                         right: (origin.x + max_width).round() as i32,
                         bottom: (origin.y
-                            + echoisland_ui::native_panel_ui::visual::native_panel_visual_text_box_height_for_role(
+                            + reef_ui::native_panel_ui::visual::native_panel_visual_text_box_height_for_role(
                                 *role, text, *size,
                             ))
                         .round() as i32,
@@ -715,9 +715,9 @@ mod tests {
             card_count: 2,
             cards: vec![
                 NativePanelVisualCardInput {
-                    style: echoisland_ui::native_panel_ui::presentation::NativePanelVisualCardStyle::Settings,
+                    style: reef_ui::native_panel_ui::presentation::NativePanelVisualCardStyle::Settings,
                     title: "Settings".to_string(),
-                    subtitle: Some("EchoIsland v0.6.1".to_string()),
+                    subtitle: Some("Reef UI v0.6.1".to_string()),
                     body: None,
                     badge: None,
                     source_badge: None,
@@ -735,7 +735,7 @@ mod tests {
                     removing: false,
                 },
                 NativePanelVisualCardInput {
-                    style: echoisland_ui::native_panel_ui::presentation::NativePanelVisualCardStyle::Completion,
+                    style: reef_ui::native_panel_ui::presentation::NativePanelVisualCardStyle::Completion,
                     title: "Done".to_string(),
                     subtitle: Some("#abcdef 璺?now".to_string()),
                     body: Some("Task complete".to_string()),
@@ -865,14 +865,14 @@ mod tests {
                 origin: crate::native_panel_core::PanelPoint { x: 12.0, y: 34.0 },
                 max_width: 48.0,
                 text: "Idle".to_string(),
-                color: echoisland_ui::native_panel_ui::visual::NativePanelVisualColor::rgb(
+                color: reef_ui::native_panel_ui::visual::NativePanelVisualColor::rgb(
                     230, 235, 245,
                 ),
                 size: 10,
                 weight:
-                    echoisland_ui::native_panel_ui::visual::NativePanelVisualTextWeight::Semibold,
+                    reef_ui::native_panel_ui::visual::NativePanelVisualTextWeight::Semibold,
                 alignment:
-                    echoisland_ui::native_panel_ui::visual::NativePanelVisualTextAlignment::Center,
+                    reef_ui::native_panel_ui::visual::NativePanelVisualTextAlignment::Center,
                 alpha: 1.0,
             },
         );
@@ -989,7 +989,7 @@ mod tests {
 
         let round_rect = windows_native_panel_paint_operation_from_primitive(
             &WindowsNativePanelPaintPrimitive::MascotRoundRect {
-                role: echoisland_ui::native_panel_ui::visual::NativePanelVisualMascotRoundRectRole::Mouth,
+                role: reef_ui::native_panel_ui::visual::NativePanelVisualMascotRoundRectRole::Mouth,
                 frame,
                 radius: 2.0,
                 color,
@@ -998,7 +998,7 @@ mod tests {
         );
         let ellipse = windows_native_panel_paint_operation_from_primitive(
             &WindowsNativePanelPaintPrimitive::MascotEllipse {
-                role: echoisland_ui::native_panel_ui::visual::NativePanelVisualMascotEllipseRole::LeftEye,
+                role: reef_ui::native_panel_ui::visual::NativePanelVisualMascotEllipseRole::LeftEye,
                 frame,
                 color,
                 alpha,
@@ -1006,14 +1006,14 @@ mod tests {
         );
         let text = windows_native_panel_paint_operation_from_primitive(
             &WindowsNativePanelPaintPrimitive::MascotText {
-                role: echoisland_ui::native_panel_ui::visual::NativePanelVisualMascotTextRole::SleepLabel,
+                role: reef_ui::native_panel_ui::visual::NativePanelVisualMascotTextRole::SleepLabel,
                 origin: crate::native_panel_core::PanelPoint { x: 1.0, y: 2.0 },
                 max_width: 20.0,
                 text: "z".to_string(),
                 color,
                 size: 10,
-                weight: echoisland_ui::native_panel_ui::visual::NativePanelVisualTextWeight::Semibold,
-                alignment: echoisland_ui::native_panel_ui::visual::NativePanelVisualTextAlignment::Center,
+                weight: reef_ui::native_panel_ui::visual::NativePanelVisualTextWeight::Semibold,
+                alignment: reef_ui::native_panel_ui::visual::NativePanelVisualTextAlignment::Center,
                 alpha,
             },
         );

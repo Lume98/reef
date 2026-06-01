@@ -101,7 +101,7 @@ pub(super) fn visual_input(
             NativePanelVisualCardInput {
                 style: crate::native_panel_ui::presentation::NativePanelVisualCardStyle::Settings,
                 title: "Settings".to_string(),
-                subtitle: Some("EchoIsland v0.6.1".to_string()),
+                subtitle: Some("Reef UI v0.6.1".to_string()),
                 body: None,
                 badge: None,
                 source_badge: None,
@@ -194,7 +194,7 @@ pub(super) fn session_with_chat_lines() -> SessionSnapshotView {
     SessionSnapshotView {
         session_id: "session-123456".to_string(),
         source: "codex".to_string(),
-        project_name: Some("EchoIsland".to_string()),
+        project_name: Some("Reef UI".to_string()),
         cwd: None,
         model: None,
         terminal_app: None,

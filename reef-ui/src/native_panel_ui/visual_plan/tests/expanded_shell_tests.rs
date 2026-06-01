@@ -130,7 +130,7 @@ fn expanded_visual_plan_draws_tool_body_role_as_mac_style_pill() {
     input.card_stack_content_height = 120.0;
     input.cards = vec![NativePanelVisualCardInput {
         style: crate::native_panel_ui::presentation::NativePanelVisualCardStyle::Default,
-        title: "EchoIsland".to_string(),
+        title: "Reef UI".to_string(),
         subtitle: Some("#c1d5-7 · now".to_string()),
         body: Some("Bash cargo test".to_string()),
         badge: Some(NativePanelVisualCardBadgeInput {
@@ -196,7 +196,7 @@ fn expanded_visual_plan_does_not_draw_card_text_outside_clipped_shell() {
     input.card_stack_content_height = 140.0;
     input.cards = vec![NativePanelVisualCardInput {
         style: crate::native_panel_ui::presentation::NativePanelVisualCardStyle::Default,
-        title: "EchoIsland".to_string(),
+        title: "Reef UI".to_string(),
         subtitle: Some("#c1d5-7 路 gpt-5.4 路 7m".to_string()),
         body: None,
         badge: Some(NativePanelVisualCardBadgeInput {
@@ -234,7 +234,7 @@ fn expanded_visual_plan_does_not_draw_card_text_outside_clipped_shell() {
 
     assert!(plan.primitives.iter().any(|primitive| matches!(
         primitive,
-        NativePanelVisualPrimitive::Text { text, .. } if text == "EchoIsland"
+        NativePanelVisualPrimitive::Text { text, .. } if text == "Reef UI"
     )));
     assert!(!plan.primitives.iter().any(|primitive| matches!(
         primitive,

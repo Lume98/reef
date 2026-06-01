@@ -246,7 +246,7 @@ mod tests {
         resolve_panel_layout, PanelAnimationDescriptor, PanelAnimationKind, PanelGeometryMetrics,
         PanelLayoutInput, PanelRect,
     };
-    use echoisland_ui::native_panel_ui::descriptor::{
+    use reef_ui::native_panel_ui::descriptor::{
         NativePanelHostWindowDescriptor, NativePanelHostWindowState, NativePanelPointerRegion,
         NativePanelPointerRegionKind, NativePanelTimelineDescriptor,
     };

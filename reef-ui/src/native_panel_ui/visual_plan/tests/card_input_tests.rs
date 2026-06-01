@@ -34,7 +34,7 @@ fn visual_card_input_preserves_structured_body_roles_from_shared_spec() {
     let card = native_panel_visual_card_input_from_scene_card_with_height(
         &SceneCard::Session {
             session,
-            title: "EchoIsland".to_string(),
+            title: "Reef UI".to_string(),
             status: SceneBadge {
                 text: "Running".to_string(),
                 emphasized: true,

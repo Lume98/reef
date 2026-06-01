@@ -816,7 +816,7 @@ fn windows_runtime_expanded_target_height_uses_compact_width_when_scene_has_no_l
         crate::native_panel_core::EXPANDED_CARDS_SIDE_INSET,
     );
     let expected_body_height =
-        echoisland_ui::native_panel_ui::presentation::estimated_scene_content_height_for_card_width(
+        reef_ui::native_panel_ui::presentation::estimated_scene_content_height_for_card_width(
             scene,
             card_width,
         )

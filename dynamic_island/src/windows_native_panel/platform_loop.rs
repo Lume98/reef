@@ -479,7 +479,7 @@ fn apply_windows_native_window_create(
 
     static WINDOW_CLASS: OnceLock<Result<Vec<u16>, String>> = OnceLock::new();
     let class_name = WINDOW_CLASS.get_or_init(|| {
-        let class_name = wide_null("EchoIslandNativePanelWindow");
+        let class_name = wide_null("ReefUINativePanelWindow");
         let instance = unsafe { GetModuleHandleW(ptr::null()) };
         let class = WNDCLASSW {
             lpfnWndProc: Some(native_panel_window_proc),
@@ -495,7 +495,7 @@ fn apply_windows_native_window_create(
         Ok(class_name)
     });
     let class_name = class_name.as_ref().map_err(Clone::clone)?;
-    let window_name = wide_null("EchoIsland Native Panel");
+    let window_name = wide_null("Reef UI Native Panel");
     let instance = unsafe { GetModuleHandleW(ptr::null()) };
     let hwnd = unsafe {
         CreateWindowExW(

@@ -246,8 +246,8 @@ mod tests {
 
     const MANIFEST: &str = r#"{
       "version": 1,
-      "id": "echoisland-default",
-      "name": "EchoIsland Assistant",
+      "id": "reef-ui-default",
+      "name": "Reef UI Assistant",
       "sprite": {
         "file": "spritesheet.webp",
         "columns": 8,
@@ -308,7 +308,7 @@ mod tests {
     fn mascot_sprite_manifest_parses_codex_like_pet_pack_contract() {
         let manifest = parse_mascot_sprite_manifest(MANIFEST).expect("manifest");
 
-        assert_eq!(manifest.id, "echoisland-default");
+        assert_eq!(manifest.id, "reef-ui-default");
         assert_eq!(manifest.sprite.file, "spritesheet.webp");
         assert_eq!(manifest.sprite.columns, 8);
         assert_eq!(manifest.sprite.cell_width, 192.0);

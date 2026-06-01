@@ -28,8 +28,8 @@ pub(super) struct WindowsDirectWriteTextLayoutRequest {
     pub(super) text: String,
     pub(super) max_width: f64,
     pub(super) size: i32,
-    pub(super) weight: echoisland_ui::native_panel_ui::visual::NativePanelVisualTextWeight,
-    pub(super) alignment: echoisland_ui::native_panel_ui::visual::NativePanelVisualTextAlignment,
+    pub(super) weight: reef_ui::native_panel_ui::visual::NativePanelVisualTextWeight,
+    pub(super) alignment: reef_ui::native_panel_ui::visual::NativePanelVisualTextAlignment,
     pub(super) fonts: WindowsDirectWriteFontFallback,
 }
 
@@ -65,8 +65,8 @@ impl WindowsDirectWriteTextLayoutRequest {
         text: String,
         max_width: f64,
         size: i32,
-        weight: echoisland_ui::native_panel_ui::visual::NativePanelVisualTextWeight,
-        alignment: echoisland_ui::native_panel_ui::visual::NativePanelVisualTextAlignment,
+        weight: reef_ui::native_panel_ui::visual::NativePanelVisualTextWeight,
+        alignment: reef_ui::native_panel_ui::visual::NativePanelVisualTextAlignment,
     ) -> Self {
         Self {
             fonts: WindowsDirectWriteFontFallback::for_text(&text),
@@ -128,8 +128,8 @@ impl WindowsDirectWriteFactory {
         &self,
         fonts: WindowsDirectWriteFontFallback,
         size: i32,
-        weight: echoisland_ui::native_panel_ui::visual::NativePanelVisualTextWeight,
-        alignment: echoisland_ui::native_panel_ui::visual::NativePanelVisualTextAlignment,
+        weight: reef_ui::native_panel_ui::visual::NativePanelVisualTextWeight,
+        alignment: reef_ui::native_panel_ui::visual::NativePanelVisualTextAlignment,
     ) -> Result<IDWriteTextFormat, String> {
         let Some(factory) = self.factory.as_ref() else {
             return Err("DirectWrite factory is not initialized".to_string());
@@ -163,16 +163,16 @@ impl WindowsDirectWriteFactory {
 
 #[cfg(windows)]
 fn dwrite_font_weight(
-    weight: echoisland_ui::native_panel_ui::visual::NativePanelVisualTextWeight,
+    weight: reef_ui::native_panel_ui::visual::NativePanelVisualTextWeight,
 ) -> DWRITE_FONT_WEIGHT {
     match weight {
-        echoisland_ui::native_panel_ui::visual::NativePanelVisualTextWeight::Normal => {
+        reef_ui::native_panel_ui::visual::NativePanelVisualTextWeight::Normal => {
             DWRITE_FONT_WEIGHT_NORMAL
         }
-        echoisland_ui::native_panel_ui::visual::NativePanelVisualTextWeight::Semibold => {
+        reef_ui::native_panel_ui::visual::NativePanelVisualTextWeight::Semibold => {
             DWRITE_FONT_WEIGHT_SEMI_BOLD
         }
-        echoisland_ui::native_panel_ui::visual::NativePanelVisualTextWeight::Bold => {
+        reef_ui::native_panel_ui::visual::NativePanelVisualTextWeight::Bold => {
             DWRITE_FONT_WEIGHT_BOLD
         }
     }
@@ -180,16 +180,16 @@ fn dwrite_font_weight(
 
 #[cfg(windows)]
 fn dwrite_text_alignment(
-    alignment: echoisland_ui::native_panel_ui::visual::NativePanelVisualTextAlignment,
+    alignment: reef_ui::native_panel_ui::visual::NativePanelVisualTextAlignment,
 ) -> windows::Win32::Graphics::DirectWrite::DWRITE_TEXT_ALIGNMENT {
     match alignment {
-        echoisland_ui::native_panel_ui::visual::NativePanelVisualTextAlignment::Left => {
+        reef_ui::native_panel_ui::visual::NativePanelVisualTextAlignment::Left => {
             DWRITE_TEXT_ALIGNMENT_LEADING
         }
-        echoisland_ui::native_panel_ui::visual::NativePanelVisualTextAlignment::Center => {
+        reef_ui::native_panel_ui::visual::NativePanelVisualTextAlignment::Center => {
             DWRITE_TEXT_ALIGNMENT_CENTER
         }
-        echoisland_ui::native_panel_ui::visual::NativePanelVisualTextAlignment::Right => {
+        reef_ui::native_panel_ui::visual::NativePanelVisualTextAlignment::Right => {
             DWRITE_TEXT_ALIGNMENT_TRAILING
         }
     }
@@ -223,8 +223,8 @@ mod tests {
             "Codex ready".to_string(),
             160.0,
             14,
-            echoisland_ui::native_panel_ui::visual::NativePanelVisualTextWeight::Semibold,
-            echoisland_ui::native_panel_ui::visual::NativePanelVisualTextAlignment::Left,
+            reef_ui::native_panel_ui::visual::NativePanelVisualTextWeight::Semibold,
+            reef_ui::native_panel_ui::visual::NativePanelVisualTextAlignment::Left,
         );
 
         assert_eq!(
@@ -238,7 +238,7 @@ mod tests {
         assert_eq!(request.size, 14);
         assert_eq!(
             request.weight,
-            echoisland_ui::native_panel_ui::visual::NativePanelVisualTextWeight::Semibold
+            reef_ui::native_panel_ui::visual::NativePanelVisualTextWeight::Semibold
         );
     }
 
@@ -248,8 +248,8 @@ mod tests {
             "\u{E713}".to_string(),
             26.0,
             16,
-            echoisland_ui::native_panel_ui::visual::NativePanelVisualTextWeight::Normal,
-            echoisland_ui::native_panel_ui::visual::NativePanelVisualTextAlignment::Center,
+            reef_ui::native_panel_ui::visual::NativePanelVisualTextWeight::Normal,
+            reef_ui::native_panel_ui::visual::NativePanelVisualTextAlignment::Center,
         );
 
         assert_eq!(
@@ -267,8 +267,8 @@ mod tests {
             "\u{E7E8}".to_string(),
             26.0,
             16,
-            echoisland_ui::native_panel_ui::visual::NativePanelVisualTextWeight::Bold,
-            echoisland_ui::native_panel_ui::visual::NativePanelVisualTextAlignment::Center,
+            reef_ui::native_panel_ui::visual::NativePanelVisualTextWeight::Bold,
+            reef_ui::native_panel_ui::visual::NativePanelVisualTextAlignment::Center,
         );
 
         assert_eq!(
