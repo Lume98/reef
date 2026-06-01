@@ -97,9 +97,9 @@ pub(crate) mod facade {
         pub(crate) use super::super::runtime_click::dispatch_queued_native_panel_platform_events_with_handler;
         #[cfg(feature = "tauri-host")]
         pub(crate) use super::super::runtime_commands::{
-            dispatch_drained_native_panel_platform_events_with_app_handle,
-            dispatch_native_panel_click_command_with_app_handle,
-            dispatch_native_panel_platform_events_with_app_handle,
+            dispatch_drained_native_panel_platform_events_with_host,
+            dispatch_native_panel_click_command_with_host,
+            dispatch_native_panel_platform_events_with_host,
             execute_native_panel_cycle_display_command,
             run_native_panel_pointer_input_with_queued_command_dispatch,
             run_native_panel_runtime_with_queued_command_dispatch,

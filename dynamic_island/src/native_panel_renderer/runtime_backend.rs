@@ -403,46 +403,56 @@ pub(crate) trait NativePanelRuntimeBackend: NativePanelPlatformRuntimeBackend {
         NativePanelPlatformRuntimeBackend::create_panel(self)
     }
 
-    fn hide_legacy_app_window<R: tauri::Runtime>(&self, app: &AppHandle<R>) -> Result<(), String> {
-        NativePanelPlatformRuntimeBackend::hide_legacy_app_window(self, app)
-    }
-
-    fn spawn_platform_loops<R: tauri::Runtime + 'static>(&self, app: AppHandle<R>) {
-        NativePanelPlatformRuntimeBackend::spawn_platform_loops(self, app);
-    }
-
-    fn update_snapshot<R: tauri::Runtime>(
+    fn hide_legacy_app_window<H: crate::host_platform::NativePanelHostPlatform>(
         &self,
-        app: &AppHandle<R>,
+        host: &H,
+    ) -> Result<(), String> {
+        host.hide_native_panel()
+    }
+
+    fn spawn_platform_loops<H: crate::host_platform::NativePanelHostPlatform + Clone + 'static>(
+        &self,
+        host: H,
+    ) {
+        host.spawn_platform_loops();
+    }
+
+    fn update_snapshot<H: crate::host_platform::NativePanelHostPlatform>(
+        &self,
+        host: &H,
         snapshot: &RuntimeSnapshot,
     ) -> Result<(), String> {
-        NativePanelPlatformRuntimeBackend::update_snapshot(self, app, snapshot)
+        let _ = snapshot;
+        host.refresh_native_panel_from_last_snapshot()
     }
 
-    fn hide_panel<R: tauri::Runtime>(&self, app: &AppHandle<R>) -> Result<(), String> {
-        NativePanelPlatformRuntimeBackend::hide_panel(self, app)
-    }
-
-    fn refresh_from_last_snapshot<R: tauri::Runtime>(
+    fn hide_panel<H: crate::host_platform::NativePanelHostPlatform>(
         &self,
-        app: &AppHandle<R>,
+        host: &H,
     ) -> Result<(), String> {
-        NativePanelPlatformRuntimeBackend::refresh_from_last_snapshot(self, app)
+        host.hide_native_panel()
     }
 
-    fn reposition_to_selected_display<R: tauri::Runtime>(
+    fn refresh_from_last_snapshot<H: crate::host_platform::NativePanelHostPlatform>(
         &self,
-        app: &AppHandle<R>,
+        host: &H,
     ) -> Result<(), String> {
-        NativePanelPlatformRuntimeBackend::reposition_to_selected_display(self, app)
+        host.refresh_native_panel_from_last_snapshot()
     }
 
-    fn set_shared_expanded_body_height<R: tauri::Runtime>(
+    fn reposition_to_selected_display<H: crate::host_platform::NativePanelHostPlatform>(
         &self,
-        app: &AppHandle<R>,
+        host: &H,
+    ) -> Result<(), String> {
+        host.reposition_native_panel_to_selected_display()
+    }
+
+    fn set_shared_expanded_body_height<H: crate::host_platform::NativePanelHostPlatform>(
+        &self,
+        host: &H,
         body_height: f64,
     ) -> Result<(), String> {
-        NativePanelPlatformRuntimeBackend::set_shared_expanded_body_height(self, app, body_height)
+        host.set_shared_expanded_body_height(body_height)
     }
 }
 

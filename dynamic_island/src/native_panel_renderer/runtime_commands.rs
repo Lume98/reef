@@ -63,7 +63,10 @@ pub(crate) fn execute_native_panel_quit_application_command(host: &impl NativePa
 pub(crate) fn execute_native_panel_cycle_display_command<H>(
     host: &H,
     reposition: impl FnOnce(&H) -> Result<(), String>,
-) -> Result<AppSettings, String> {
+) -> Result<AppSettings, String>
+where
+    H: NativePanelHostPlatform,
+{
     let displays = list_available_displays(host)?;
     let settings = current_app_settings();
     let Some(next_selection) =
@@ -146,17 +149,23 @@ pub(crate) fn execute_native_panel_debug_mode_trigger_command(
 }
 
 #[cfg(feature = "tauri-host")]
-pub(crate) fn execute_native_panel_open_settings_location_command(
-    host: &impl NativePanelHostPlatform,
-) -> Result<(), String> {
+pub(crate) fn execute_native_panel_open_settings_location_command<H>(
+    host: &H,
+) -> Result<(), String>
+where
+    H: NativePanelHostPlatform,
+{
     host.open_settings_location()
 }
 
 #[cfg(feature = "tauri-host")]
-pub(crate) fn execute_native_panel_open_release_page_command(
-    host: &impl NativePanelHostPlatform,
-) -> Result<(), String> {
-    crate::updater_service::spawn_native_update_flow(host.clone());
+pub(crate) fn execute_native_panel_open_release_page_command<H>(
+    host: &H,
+) -> Result<(), String>
+where
+    H: NativePanelHostPlatform,
+{
+    crate::updater_service::spawn_native_update_flow((*host).clone());
     Ok(())
 }
 
@@ -512,14 +521,14 @@ pub(crate) trait NativePanelAppHandleRuntimeCommandBackend {
 
     fn open_settings_location_command(&mut self) -> Result<(), String> {
         self.dispatch_app_command(
-            execute_native_panel_open_settings_location_command,
+            |host| execute_native_panel_open_settings_location_command(&host),
             "failed to open settings folder",
         )
     }
 
     fn open_release_page_command(&mut self) -> Result<(), String> {
         self.dispatch_app_command(
-            execute_native_panel_open_release_page_command,
+            |host| execute_native_panel_open_release_page_command(&host),
             "failed to start update flow",
         )
     }

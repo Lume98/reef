@@ -9,6 +9,7 @@ pub use echoisland_runtime;
 mod app_settings;
 mod config;
 mod display_settings;
+mod host_platform;
 #[cfg(feature = "tauri-host")]
 mod error;
 #[cfg(feature = "tauri-host")]

@@ -6,7 +6,7 @@ use tauri::AppHandle;
 
 #[cfg(feature = "tauri-host")]
 use crate::native_panel_renderer::facade::command::{
-    dispatch_drained_native_panel_platform_events_with_app_handle,
+    dispatch_drained_native_panel_platform_events_with_host,
     spawn_native_panel_platform_event_dispatch_loop,
     spawn_native_panel_platform_loops_with_event_dispatch, NativePanelRuntimeDispatchMode,
 };
@@ -69,7 +69,7 @@ pub(crate) fn spawn_platform_loops_without_app() {
 pub(crate) fn dispatch_queued_native_panel_platform_events<R: tauri::Runtime + 'static>(
     app: AppHandle<R>,
 ) -> Result<(), String> {
-    dispatch_drained_native_panel_platform_events_with_app_handle(
+    dispatch_drained_native_panel_platform_events_with_host(
         app,
         drain_windows_native_panel_platform_events,
         toggle_native_panel_settings_surface,
