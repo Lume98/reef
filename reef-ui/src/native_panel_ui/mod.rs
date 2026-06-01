@@ -44,7 +44,31 @@ pub mod presentation {
 }
 
 pub mod components {
-    pub use super::component_models::*;
+    pub mod base {
+        pub use super::super::component_models::{
+            NativePanelComponent, NativePanelComponentTree, NativePanelPanelColors,
+        };
+    }
+
+    pub mod container {
+        pub use super::super::component_models::NativePanelContainerComponent;
+    }
+
+    pub mod content {
+        pub use super::super::component_models::{
+            NativePanelCompactBarComponent, NativePanelSessionCardComponent,
+            NativePanelSettingRowComponent, NativePanelStackComponent,
+        };
+    }
+
+    pub mod decoration {
+        pub use super::super::component_models::NativePanelMastheadComponent;
+    }
+
+    pub use base::*;
+    pub use container::*;
+    pub use content::*;
+    pub use decoration::*;
 }
 
 pub mod render {
