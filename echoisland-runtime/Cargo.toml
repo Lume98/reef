@@ -1,0 +1,13 @@
+[package]
+name = "echoisland-runtime"
+version = "0.1.0"
+edition = "2021"
+description = "共享运行时类型定义"
+
+[dependencies]
+serde = { workspace = true }
+chrono = { version = "0.4", features = ["serde"] }
+
+[lib]
+name = "echoisland_runtime"
+crate-type = ["lib"]
