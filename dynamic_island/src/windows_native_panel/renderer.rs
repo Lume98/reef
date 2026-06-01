@@ -25,6 +25,9 @@ use crate::{
             NativePanelRenderCommandBundle, NativePanelRenderer, NativePanelRuntimeSceneCache,
         },
     },
+    native_panel_renderer::rendering_backend::{
+        NativePanelFrameSubmission, NativePanelRenderBackend,
+    },
     native_panel_scene::{PanelRuntimeRenderState, PanelScene},
 };
 
@@ -41,6 +44,7 @@ pub(crate) struct WindowsNativePanelRenderer {
     pub(super) last_window_state: Option<NativePanelHostWindowState>,
     pub(super) last_pointer_regions: Vec<NativePanelPointerRegion>,
     pub(super) last_presentation_model: Option<NativePanelPresentationModel>,
+    pub(super) last_frame_submission: Option<NativePanelFrameSubmission>,
     pub(super) active_close_presentation_plan: Option<NativePanelClosePresentationPlan>,
 }
 
@@ -57,6 +61,7 @@ impl Default for WindowsNativePanelRenderer {
             last_window_state: None,
             last_pointer_regions: Vec::new(),
             last_presentation_model: None,
+            last_frame_submission: None,
             active_close_presentation_plan: None,
         }
     }
@@ -194,6 +199,18 @@ impl NativePanelRenderer for WindowsNativePanelRenderer {
     }
 
     fn set_visible(&mut self, _visible: bool) -> Result<(), Self::Error> {
+        Ok(())
+    }
+}
+
+impl NativePanelRenderBackend for WindowsNativePanelRenderer {
+    type Error = String;
+
+    fn submit_frame(
+        &mut self,
+        submission: &NativePanelFrameSubmission,
+    ) -> Result<(), Self::Error> {
+        self.last_frame_submission = Some(submission.clone());
         Ok(())
     }
 }

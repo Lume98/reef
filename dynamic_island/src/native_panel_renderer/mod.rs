@@ -12,7 +12,8 @@ pub(crate) use reef_ui::native_panel_ui::{
     presentation as card_visual_spec, presentation as completion_glow_visual_spec,
     presentation as mascot_sprite_spec, presentation as mascot_visual_spec,
     presentation as presentation_model, render as animation_plan, render as animation_scheduler,
-    render as render_commands, render as transition_controller, visual as visual_primitives,
+    render as render_commands, render as transition_controller, rendering as rendering_backend,
+    visual as visual_primitives,
 };
 
 pub(crate) mod visual_plan {

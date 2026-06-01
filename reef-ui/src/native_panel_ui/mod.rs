@@ -6,6 +6,7 @@
 mod action_button_visual_spec;
 mod animation_plan;
 mod animation_scheduler;
+mod component_models;
 mod card_visual_spec;
 mod completion_glow_visual_spec;
 mod descriptors;
@@ -14,6 +15,7 @@ mod mascot_sprite_spec;
 mod mascot_visual_spec;
 mod presentation_model;
 mod render_commands;
+mod rendering_backend;
 mod transition_controller;
 mod visual_plan;
 mod visual_primitives;
@@ -41,11 +43,19 @@ pub mod presentation {
     pub use super::visual_primitives::NativePanelVisualColor;
 }
 
+pub mod components {
+    pub use super::component_models::*;
+}
+
 pub mod render {
     pub use super::animation_plan::*;
     pub use super::animation_scheduler::*;
     pub use super::render_commands::*;
     pub use super::transition_controller::*;
+}
+
+pub mod rendering {
+    pub use super::rendering_backend::*;
 }
 
 pub mod visual {
