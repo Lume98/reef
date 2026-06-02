@@ -27,7 +27,7 @@ fn main() {
         }
     };
 
-    let mut painter = Direct2DPainter::new();
+    let mut painter: Direct2DPainter = Direct2DPainter::new();
     painter.set_window(window.hwnd());
 
     let primitives = vec![
