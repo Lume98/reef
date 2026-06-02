@@ -10,7 +10,7 @@ use reef_core::{
 };
 use reef_render::primitive::{FontWeight, TextAlignment, VisualPrimitive};
 use reef_widgets::{
-    card::{BodyLine, Card, CardStyle},
+    card::{Badge, BodyLine, Card, CardStyle, SettingsRow},
     container::Container,
     label::Label,
 };
@@ -106,9 +106,9 @@ fn main() {
         "PendingApproval",
         Card::new(CardStyle::PendingApproval)
             .title("Allow command?")
-            .status_badge("Waiting")
-            .source_badge("terminal")
-            .body_line(BodyLine { prefix: Some("$ ".into()), text: "rm -rf /tmp/cache".into() })
+            .badge(Badge::status("Waiting", true))
+            .badge(Badge::source("terminal"))
+            .body_line(BodyLine::plain(Some("$"), "rm -rf /tmp/cache"))
             .action_hint("Allow / Deny")
             .height(120.0),
         300.0,
@@ -121,10 +121,10 @@ fn main() {
         Card::new(CardStyle::PendingQuestion)
             .title("Read this file?")
             .subtitle("Claude wants to access a file")
-            .status_badge("Question")
-            .source_badge("fs")
-            .body_line(BodyLine { prefix: None, text: "File: /etc/config.json".into() })
-            .tool("file_read", Some("Read /etc/config.json".into()))
+            .badge(Badge::status("Question", true))
+            .badge(Badge::source("fs"))
+            .body_line(BodyLine::plain(None, "File: /etc/config.json"))
+            .tool("file_read", Some("Read /etc/config.json".to_string()))
             .action_hint("Allow / Deny / Approve All")
             .height(150.0),
         300.0,
@@ -136,10 +136,10 @@ fn main() {
         "Completion",
         Card::new(CardStyle::Completion)
             .title("Claude完成")
-            .status_badge("完成")
-            .source_badge("chat")
-            .body_line(BodyLine { prefix: None, text: "已完成代码审查，发现 3 处优化建议".into() })
-            .body_line(BodyLine { prefix: None, text: "性能提升约 15%".into() })
+            .badge(Badge::status("完成", true))
+            .badge(Badge::source("chat"))
+            .body_line(BodyLine::plain(None, "已完成代码审查，发现 3 处优化建议"))
+            .body_line(BodyLine::plain(None, "性能提升约 15%"))
             .height(120.0),
         300.0,
         120.0,
@@ -151,9 +151,9 @@ fn main() {
         Card::new(CardStyle::Settings)
             .title("Settings")
             .settings_rows(vec![
-                ("Auto-approve".into(), "On".into(), true),
-                ("Theme".into(), "Dark".into(), false),
-                ("Font Size".into(), "14px".into(), false),
+                SettingsRow { title: "Auto-approve".into(), value: "On".into(), active: true },
+                SettingsRow { title: "Theme".into(), value: "Dark".into(), active: false },
+                SettingsRow { title: "Font Size".into(), value: "14px".into(), active: false },
             ])
             .height(140.0),
         300.0,
@@ -166,8 +166,8 @@ fn main() {
         Card::new(CardStyle::PromptAssist)
             .title("Generate commit message?")
             .subtitle("Based on staged changes")
-            .status_badge("Suggestion")
-            .body_line(BodyLine { prefix: Some("> ".into()), text: "feat: add user auth middleware".into() })
+            .badge(Badge::status("Suggestion", true))
+            .body_line(BodyLine::plain(Some(">"), "feat: add user auth middleware"))
             .action_hint("Accept / Edit / Dismiss")
             .height(130.0),
         300.0,

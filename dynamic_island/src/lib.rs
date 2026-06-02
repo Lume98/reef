@@ -32,6 +32,9 @@ pub mod native_panel_core {
 // 原生渲染协调层：把场景模型转换为渲染命令，并处理运行时交互。
 mod native_panel_renderer;
 
+// 运行时快照 → reef-widgets IslandWidget 桥接层。
+pub mod island_widget_bridge;
+
 // 对外暴露平台无关的场景类型，供扩展内外共享 UI 结构。
 pub mod native_panel_scene {
     pub use reef_ui::native_panel_scene::*;

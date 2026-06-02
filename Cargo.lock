@@ -887,6 +887,7 @@ dependencies = [
  "log",
  "once_cell",
  "reef-ui",
+ "reef-widgets",
  "serde",
  "serde_json",
  "tauri",

@@ -7,6 +7,7 @@ use reef_layout::Constraints;
 use reef_render::primitive::VisualPrimitive;
 
 /// Breathing 9-slice glow image for completion animation.
+#[derive(Clone)]
 pub struct CompletionGlow {
     pub frame: Rect,
     pub base_opacity: f64,

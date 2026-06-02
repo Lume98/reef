@@ -1,11 +1,23 @@
+pub mod animation;
 pub mod card;
 pub mod compact_bar;
 pub mod compact_shoulder;
 pub mod completion_glow;
 pub mod container;
 pub mod expanded_shell;
+pub mod interaction;
 pub mod island_widget;
 pub mod label;
 pub mod mascot;
+pub mod mascot_badge;
+pub mod mascot_bubble;
 pub mod mascot_dot;
 pub mod mascot_eye;
+pub mod mascot_sprite;
+
+pub use animation::{staggered_card_phase, card_content_visibility, ease_out_cubic, lerp, AnimatedValue};
+pub use card::{Badge, BadgeRole, BodyLine, BodyRole, Card, CardStyle, SettingsRow, ToolPill};
+pub use compact_bar::{ChromeVisibility, CompactBar};
+pub use interaction::{HitAction, InteractionResult, PointerInput, PointerRegion, PointerRegionKind, PointerRegionSet};
+pub use island_widget::{DisplayMode, IslandWidget};
+pub use mascot::{MascotPose, MascotWidget};

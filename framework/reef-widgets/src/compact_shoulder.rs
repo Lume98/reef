@@ -7,6 +7,7 @@ use reef_layout::Constraints;
 use reef_render::primitive::{PathSegment, VisualPrimitive};
 
 /// Animated shoulder nubbin (bezier path).
+#[derive(Clone)]
 pub struct CompactShoulder {
     pub frame: Rect,
     pub side: ShoulderSide,
@@ -15,6 +16,7 @@ pub struct CompactShoulder {
     pub border_color: Color,
 }
 
+#[derive(Clone, Copy)]
 pub enum ShoulderSide {
     Left,
     Right,
