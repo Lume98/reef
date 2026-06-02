@@ -8,9 +8,9 @@ name = "hello-reef"
 path = "src/main.rs"
 
 [dependencies]
-reef-core = { path = "../../reef-core" }
-reef-render = { path = "../../reef-render" }
-reef-layout = { path = "../../reef-layout" }
-reef-app = { path = "../../reef-app" }
-reef-widgets = { path = "../../reef-widgets" }
-reef-backend-d2d = { path = "../../reef-backend-d2d" }
+reef-core = { path = "../../framework/reef-core" }
+reef-render = { path = "../../framework/reef-render" }
+reef-layout = { path = "../../framework/reef-layout" }
+reef-app = { path = "../../framework/reef-app" }
+reef-widgets = { path = "../../framework/reef-widgets" }
+reef-backend-d2d = { path = "../../framework/reef-backend-d2d" }

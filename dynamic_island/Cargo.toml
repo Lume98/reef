@@ -25,7 +25,7 @@ tauri-plugin-opener = { version = "2", optional = true }
 
 # 共享运行时类型
 echoisland-runtime = { path = "../echoisland-runtime" }
-reef-ui = { path = "../reef-ui" }
+reef-ui = { path = "../framework/reef-ui" }
 
 [target.'cfg(target_os = "windows")'.dependencies]
 windows = { workspace = true }
