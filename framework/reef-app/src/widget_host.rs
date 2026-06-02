@@ -5,22 +5,21 @@ use reef_core::{
 use reef_layout::Constraints;
 use reef_render::primitive::{VisualPrimitive, VisualPlan};
 
-/// A visual component in the reef UI tree.
+/// Reef UI 树中的可视化组件。
 ///
-/// React-style design: each widget is a struct with props as fields.
-/// Container widgets hold child widgets as struct fields and recurse
-/// in their measure/paint/handle_event implementations.
+/// 采用类 React 设计：每个组件是一个结构体，属性作为字段。
+/// 容器组件将子组件作为字段持有，并在 measure/paint/handle_event 中递归处理。
 pub trait Widget {
-    /// Compute the desired size within the given constraints.
+    /// 在给定约束下计算期望尺寸。
     fn measure(&self, constraints: Constraints) -> Size;
 
-    /// Draw into the primitive list. Container widgets recurse into children,
-    /// computing child rects based on measure results and their layout strategy.
+    /// 将自身绘制到图元列表中。容器组件应递归绘制子组件，
+    /// 根据测量结果和布局策略计算子组件区域。
     fn paint(&self, rect: Rect, ctx: &mut PaintContext);
 
-    /// Handle an event. Return true if consumed (stops bubbling).
-    /// Container widgets should forward events to hit children first,
-    /// then handle locally if not consumed.
+    /// 处理事件。返回 true 表示事件已被消费（停止冒泡）。
+    /// 容器组件应先尝试将事件转发给命中的子组件，
+    /// 若未被消费，再自行处理。
     fn handle_event(
         &mut self,
         _event: &Event,
@@ -31,18 +30,23 @@ pub trait Widget {
     }
 }
 
+/// paint 阶段的上下文，用于收集绘制图元。
 pub struct PaintContext<'a> {
     pub primitives: &'a mut Vec<VisualPrimitive>,
 }
 
+/// 事件处理阶段的上下文，用于标记组件树是否需要重绘。
 pub struct EventContext<'a> {
     pub dirty: &'a mut bool,
 }
 
-/// Manages the root widget and coordinates measure/paint cycles.
+/// 管理根组件并协调 measure/paint 周期。
 pub struct WidgetHost {
+    /// 根组件
     root: Option<Box<dyn Widget>>,
+    /// 脏标记，为 true 时表示需要重新 measure/paint
     dirty: bool,
+    /// 窗口逻辑尺寸
     size: Size,
 }
 
@@ -58,11 +62,13 @@ impl WidgetHost {
         }
     }
 
+    /// 设置根组件，并标记为脏。
     pub fn set_root(&mut self, widget: Box<dyn Widget>) {
         self.root = Some(widget);
         self.dirty = true;
     }
 
+    /// 设置窗口尺寸，尺寸变化时自动标记为脏。
     pub fn set_size(&mut self, size: Size) {
         if self.size != size {
             self.size = size;
@@ -70,19 +76,22 @@ impl WidgetHost {
         }
     }
 
+    /// 手动标记组件树需要重新渲染。
     pub fn mark_dirty(&mut self) {
         self.dirty = true;
     }
 
+    /// 获取根组件的不可变引用。
     pub fn root(&self) -> Option<&dyn Widget> {
         self.root.as_deref()
     }
 
+    /// 获取根组件的可变引用。
     pub fn root_mut(&mut self) -> Option<&mut Box<dyn Widget>> {
         self.root.as_mut()
     }
 
-    /// Measure then paint the widget tree into a VisualPlan.
+    /// 先 measure 再 paint，产出完整的 VisualPlan 交给渲染层。
     pub fn render(&mut self) -> VisualPlan {
         let mut plan = VisualPlan::new();
         if let Some(root) = &self.root {
@@ -94,8 +103,10 @@ impl WidgetHost {
             };
             let constraints = Constraints::loose(self.size);
 
+            // measure 阶段：自顶向下传递约束，自底向上返回尺寸
             let _measured = root.measure(constraints);
 
+            // paint 阶段：根据测量结果递归绘制
             let mut primitives = Vec::new();
             let mut ctx = PaintContext {
                 primitives: &mut primitives,
@@ -107,9 +118,8 @@ impl WidgetHost {
         plan
     }
 
-    /// Dispatch an event into the widget tree.
-    /// The root widget's handle_event is called, which should recurse
-    /// into children for hit testing and bubbling.
+    /// 向组件树分发事件。
+    /// 调用根组件的 handle_event，由其负责递归命中测试和事件冒泡。
     pub fn dispatch_event(&mut self, event: &Event, position: Point) -> bool {
         let root = match &mut self.root {
             Some(r) => r,
@@ -121,12 +131,14 @@ impl WidgetHost {
             width: self.size.width,
             height: self.size.height,
         };
+        // 超出根区域的事件直接丢弃
         if !point_in_rect(position, root_rect) {
             return false;
         }
         let mut dirty = false;
         let mut ctx = EventContext { dirty: &mut dirty };
         let consumed = root.handle_event(event, root_rect, &mut ctx);
+        // 事件处理过程中若有状态变更，标记需要重绘
         if dirty {
             self.dirty = true;
         }
@@ -140,8 +152,9 @@ impl Default for WidgetHost {
     }
 }
 
-/// Helper for containers: dispatch an event to a child widget.
-/// Returns true if the child consumed the event.
+/// 容器组件的辅助函数：向子组件转发事件。
+/// 自动进行命中测试，只有事件位置在子组件区域内时才转发。
+/// 返回 true 表示子组件消费了该事件。
 pub fn dispatch_to_child(
     child: &mut dyn Widget,
     event: &Event,
