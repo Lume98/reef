@@ -7,6 +7,7 @@ use reef_layout::Constraints;
 use reef_render::primitive::VisualPrimitive;
 
 /// Expanded panel shell: rounded rect border + separator line.
+#[derive(Clone)]
 pub struct ExpandedShell {
     pub fill_color: Color,
     pub border_color: Color,
@@ -41,7 +42,10 @@ impl ExpandedShell {
 
 impl Widget for ExpandedShell {
     fn measure(&self, constraints: Constraints) -> Size {
-        constraints.constrain(Size { width: constraints.max_width, height: constraints.max_height })
+        constraints.constrain(Size {
+            width: constraints.max_width,
+            height: constraints.max_height,
+        })
     }
 
     fn paint(&self, rect: Rect, ctx: &mut PaintContext) {
