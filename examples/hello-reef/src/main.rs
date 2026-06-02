@@ -65,15 +65,9 @@ fn main() {
         },
     ];
 
-    if let Err(e) = painter.render_to_window(
-        &primitives,
-        Rect {
-            x: 0.0,
-            y: 0.0,
-            width,
-            height,
-        },
-    ) {
+    let screen_rect = Rect { x, y, width, height };
+
+    if let Err(e) = painter.render_to_window(&primitives, screen_rect) {
         eprintln!("Render error: {e}");
     }
 

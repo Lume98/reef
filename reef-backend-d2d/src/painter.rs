@@ -207,10 +207,11 @@ impl Direct2DPainter {
 
         let factory: windows::Win32::Graphics::DirectWrite::IDWriteFactory = unsafe {
             DWriteCreateFactory(DWRITE_FACTORY_TYPE_SHARED)
-                .map_err(|e| e.to_string())?
+                .map_err(|e| format!("DWriteCreateFactory: {e}"))?
         };
 
         let font_family: Vec<u16> = "Segoe UI\0".encode_utf16().collect();
+        let locale: Vec<u16> = "\0".encode_utf16().collect();
         unsafe {
             factory
                 .CreateTextFormat(
@@ -220,9 +221,9 @@ impl Direct2DPainter {
                     windows::Win32::Graphics::DirectWrite::DWRITE_FONT_STYLE_NORMAL,
                     windows::Win32::Graphics::DirectWrite::DWRITE_FONT_STRETCH_NORMAL,
                     size as f32,
-                    PCWSTR(font_family.as_ptr()),
+                    PCWSTR(locale.as_ptr()),
                 )
-                .map_err(|e| e.to_string())
+                .map_err(|e| format!("CreateTextFormat(size={size}): {e}"))
         }
     }
 

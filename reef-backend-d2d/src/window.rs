@@ -46,12 +46,13 @@ impl NativeWindow {
         };
 
         let class_name = encode_wide("ReefWindowClass");
-        let instance = unsafe {
-            let mut buf = [0u16; 1];
-            windows_sys::Win32::System::LibraryLoader::GetModuleHandleW(buf.as_mut_ptr())
-        };
+        let instance =
+            unsafe { windows_sys::Win32::System::LibraryLoader::GetModuleHandleW(std::ptr::null()) };
         if instance.is_null() {
-            return Err("GetModuleHandleW failed".to_string());
+            return Err(format!(
+                "GetModuleHandleW failed: {}",
+                std::io::Error::last_os_error()
+            ));
         }
 
         let wnd_class = WNDCLASSW {

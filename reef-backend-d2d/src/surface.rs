@@ -59,7 +59,7 @@ impl PaintSurface {
         unsafe {
             self.target
                 .BindDC(HDC(self.dib.hdc), &bind_rect)
-                .map_err(|e| e.to_string())?;
+                .map_err(|e| format!("BindDC failed: {e}"))?;
             self.target
                 .SetAntialiasMode(D2D1_ANTIALIAS_MODE_PER_PRIMITIVE);
             self.target
