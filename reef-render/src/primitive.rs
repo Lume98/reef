@@ -45,6 +45,44 @@ pub enum VisualPrimitive {
         frame: Rect,
         opacity: f64,
     },
+    StrokedRoundRect {
+        frame: Rect,
+        radius: f64,
+        fill: Color,
+        stroke: Color,
+        stroke_width: f64,
+        alpha: f64,
+    },
+    NineSliceImage {
+        key: String,
+        frame: Rect,
+        slice_left: f64,
+        slice_right: f64,
+        slice_top: f64,
+        slice_bottom: f64,
+        opacity: f64,
+    },
+    BezierPath {
+        segments: Vec<PathSegment>,
+        fill: Color,
+        alpha: f64,
+    },
+    SpriteImage {
+        key: String,
+        source_rect: Rect,
+        frame: Rect,
+        opacity: f64,
+    },
+}
+
+#[derive(Clone, Debug, PartialEq)]
+pub enum PathSegment {
+    LineTo(Point),
+    CubicBezier {
+        control1: Point,
+        control2: Point,
+        end: Point,
+    },
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]

@@ -1,6 +1,4 @@
-use std::any::Any;
-
-use reef_app::widget_host::{MeasureContext, PaintContext, Widget};
+use reef_app::widget_host::{PaintContext, Widget};
 use reef_core::{
     color::Color,
     geometry::{Rect, Size},
@@ -15,6 +13,7 @@ pub struct Container {
     pub border_width: f64,
     pub padding: f64,
     pub min_size: Size,
+    pub child: Option<Box<dyn Widget>>,
 }
 
 impl Container {
@@ -29,6 +28,7 @@ impl Container {
                 width: 0.0,
                 height: 0.0,
             },
+            child: None,
         }
     }
 
@@ -52,30 +52,33 @@ impl Container {
         self.min_size = size;
         self
     }
+
+    pub fn child(mut self, widget: Box<dyn Widget>) -> Self {
+        self.child = Some(widget);
+        self
+    }
 }
 
 impl Widget for Container {
-    fn as_any(&self) -> &dyn Any {
-        self
-    }
-
-    fn as_any_mut(&mut self) -> &mut dyn Any {
-        self
-    }
-
-    fn measure(&self, constraints: Constraints, _ctx: &mut MeasureContext) -> Size {
-        let doubled_padding = self.padding * 2.0;
-        let inner_constraints = Constraints {
-            min_width: (constraints.min_width - doubled_padding).max(0.0),
-            max_width: (constraints.max_width - doubled_padding).max(0.0),
-            min_height: (constraints.min_height - doubled_padding).max(0.0),
-            max_height: (constraints.max_height - doubled_padding).max(0.0),
+    fn measure(&self, constraints: Constraints) -> Size {
+        let doubled = self.padding * 2.0;
+        let inner = Constraints {
+            min_width: (constraints.min_width - doubled).max(0.0),
+            max_width: (constraints.max_width - doubled).max(0.0),
+            min_height: (constraints.min_height - doubled).max(0.0),
+            max_height: (constraints.max_height - doubled).max(0.0),
         };
-        let _ = inner_constraints;
-        constraints.constrain(Size {
-            width: self.min_size.width.max(constraints.min_width),
-            height: self.min_size.height.max(constraints.min_height),
-        })
+
+        let child_size = match &self.child {
+            Some(child) => child.measure(inner),
+            None => Size { width: 0.0, height: 0.0 },
+        };
+
+        let width = child_size.width + doubled;
+        let height = child_size.height + doubled;
+        let width = self.min_size.width.max(width);
+        let height = self.min_size.height.max(height);
+        constraints.constrain(Size { width, height })
     }
 
     fn paint(&self, rect: Rect, ctx: &mut PaintContext) {
@@ -90,8 +93,22 @@ impl Widget for Container {
                 frame: rect,
                 radius: self.radius,
                 color: border_color,
-                alpha: 1.0,
+                alpha: 0.6,
             });
+        }
+
+        if let Some(child) = &self.child {
+            let child_rect = Rect {
+                x: rect.x + self.padding,
+                y: rect.y + self.padding,
+                width: (rect.width - self.padding * 2.0).max(0.0),
+                height: (rect.height - self.padding * 2.0).max(0.0),
+            };
+            ctx.primitives.push(VisualPrimitive::ClipStart {
+                frame: child_rect,
+            });
+            child.paint(child_rect, ctx);
+            ctx.primitives.push(VisualPrimitive::ClipEnd);
         }
     }
 }
@@ -99,7 +116,6 @@ impl Widget for Container {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use reef_app::widget_host::{PaintContext, Widget};
     use reef_core::geometry::Size;
     use reef_layout::Constraints;
 
@@ -113,8 +129,7 @@ mod tests {
             width: 800.0,
             height: 600.0,
         });
-        let mut ctx = MeasureContext { children: &[] };
-        let size = container.measure(constraints, &mut ctx);
+        let size = container.measure(constraints);
         assert_eq!(size.width, 200.0);
         assert_eq!(size.height, 100.0);
     }
@@ -134,5 +149,39 @@ mod tests {
         };
         container.paint(rect, &mut ctx);
         assert_eq!(primitives.len(), 1);
+    }
+
+    #[test]
+    fn container_with_child_measures_including_padding() {
+        let container = Container::new(Color::BLACK)
+            .padding(10.0)
+            .child(Box::new(crate::label::Label::new("Hi")));
+        let constraints = Constraints::loose(Size {
+            width: 800.0,
+            height: 600.0,
+        });
+        let size = container.measure(constraints);
+        assert!(size.width > 20.0);
+        assert!(size.height > 20.0);
+    }
+
+    #[test]
+    fn container_with_child_paints_clip_and_child() {
+        let container = Container::new(Color::BLACK)
+            .padding(8.0)
+            .child(Box::new(crate::label::Label::new("Hi")));
+        let rect = Rect {
+            x: 0.0,
+            y: 0.0,
+            width: 200.0,
+            height: 100.0,
+        };
+        let mut primitives = Vec::new();
+        let mut ctx = PaintContext {
+            primitives: &mut primitives,
+        };
+        container.paint(rect, &mut ctx);
+        // ClipStart + RoundRect + Child Text + ClipEnd
+        assert!(primitives.len() >= 4);
     }
 }

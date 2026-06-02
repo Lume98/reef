@@ -1,4 +1,7 @@
 pub mod absolute;
+pub mod column;
+pub mod padding;
+pub mod row;
 pub mod stack;
 
 use reef_core::geometry::{Rect, Size};

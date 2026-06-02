@@ -1,5 +1,5 @@
 use reef_core::geometry::Rect;
-use reef_render::{primitive::VisualPrimitive, render_backend::RenderBackend};
+use reef_render::{primitive::{PathSegment, VisualPrimitive}, render_backend::RenderBackend};
 
 use crate::dpi::{DpiScale, PhysicalRect};
 use crate::surface::PaintSurface;
@@ -194,6 +194,103 @@ impl Direct2DPainter {
                 // Image rendering requires bitmap loading - skip for now
                 Ok(())
             }
+            VisualPrimitive::StrokedRoundRect {
+                frame,
+                radius,
+                fill,
+                stroke,
+                stroke_width,
+                alpha,
+            } => {
+                let fill_brush = unsafe {
+                    target
+                        .CreateSolidColorBrush(&color_f(*fill, *alpha), None)
+                        .map_err(|e| e.to_string())?
+                };
+                let stroke_brush = unsafe {
+                    target
+                        .CreateSolidColorBrush(&color_f(*stroke, *alpha), None)
+                        .map_err(|e| e.to_string())?
+                };
+                let rounded = D2D1_ROUNDED_RECT {
+                    rect: rect_f(*frame),
+                    radiusX: *radius as f32,
+                    radiusY: *radius as f32,
+                };
+                unsafe {
+                    target.FillRoundedRectangle(&rounded, &fill_brush);
+                    target.DrawRoundedRectangle(
+                        &rounded,
+                        &stroke_brush,
+                        *stroke_width as f32,
+                        None,
+                    );
+                }
+                Ok(())
+            }
+            VisualPrimitive::NineSliceImage { .. } => {
+                // Nine-slice image rendering requires bitmap loading - placeholder
+                Ok(())
+            }
+            VisualPrimitive::BezierPath {
+                segments,
+                fill,
+                alpha,
+            } => {
+                if segments.is_empty() {
+                    return Ok(());
+                }
+                use windows::Win32::Graphics::Direct2D::Common::{
+                    D2D1_BEZIER_SEGMENT, D2D1_FIGURE_BEGIN_FILLED, D2D1_FIGURE_END_CLOSED,
+                };
+                let brush = unsafe {
+                    target
+                        .CreateSolidColorBrush(&color_f(*fill, *alpha), None)
+                        .map_err(|e| e.to_string())?
+                };
+                let factory = crate::factory::Direct2DFactory::shared()?;
+                let d2d_factory = factory.factory().ok_or("D2D factory not initialized")?;
+                let start_point = match &segments[0] {
+                    PathSegment::LineTo(p) => *p,
+                    PathSegment::CubicBezier { end, .. } => *end,
+                };
+                let geometry = unsafe {
+                    let geo = d2d_factory
+                        .CreatePathGeometry()
+                        .map_err(|e| e.to_string())?;
+                    let sink = geo.Open().map_err(|e| e.to_string())?;
+                    sink.BeginFigure(point_f(start_point), D2D1_FIGURE_BEGIN_FILLED);
+                    for seg in segments.iter().skip(1) {
+                        match seg {
+                            PathSegment::LineTo(p) => {
+                                sink.AddLine(point_f(*p));
+                            }
+                            PathSegment::CubicBezier {
+                                control1,
+                                control2,
+                                end,
+                            } => {
+                                sink.AddBezier(&D2D1_BEZIER_SEGMENT {
+                                    point1: point_f(*control1),
+                                    point2: point_f(*control2),
+                                    point3: point_f(*end),
+                                });
+                            }
+                        }
+                    }
+                    sink.EndFigure(D2D1_FIGURE_END_CLOSED);
+                    sink.Close().map_err(|e| e.to_string())?;
+                    geo
+                };
+                unsafe {
+                    target.FillGeometry(&geometry, &brush, None);
+                }
+                Ok(())
+            }
+            VisualPrimitive::SpriteImage { .. } => {
+                // Sprite image rendering requires bitmap loading - placeholder
+                Ok(())
+            }
         }
     }
 
@@ -332,6 +429,58 @@ pub fn resolve_paint_operations(plan: &reef_render::primitive::VisualPlan) -> Ve
                 frame: *frame,
                 opacity: *opacity,
             },
+            VisualPrimitive::StrokedRoundRect {
+                frame,
+                radius,
+                fill,
+                stroke,
+                stroke_width,
+                alpha,
+            } => PaintOperation::FillStrokedRoundRect {
+                frame: *frame,
+                radius: *radius,
+                fill: *fill,
+                stroke: *stroke,
+                stroke_width: *stroke_width,
+                alpha: *alpha,
+            },
+            VisualPrimitive::NineSliceImage {
+                key,
+                frame,
+                slice_left,
+                slice_right,
+                slice_top,
+                slice_bottom,
+                opacity,
+            } => PaintOperation::DrawNineSliceImage {
+                key: key.clone(),
+                frame: *frame,
+                slice_left: *slice_left,
+                slice_right: *slice_right,
+                slice_top: *slice_top,
+                slice_bottom: *slice_bottom,
+                opacity: *opacity,
+            },
+            VisualPrimitive::BezierPath {
+                segments,
+                fill,
+                alpha,
+            } => PaintOperation::FillBezierPath {
+                segments: segments.clone(),
+                fill: *fill,
+                alpha: *alpha,
+            },
+            VisualPrimitive::SpriteImage {
+                key,
+                source_rect,
+                frame,
+                opacity,
+            } => PaintOperation::DrawSpriteImage {
+                key: key.clone(),
+                source_rect: *source_rect,
+                frame: *frame,
+                opacity: *opacity,
+            },
         })
         .collect()
 }
@@ -374,6 +523,34 @@ pub enum PaintOperation {
         alpha: f64,
     },
     DrawImage {
+        key: String,
+        source_rect: Rect,
+        frame: Rect,
+        opacity: f64,
+    },
+    FillStrokedRoundRect {
+        frame: Rect,
+        radius: f64,
+        fill: reef_core::color::Color,
+        stroke: reef_core::color::Color,
+        stroke_width: f64,
+        alpha: f64,
+    },
+    DrawNineSliceImage {
+        key: String,
+        frame: Rect,
+        slice_left: f64,
+        slice_right: f64,
+        slice_top: f64,
+        slice_bottom: f64,
+        opacity: f64,
+    },
+    FillBezierPath {
+        segments: Vec<reef_render::primitive::PathSegment>,
+        fill: reef_core::color::Color,
+        alpha: f64,
+    },
+    DrawSpriteImage {
         key: String,
         source_rect: Rect,
         frame: Rect,

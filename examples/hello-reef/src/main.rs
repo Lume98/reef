@@ -1,3 +1,4 @@
+use reef_app::widget_host::WidgetHost;
 use reef_backend_d2d::{
     dpi::ensure_process_dpi_awareness,
     painter::Direct2DPainter,
@@ -8,6 +9,11 @@ use reef_core::{
     geometry::{Point, Rect},
 };
 use reef_render::primitive::{FontWeight, TextAlignment, VisualPrimitive};
+use reef_widgets::{
+    card::{BodyLine, Card, CardStyle},
+    container::Container,
+    label::Label,
+};
 
 fn main() {
     ensure_process_dpi_awareness();
@@ -30,6 +36,7 @@ fn main() {
     let mut painter: Direct2DPainter = Direct2DPainter::new();
     painter.set_window(window.hwnd());
 
+    // --- Old-style: manual primitives ---
     let primitives = vec![
         VisualPrimitive::RoundRect {
             frame: Rect {
@@ -73,8 +80,37 @@ fn main() {
 
     window.show();
 
-    println!("Hello Reef! Window displayed at ({x}, {y}), size {width}x{height}");
-    println!("Close the window or press Ctrl+C to exit.");
+    // --- New-style: widget system demo ---
+    println!();
+    println!("=== Widget System Demo ===");
 
+    // Container with a Label child
+    let container = Container::new(Color::rgb(18, 18, 22))
+        .radius(24.0)
+        .border(Color::rgb(44, 44, 50), 1.0)
+        .padding(10.0)
+        .child(Box::new(Label::new("Hello from Widget!").color(Color::rgb(230, 235, 245)).font_size(16)));
+
+    let mut host = WidgetHost::new();
+    host.set_size(reef_core::geometry::Size { width: 320.0, height: 48.0 });
+    host.set_root(Box::new(container));
+    let plan = host.render();
+    println!("Container+Label produced {} primitives", plan.primitives.len());
+
+    // Card widget demo
+    let card = Card::new(CardStyle::PendingApproval)
+        .title("Allow command?")
+        .status_badge("Waiting")
+        .body_line(BodyLine { prefix: Some("$ ".into()), text: "rm -rf /tmp".into() })
+        .action_hint("Allow / Deny")
+        .height(120.0);
+
+    let mut host2 = WidgetHost::new();
+    host2.set_size(reef_core::geometry::Size { width: 300.0, height: 120.0 });
+    host2.set_root(Box::new(card));
+    let plan2 = host2.render();
+    println!("Card produced {} primitives", plan2.primitives.len());
+
+    println!("Close the window or press Ctrl+C to exit.");
     while window.poll_message() {}
 }
