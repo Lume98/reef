@@ -573,7 +573,10 @@ mod tests {
             },
             session_surface: SessionSurfaceScene { cards: vec![] },
             settings_surface: crate::native_panel_scene::build_settings_surface_scene(
-                &[crate::native_panel_scene::fallback_panel_display_option()],
+                crate::native_panel_scene::resolve_settings_surface_projection(
+                    &[crate::native_panel_scene::fallback_panel_display_option()],
+                    crate::native_panel_core::PanelSettingsState::default(),
+                ),
                 crate::native_panel_core::PanelSettingsState::default(),
                 "0.0.0",
                 &crate::updater_service::AppUpdateStatus::idle(),

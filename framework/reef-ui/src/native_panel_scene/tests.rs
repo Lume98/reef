@@ -938,7 +938,10 @@ fn scene_cards_total_height_delegates_card_height_resolution() {
         },
         session_surface: SessionSurfaceScene { cards: Vec::new() },
         settings_surface: build_settings_surface_scene(
-            &[crate::native_panel_scene::fallback_panel_display_option()],
+            resolve_settings_surface_projection(
+                &[crate::native_panel_scene::fallback_panel_display_option()],
+                PanelSettingsState::default(),
+            ),
             PanelSettingsState::default(),
             env!("CARGO_PKG_VERSION"),
             &crate::updater_service::AppUpdateStatus::idle(),

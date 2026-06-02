@@ -15,10 +15,10 @@ use super::{
     build_pending_permission_status_card_scene, build_pending_question_status_card_scene,
     build_prompt_assist_status_card_scene, build_session_card_scene, build_settings_surface_scene,
     build_status_queue_status_card_scene, settings_surface_row_action, surface_scene_mode,
-    CompactBarScene, PanelScene, SceneBadge, SceneCard, SceneGlow, SceneGlowStyle, SceneHitTarget,
-    SceneMascotPose, SceneNode, SceneText, SessionSurfaceScene, SettingsRowScene,
-    SettingsSurfaceScene, StatusSurfaceDefaultState, StatusSurfaceDisplayMode,
-    StatusSurfaceQueueState, StatusSurfaceScene, SurfaceScene,
+    resolve_settings_surface_projection, CompactBarScene, PanelScene, SceneBadge, SceneCard,
+    SceneGlow, SceneGlowStyle, SceneHitTarget, SceneMascotPose, SceneNode, SceneText,
+    SessionSurfaceScene, SettingsRowScene, SettingsSurfaceScene, StatusSurfaceDefaultState,
+    StatusSurfaceDisplayMode, StatusSurfaceQueueState, StatusSurfaceScene, SurfaceScene,
 };
 
 #[derive(Clone, Debug, PartialEq)]
@@ -64,8 +64,9 @@ pub fn build_panel_scene(
     let surface_scene = build_surface_scene(state, &compact_bar);
     let status_surface = build_status_surface_scene(state, snapshot);
     let session_surface = build_session_surface_scene(state, snapshot);
+    let settings_projection = resolve_settings_surface_projection(&input.display_options, input.settings);
     let settings_surface = build_settings_surface_scene(
-        &input.display_options,
+        settings_projection,
         input.settings,
         &input.app_version,
         &input.update_status,

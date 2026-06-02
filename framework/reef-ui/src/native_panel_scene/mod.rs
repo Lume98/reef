@@ -14,6 +14,7 @@ mod scene;
 // 具体 Surface/Card 的结构和构建辅助。
 mod session_card_scene;
 mod settings_scene;
+mod settings_projection;
 mod status_card_scene;
 mod surface_scene;
 
@@ -21,6 +22,7 @@ pub use build::*;
 pub use scene::*;
 pub use session_card_scene::*;
 pub use settings_scene::*;
+pub use settings_projection::*;
 pub use status_card_scene::*;
 pub use surface_scene::*;
 

@@ -6,23 +6,19 @@
 
 use crate::{
     app_settings::AppSettings,
+    business::{
+        panel_display_options_from_display_options, panel_settings_state_from_app_settings,
+        resolve_panel_selected_display_index, resolve_selected_display_index_from_display_options,
+    },
     display_settings::DisplayOption,
-    native_panel_core::resolve_preferred_panel_display_index,
-    native_panel_core::{PanelRect, PanelSettingsState},
+    native_panel_core::PanelRect,
     native_panel_scene::{
-        fallback_panel_display_option, panel_display_option_state_with_width_support,
-        PanelDisplayOptionState, PanelSceneBuildInput,
+        fallback_panel_display_option, PanelDisplayOptionState, PanelSceneBuildInput,
     },
 };
 use reef_ui::native_panel_ui::descriptor::{
     NativePanelRuntimeInputContext, NativePanelRuntimeInputDescriptor,
 };
-
-#[derive(Clone, Debug, PartialEq, Eq)]
-pub(crate) struct NativePanelDisplaySelectionUpdate {
-    pub(crate) selected_display_index: usize,
-    pub(crate) selected_display_key: String,
-}
 
 pub(crate) fn panel_scene_build_input_from_app_settings(
     display_options: Vec<PanelDisplayOptionState>,
@@ -34,20 +30,6 @@ pub(crate) fn panel_scene_build_input_from_app_settings(
         settings: panel_settings_state_from_app_settings(selected_display_index, settings),
         app_version: env!("CARGO_PKG_VERSION").to_string(),
         update_status: crate::updater_service::current_update_status(),
-    }
-}
-
-pub(crate) fn panel_settings_state_from_app_settings(
-    selected_display_index: usize,
-    settings: &AppSettings,
-) -> PanelSettingsState {
-    PanelSettingsState {
-        selected_display_index,
-        island_width_preset: settings.island_width_preset,
-        completion_sound_enabled: settings.completion_sound_enabled,
-        mascot_enabled: settings.mascot_enabled,
-        debug_mode_enabled: settings.debug_mode_enabled,
-        language: settings.language,
     }
 }
 
@@ -146,71 +128,6 @@ pub(crate) fn native_panel_runtime_input_context_from_display_options_with_scree
     context
 }
 
-pub(crate) fn panel_display_options_from_display_options(
-    displays: &[DisplayOption],
-) -> Vec<PanelDisplayOptionState> {
-    displays
-        .iter()
-        .map(|display| {
-            panel_display_option_state_with_width_support(
-                display.index,
-                display.key.clone(),
-                &display.name,
-                display.width,
-                display.height,
-                display.supports_wide_island,
-            )
-        })
-        .collect()
-}
-
-pub(crate) fn resolve_selected_display_index_from_display_options(
-    displays: &[DisplayOption],
-    settings: &AppSettings,
-    fallback_index: Option<usize>,
-) -> usize {
-    if displays.is_empty() {
-        return fallback_index.unwrap_or(settings.preferred_display_index);
-    }
-    resolve_panel_selected_display_index(
-        &displays
-            .iter()
-            .map(|display| display.key.clone())
-            .collect::<Vec<_>>(),
-        settings,
-        fallback_index,
-    )
-}
-
-pub(crate) fn resolve_next_display_selection_update_from_display_options(
-    displays: &[DisplayOption],
-    settings: &AppSettings,
-) -> Option<NativePanelDisplaySelectionUpdate> {
-    if displays.is_empty() {
-        return None;
-    }
-    let current = resolve_selected_display_index_from_display_options(displays, settings, Some(0));
-    let selected = displays.get((current + 1) % displays.len())?;
-    Some(NativePanelDisplaySelectionUpdate {
-        selected_display_index: selected.index,
-        selected_display_key: selected.key.clone(),
-    })
-}
-
-pub(crate) fn resolve_panel_selected_display_index(
-    display_keys: &[String],
-    settings: &AppSettings,
-    fallback_index: Option<usize>,
-) -> usize {
-    resolve_preferred_panel_display_index(
-        display_keys,
-        settings.preferred_display_key.as_deref(),
-        settings.preferred_display_index,
-        fallback_index,
-    )
-    .unwrap_or(0)
-}
-
 fn sanitize_panel_display_options(
     display_options: Vec<PanelDisplayOptionState>,
 ) -> Vec<PanelDisplayOptionState> {
@@ -230,11 +147,14 @@ mod tests {
         native_panel_runtime_input_descriptor_from_context,
         native_panel_runtime_input_descriptor_from_display_options_with_screen_frame,
     };
-    use super::{
-        panel_display_options_from_display_options, panel_scene_build_input_from_app_settings,
-        panel_scene_build_input_from_display_options,
+    use crate::business::{
+        panel_display_options_from_display_options,
         resolve_next_display_selection_update_from_display_options,
-        resolve_panel_selected_display_index, resolve_selected_display_index_from_display_options,
+        resolve_panel_selected_display_index,
+        resolve_selected_display_index_from_display_options,
+    };
+    use super::{
+        panel_scene_build_input_from_app_settings, panel_scene_build_input_from_display_options,
     };
     use crate::{app_settings::AppSettings, display_settings::DisplayOption};
     use reef_ui::native_panel_ui::descriptor::NativePanelRuntimeInputContext;
@@ -622,7 +542,7 @@ mod tests {
 
         assert_eq!(
             resolve_next_display_selection_update_from_display_options(&displays, &settings),
-            Some(super::NativePanelDisplaySelectionUpdate {
+            Some(crate::business::NativePanelDisplaySelectionUpdate {
                 selected_display_index: 1,
                 selected_display_key: "display-2".to_string(),
             })

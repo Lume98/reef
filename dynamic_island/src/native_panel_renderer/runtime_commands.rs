@@ -21,9 +21,9 @@ use crate::{
 #[cfg(feature = "tauri-host")]
 use crate::{
     app_settings::{update_preferred_display_selection, AppSettings},
+    business::resolve_next_display_selection_update_from_display_options,
     display_settings::list_available_displays,
     host_platform::NativePanelHostPlatform,
-    native_panel_scene_input::resolve_next_display_selection_update_from_display_options,
 };
 
 #[cfg(feature = "tauri-host")]
