@@ -10,6 +10,14 @@ use super::descriptors::{
     NativePanelPointerRegionInput, NativePanelPointerRegionKind,
 };
 use super::presentation_model::estimated_scene_content_height_for_card_width;
+use super::rendering_backend::{
+    native_panel_frame_submission_from_visual_plan, NativePanelFrameSubmission,
+};
+use super::{
+    presentation_model::native_panel_visual_plan_input_from_presentation,
+    presentation_model::resolve_native_panel_presentation_model,
+    visual_plan::{resolve_native_panel_visual_plan, NativePanelVisualDisplayMode},
+};
 
 #[derive(Clone, Debug)]
 pub struct NativePanelRenderCommandBundle {
@@ -119,6 +127,31 @@ pub fn resolve_native_panel_render_command_bundle(
         action_buttons: resolve_action_button_commands(&pointer_regions, scene),
         pointer_regions,
     }
+}
+
+pub fn resolve_native_panel_frame_submission_for_render_command_bundle(
+    bundle: &NativePanelRenderCommandBundle,
+) -> NativePanelFrameSubmission {
+    let presentation = resolve_native_panel_presentation_model(bundle);
+    let window_state = super::descriptors::NativePanelHostWindowState {
+        frame: Some(bundle.layout.panel_frame),
+        visible: bundle.layout.shell_visible,
+        preferred_display_index: 0,
+    };
+    let display_mode = if !window_state.visible {
+        NativePanelVisualDisplayMode::Hidden
+    } else if presentation.shell.visible {
+        NativePanelVisualDisplayMode::Expanded
+    } else {
+        NativePanelVisualDisplayMode::Compact
+    };
+    let visual_input = native_panel_visual_plan_input_from_presentation(
+        window_state,
+        display_mode,
+        Some(&presentation),
+    );
+    let visual_plan = resolve_native_panel_visual_plan(&visual_input);
+    native_panel_frame_submission_from_visual_plan(&visual_plan)
 }
 
 pub fn native_panel_compact_bar_command(
@@ -390,5 +423,73 @@ mod tests {
         );
 
         assert!(narrow.content_height > wide.content_height);
+    }
+
+    #[test]
+    fn render_command_bundle_can_be_converted_into_frame_submission() {
+        let mut state = PanelState {
+            expanded: true,
+            surface_mode: ExpandedSurface::Default,
+            ..PanelState::default()
+        };
+        state.transitioning = false;
+        let scene = build_panel_scene(&state, &snapshot(), &PanelSceneBuildInput::default());
+        let layout = resolve_panel_layout(PanelLayoutInput {
+            screen_frame: PanelRect {
+                x: 0.0,
+                y: 0.0,
+                width: 1440.0,
+                height: 900.0,
+            },
+            metrics: PanelGeometryMetrics {
+                compact_height: crate::native_panel_core::DEFAULT_COMPACT_PILL_HEIGHT,
+                compact_width: crate::native_panel_core::DEFAULT_COMPACT_PILL_WIDTH,
+                expanded_width: crate::native_panel_core::DEFAULT_EXPANDED_PILL_WIDTH,
+                panel_width: crate::native_panel_core::DEFAULT_PANEL_CANVAS_WIDTH,
+            },
+            canvas_height: 180.0,
+            visible_height: 180.0,
+            bar_progress: 1.0,
+            height_progress: 1.0,
+            drop_progress: 1.0,
+            content_visibility: 1.0,
+            collapsed_height: crate::native_panel_core::COLLAPSED_PANEL_HEIGHT,
+            drop_distance: crate::native_panel_core::PANEL_DROP_DISTANCE,
+            content_top_gap: crate::native_panel_core::EXPANDED_CONTENT_TOP_GAP,
+            content_bottom_inset: crate::native_panel_core::EXPANDED_CONTENT_BOTTOM_INSET,
+            cards_side_inset: crate::native_panel_core::EXPANDED_CARDS_SIDE_INSET,
+            shoulder_size: crate::native_panel_core::COMPACT_SHOULDER_SIZE,
+            separator_side_inset: crate::native_panel_core::EXPANDED_SEPARATOR_SIDE_INSET,
+        });
+        let render_state = PanelRenderState {
+            shared: SharedExpandedRenderState {
+                enabled: false,
+                visible: false,
+                interactive: false,
+            },
+            layer_style: PanelRenderLayerStyleState {
+                shell_visible: true,
+                separator_visibility: 1.0,
+                shared_visible: false,
+                bar_progress: 1.0,
+                height_progress: 1.0,
+                chrome_transition_progress: 1.0,
+                shoulder_progress: 0.0,
+                headline_emphasized: false,
+                edge_actions_visible: true,
+            },
+        };
+        let bundle = resolve_native_panel_render_command_bundle(
+            layout,
+            &scene,
+            PanelRuntimeRenderState::default(),
+            render_state,
+            None,
+        );
+
+        let submission = resolve_native_panel_frame_submission_for_render_command_bundle(&bundle);
+
+        assert!(!submission.hidden);
+        assert!(!submission.commands.is_empty());
     }
 }

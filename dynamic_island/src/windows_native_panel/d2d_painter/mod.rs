@@ -9,6 +9,9 @@ use super::{
 use crate::native_panel_core::{PanelPoint, PanelRect};
 #[cfg(all(windows, not(test)))]
 use reef_ui::native_panel_ui::visual::native_panel_visual_text_box_height_for_role;
+use reef_ui::native_panel_ui::rendering::{
+    native_panel_submit_visual_plan, NativePanelFrameSubmission, NativePanelRenderBackend,
+};
 use reef_ui::native_panel_ui::visual::NativePanelVisualShoulderSide;
 
 #[cfg(all(windows, not(test)))]
@@ -75,6 +78,20 @@ pub(super) trait WindowsNativePanelPainter {
         &mut self,
         job: &WindowsNativePanelShellPaintJob,
     ) -> Result<WindowsNativePanelPaintPlan, String>;
+}
+
+#[derive(Default)]
+struct NativePanelPlanSubmissionRecorder;
+
+impl NativePanelRenderBackend for NativePanelPlanSubmissionRecorder {
+    type Error = String;
+
+    fn submit_frame(
+        &mut self,
+        _submission: &NativePanelFrameSubmission,
+    ) -> Result<(), Self::Error> {
+        Ok(())
+    }
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -333,6 +350,8 @@ impl WindowsNativePanelPainter for Direct2DWindowsNativePanelPainter {
         job: &WindowsNativePanelShellPaintJob,
     ) -> Result<WindowsNativePanelPaintPlan, String> {
         let plan = resolve_windows_native_panel_paint_plan(job);
+        let mut recorder = NativePanelPlanSubmissionRecorder::default();
+        let _ = native_panel_submit_visual_plan(&mut recorder, &plan);
         #[cfg(all(windows, not(test)))]
         self.paint_plan_to_layered_window(job, &plan)?;
         #[cfg(any(not(windows), test))]

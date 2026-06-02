@@ -438,6 +438,36 @@ mod tests {
         }
     }
 
+    fn assert_rect_eq(actual: PanelRect, expected: PanelRect) {
+        assert!((actual.x - expected.x).abs() < 0.001, "x mismatch: {actual:?} vs {expected:?}");
+        assert!((actual.y - expected.y).abs() < 0.001, "y mismatch: {actual:?} vs {expected:?}");
+        assert!(
+            (actual.width - expected.width).abs() < 0.001,
+            "width mismatch: {actual:?} vs {expected:?}"
+        );
+        assert!(
+            (actual.height - expected.height).abs() < 0.001,
+            "height mismatch: {actual:?} vs {expected:?}"
+        );
+    }
+
+    fn assert_f64_close(actual: f64, expected: f64) {
+        assert!(
+            (actual - expected).abs() < 0.5,
+            "value mismatch: {actual} vs {expected}"
+        );
+    }
+
+    fn component_ref<'a, T, F>(tree: &'a NativePanelComponentTree, kind: F) -> &'a T
+    where
+        F: Fn(&'a NativePanelComponent) -> Option<&'a T>,
+    {
+        tree.components
+            .iter()
+            .find_map(kind)
+            .expect("component exists")
+    }
+
     #[test]
     fn component_tree_contains_core_layout_nodes() {
         let tree = build_native_panel_component_tree(&plan_input());
@@ -458,5 +488,172 @@ mod tests {
             .components
             .iter()
             .any(|component| matches!(component, NativePanelComponent::SessionCard(_))));
+    }
+
+    #[test]
+    fn container_compact_bar_and_stack_components_preserve_key_frames() {
+        let tree = build_native_panel_component_tree(&plan_input());
+
+        let container = component_ref(&tree, |component| match component {
+            NativePanelComponent::Container(component) => Some(component),
+            _ => None,
+        });
+        assert_rect_eq(
+            container.frame,
+            PanelRect {
+                x: 0.0,
+                y: 0.0,
+                width: 400.0,
+                height: 200.0,
+            },
+        );
+        assert_eq!(container.radius, crate::native_panel_core::EXPANDED_PANEL_RADIUS);
+        assert_eq!(container.separator, Some(PanelRect {
+            x: 20.0,
+            y: 44.0,
+            width: 360.0,
+            height: 1.0,
+        }));
+
+        let compact_bar = component_ref(&tree, |component| match component {
+            NativePanelComponent::CompactBar(component) => Some(component),
+            _ => None,
+        });
+        assert_rect_eq(
+            compact_bar.frame,
+            PanelRect {
+                x: 0.0,
+                y: 0.0,
+                width: 400.0,
+                height: 36.0,
+            },
+        );
+        assert_eq!(compact_bar.headline_origin.x, 200.0);
+        assert_eq!(compact_bar.headline_origin.y, 8.0);
+        assert_eq!(compact_bar.active_origin.x, 16.0);
+        assert_eq!(compact_bar.active_origin.y, 8.0);
+        assert_eq!(compact_bar.total_origin.x, 364.0);
+        assert_eq!(compact_bar.total_origin.y, 8.0);
+        assert_eq!(compact_bar.headline_width, 240.0);
+
+        let stack = component_ref(&tree, |component| match component {
+            NativePanelComponent::Stack(component) => Some(component),
+            _ => None,
+        });
+        assert_rect_eq(
+            stack.frame,
+            PanelRect {
+                x: 12.0,
+                y: 44.0,
+                width: 376.0,
+                height: 146.0,
+            },
+        );
+        assert_eq!(stack.content_height, 88.0);
+    }
+
+    #[test]
+    fn session_card_component_uses_card_stack_positioning_and_insets() {
+        let tree = build_native_panel_component_tree(&plan_input());
+        let session_card = component_ref(&tree, |component| match component {
+            NativePanelComponent::SessionCard(component) => Some(component),
+            _ => None,
+        });
+
+        assert_rect_eq(
+            session_card.frame,
+            PanelRect {
+                x: 12.0,
+                y: 44.0,
+                width: 376.0,
+                height: 72.0,
+            },
+        );
+        assert_rect_eq(
+            session_card.title_frame,
+            PanelRect {
+                x: 22.0,
+                y: 54.0,
+                width: 356.0,
+                height: 24.0,
+            },
+        );
+        assert_rect_eq(
+            session_card.body_frame,
+            PanelRect {
+                x: 22.0,
+                y: 78.0,
+                width: 356.0,
+                height: 28.0,
+            },
+        );
+    }
+
+    #[test]
+    fn setting_row_components_are_split_evenly_with_row_gap() {
+        let mut input = plan_input();
+        input.cards = vec![super::super::visual_plan::NativePanelVisualCardInput {
+            style: NativePanelVisualCardStyle::Settings,
+            title: "Settings".to_string(),
+            subtitle: None,
+            body: None,
+            badge: None,
+            source_badge: None,
+            body_prefix: None,
+            body_lines: vec![],
+            action_hint: None,
+            rows: vec![
+                super::super::visual_plan::NativePanelVisualCardRowInput {
+                    title: "Sound".to_string(),
+                    value: "On".to_string(),
+                    active: true,
+                },
+                super::super::visual_plan::NativePanelVisualCardRowInput {
+                    title: "Notifications".to_string(),
+                    value: "Off".to_string(),
+                    active: false,
+                },
+            ],
+            height: 92.0,
+            collapsed_height: 64.0,
+            compact: false,
+            removing: false,
+        }];
+
+        let tree = build_native_panel_component_tree(&input);
+        let rows: Vec<_> = tree
+            .components
+            .iter()
+            .filter_map(|component| match component {
+                NativePanelComponent::SettingRow(component) => Some(component),
+                _ => None,
+            })
+            .collect();
+
+        assert_eq!(rows.len(), 2);
+        assert_rect_eq(
+            rows[0].frame,
+            PanelRect {
+                x: 12.0,
+                y: 44.0,
+                width: 376.0,
+                height: 43.0,
+            },
+        );
+        assert_rect_eq(
+            rows[1].frame,
+            PanelRect {
+                x: 12.0,
+                y: 93.0,
+                width: 376.0,
+                height: 43.0,
+            },
+        );
+        assert!(rows[0].active);
+        assert!(!rows[1].active);
+        assert_eq!(rows[0].title_frame.x, 22.0);
+        assert_eq!(rows[0].title_frame.y, 52.0);
+        assert_f64_close(rows[0].value_frame.x, 282.72);
+        assert_eq!(rows[0].value_frame.y, 50.0);
     }
 }
