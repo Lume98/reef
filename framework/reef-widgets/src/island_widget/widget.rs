@@ -13,7 +13,7 @@ use crate::{
     mascot::MascotWidget,
 };
 
-use super::DisplayMode;
+use super::{DisplayMode, IslandWidgetSpec};
 
 /// Top-level widget that composes the entire Dynamic Island UI.
 #[derive(Clone)]
@@ -38,22 +38,7 @@ pub struct IslandWidget {
 
 impl IslandWidget {
     pub fn new() -> Self {
-        Self {
-            mode: DisplayMode::Hidden,
-            compact_bar: CompactBar::new(),
-            expanded_shell: ExpandedShell::new(),
-            cards: Vec::new(),
-            mascot: None,
-            glow: None,
-            shoulder_left: None,
-            shoulder_right: None,
-            chrome: ChromeVisibility::compact(),
-            reveal_progress: 1.0,
-            entering: true,
-            width: 400.0,
-            compact_height: 48.0,
-            expanded_height: 300.0,
-        }
+        Self::from_spec(IslandWidgetSpec::default())
     }
 
     pub fn width(mut self, w: f64) -> Self {
@@ -69,6 +54,48 @@ impl IslandWidget {
     pub fn expanded_height(mut self, h: f64) -> Self {
         self.expanded_height = h;
         self
+    }
+
+    pub fn from_spec(spec: IslandWidgetSpec) -> Self {
+        spec.into()
+    }
+}
+
+impl From<IslandWidgetSpec> for IslandWidget {
+    fn from(spec: IslandWidgetSpec) -> Self {
+        let IslandWidgetSpec {
+            mode,
+            layout,
+            mut compact_bar,
+            expanded_shell,
+            cards,
+            mascot,
+            glow,
+            shoulder_left,
+            shoulder_right,
+            chrome,
+            reveal,
+        } = spec;
+
+        compact_bar.chrome = chrome;
+        compact_bar.height = layout.compact_height;
+
+        Self {
+            mode,
+            compact_bar,
+            expanded_shell,
+            cards,
+            mascot,
+            glow,
+            shoulder_left,
+            shoulder_right,
+            chrome,
+            reveal_progress: reveal.progress,
+            entering: reveal.entering,
+            width: layout.width,
+            compact_height: layout.compact_height,
+            expanded_height: layout.expanded_height,
+        }
     }
 }
 

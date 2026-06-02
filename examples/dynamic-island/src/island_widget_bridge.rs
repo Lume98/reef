@@ -4,11 +4,47 @@
 //! 当前作为概念验证，验证 Widget 框架可以承载生产级的灵动岛 UI。
 
 use reef_widgets::{
-    Badge, BodyLine, Card, CardStyle, ChromeVisibility, CompactBar, DisplayMode, IslandWidget,
-    MascotPose, MascotWidget, SettingsRow,
+    Badge, BodyLine, Card, CardStyle, ChromeVisibility, CompactBar, DisplayMode, ExpandedShell,
+    IslandRevealSpec, IslandWidget, IslandWidgetLayout, IslandWidgetSpec, MascotPose, MascotWidget,
+    SettingsRow,
 };
 
 use echoisland_runtime::RuntimeSnapshot;
+
+/// 将运行时快照转换为可复用的岛屿规格。
+pub fn build_island_widget_spec(
+    snapshot: &RuntimeSnapshot,
+    panel_expanded: bool,
+    settings_active: bool,
+) -> IslandWidgetSpec {
+    let mode = if panel_expanded {
+        DisplayMode::Expanded
+    } else {
+        DisplayMode::Compact
+    };
+
+    IslandWidgetSpec {
+        mode,
+        layout: IslandWidgetLayout::default(),
+        compact_bar: build_compact_bar(snapshot, panel_expanded, settings_active),
+        expanded_shell: ExpandedShell::new(),
+        cards: if settings_active {
+            build_settings_cards()
+        } else {
+            build_status_cards(snapshot)
+        },
+        mascot: build_mascot(snapshot, panel_expanded),
+        glow: None,
+        shoulder_left: None,
+        shoulder_right: None,
+        chrome: if panel_expanded {
+            ChromeVisibility::expanded()
+        } else {
+            ChromeVisibility::compact()
+        },
+        reveal: IslandRevealSpec::default(),
+    }
+}
 
 /// 将运行时快照转换为顶层 IslandWidget。
 ///
@@ -19,34 +55,11 @@ pub fn build_island_widget(
     panel_expanded: bool,
     settings_active: bool,
 ) -> IslandWidget {
-    let mode = if panel_expanded {
-        DisplayMode::Expanded
-    } else {
-        DisplayMode::Compact
-    };
-
-    let compact_bar = build_compact_bar(snapshot, panel_expanded, settings_active);
-    let cards = if settings_active {
-        build_settings_cards()
-    } else {
-        build_status_cards(snapshot)
-    };
-    let mascot = build_mascot(snapshot, panel_expanded);
-
-    IslandWidget {
-        mode,
-        compact_bar,
-        cards,
-        mascot,
-        chrome: if panel_expanded {
-            ChromeVisibility::expanded()
-        } else {
-            ChromeVisibility::compact()
-        },
-        reveal_progress: 1.0,
-        entering: true,
-        ..IslandWidget::new()
-    }
+    IslandWidget::from_spec(build_island_widget_spec(
+        snapshot,
+        panel_expanded,
+        settings_active,
+    ))
 }
 
 fn build_compact_bar(
@@ -70,6 +83,61 @@ fn build_compact_bar(
     }
 
     bar
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn empty_snapshot() -> RuntimeSnapshot {
+        RuntimeSnapshot {
+            status: "idle".to_string(),
+            primary_source: "reef".to_string(),
+            active_session_count: 0,
+            total_session_count: 0,
+            pending_permission_count: 0,
+            pending_question_count: 0,
+            pending_permission: None,
+            pending_question: None,
+            pending_permissions: vec![],
+            pending_questions: vec![],
+            sessions: vec![],
+        }
+    }
+
+    #[test]
+    fn island_widget_spec_maps_expanded_settings_state() {
+        let snapshot = empty_snapshot();
+        let spec = build_island_widget_spec(&snapshot, true, true);
+
+        assert_eq!(spec.mode, DisplayMode::Expanded);
+        assert_eq!(spec.layout, IslandWidgetLayout::default());
+        assert_eq!(spec.chrome, ChromeVisibility::expanded());
+        assert!(spec.compact_bar.show_actions);
+        assert_eq!(spec.cards.len(), 1);
+        assert!(spec.mascot.is_some());
+        assert!(spec.glow.is_none());
+    }
+
+    #[test]
+    fn island_widget_from_spec_keeps_layout_and_chrome() {
+        let snapshot = empty_snapshot();
+        let spec = build_island_widget_spec(&snapshot, false, false);
+        let widget = IslandWidget::from_spec(spec);
+
+        assert_eq!(widget.mode, DisplayMode::Compact);
+        assert_eq!(widget.width, IslandWidgetLayout::default().width);
+        assert_eq!(
+            widget.compact_height,
+            IslandWidgetLayout::default().compact_height
+        );
+        assert_eq!(
+            widget.expanded_height,
+            IslandWidgetLayout::default().expanded_height
+        );
+        assert_eq!(widget.chrome, ChromeVisibility::compact());
+        assert_eq!(widget.compact_bar.chrome, ChromeVisibility::compact());
+    }
 }
 
 fn build_status_cards(snapshot: &RuntimeSnapshot) -> Vec<Card> {
