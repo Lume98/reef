@@ -4,7 +4,9 @@ use reef_core::{
     geometry::{Rect, Size},
 };
 use reef_layout::Constraints;
-use reef_render::primitive::VisualPrimitive;
+
+use crate::message_bubble_background::MessageBubbleBackground;
+use crate::message_bubble_dots::MessageBubbleDots;
 
 /// Message bubble shown above the mascot (3 dots + rounded rect).
 #[derive(Clone)]
@@ -43,37 +45,27 @@ impl Widget for MessageBubble {
     fn paint(&self, _rect: Rect, ctx: &mut PaintContext) {
         let bx = self.center_x - self.bubble_width / 2.0;
         let by = self.bottom_y - self.bubble_height;
+        let frame = Rect {
+            x: bx,
+            y: by,
+            width: self.bubble_width,
+            height: self.bubble_height,
+        };
 
-        // Bubble background
-        ctx.primitives.push(VisualPrimitive::RoundRect {
-            frame: Rect {
-                x: bx,
-                y: by,
-                width: self.bubble_width,
-                height: self.bubble_height,
-            },
-            radius: 8.0,
-            color: self.fill_color,
+        MessageBubbleBackground {
+            frame,
+            fill_color: self.fill_color,
             alpha: self.alpha,
-        });
-
-        // Three dots
-        let dot_y = by + self.bubble_height / 2.0;
-        let dot_spacing = 10.0;
-        let start_x = self.center_x - dot_spacing;
-
-        for i in 0..3 {
-            let dx = start_x + i as f64 * dot_spacing;
-            ctx.primitives.push(VisualPrimitive::Ellipse {
-                frame: Rect {
-                    x: dx - self.dot_radius,
-                    y: dot_y - self.dot_radius,
-                    width: self.dot_radius * 2.0,
-                    height: self.dot_radius * 2.0,
-                },
-                color: Color::rgb(140, 150, 170),
-                alpha: self.alpha * (0.3 + 0.7 * ((i as f64 / 2.0).min(1.0))),
-            });
         }
+        .paint(frame, ctx);
+
+        MessageBubbleDots {
+            center_x: self.center_x,
+            bottom_y: self.bottom_y,
+            bubble_height: self.bubble_height,
+            dot_radius: self.dot_radius,
+            alpha: self.alpha,
+        }
+        .paint(frame, ctx);
     }
 }

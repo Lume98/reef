@@ -1,10 +1,9 @@
 use reef_app::widget_host::{PaintContext, Widget};
-use reef_core::{
-    color::Color,
-    geometry::{Point, Rect, Size},
-};
+use reef_core::geometry::{Rect, Size};
 use reef_layout::Constraints;
-use reef_render::primitive::{FontWeight, TextAlignment, VisualPrimitive};
+
+use crate::completion_badge_label::CompletionBadgeLabel;
+use crate::completion_badge_outline::CompletionBadgeOutline;
 
 /// Completion badge shown on the mascot (outline + fill + label).
 #[derive(Clone)]
@@ -48,42 +47,31 @@ impl Widget for CompletionBadge {
             height: self.badge_height,
         };
 
-        // Outline
-        ctx.primitives.push(VisualPrimitive::RoundRect {
+        CompletionBadgeOutline {
             frame,
             radius: self.badge_height / 2.0,
-            color: Color::rgb(46, 79, 61),
             alpha: self.alpha,
-        });
+        }
+        .paint(frame, ctx);
 
-        // Fill
-        let inset = 1.0;
-        ctx.primitives.push(VisualPrimitive::RoundRect {
-            frame: Rect {
-                x: frame.x + inset,
-                y: frame.y + inset,
-                width: frame.width - inset * 2.0,
-                height: frame.height - inset * 2.0,
-            },
-            radius: (self.badge_height / 2.0) - inset,
-            color: Color::rgb(37, 37, 41),
-            alpha: self.alpha,
-        });
+        ctx.primitives
+            .push(reef_render::primitive::VisualPrimitive::RoundRect {
+                frame: Rect {
+                    x: frame.x + 1.0,
+                    y: frame.y + 1.0,
+                    width: frame.width - 2.0,
+                    height: frame.height - 2.0,
+                },
+                radius: (self.badge_height / 2.0) - 1.0,
+                color: reef_core::color::Color::rgb(37, 37, 41),
+                alpha: self.alpha,
+            });
 
-        // Label
-        let label = self.count.to_string();
-        ctx.primitives.push(VisualPrimitive::Text {
-            origin: Point {
-                x: bx + 4.0,
-                y: by + 3.0,
-            },
-            max_width: self.badge_width - 8.0,
-            text: label,
-            color: Color::rgb(102, 222, 145),
-            size: 11,
-            weight: FontWeight::Semibold,
-            alignment: TextAlignment::Center,
+        CompletionBadgeLabel {
+            frame,
+            count: self.count,
             alpha: self.alpha,
-        });
+        }
+        .paint(frame, ctx);
     }
 }

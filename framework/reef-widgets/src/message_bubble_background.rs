@@ -4,20 +4,17 @@ use reef_core::{
     geometry::{Rect, Size},
 };
 use reef_layout::Constraints;
+use reef_render::primitive::VisualPrimitive;
 
-use crate::shoulder_path::{ShoulderPath, ShoulderSide};
-
-/// Animated shoulder nubbin (bezier path).
+/// Bubble background layer.
 #[derive(Clone)]
-pub struct CompactShoulder {
+pub struct MessageBubbleBackground {
     pub frame: Rect,
-    pub side: ShoulderSide,
-    pub progress: f64,
     pub fill_color: Color,
-    pub border_color: Color,
+    pub alpha: f64,
 }
 
-impl Widget for CompactShoulder {
+impl Widget for MessageBubbleBackground {
     fn measure(&self, constraints: Constraints) -> Size {
         constraints.constrain(Size {
             width: self.frame.width,
@@ -26,12 +23,11 @@ impl Widget for CompactShoulder {
     }
 
     fn paint(&self, _rect: Rect, ctx: &mut PaintContext) {
-        ShoulderPath {
+        ctx.primitives.push(VisualPrimitive::RoundRect {
             frame: self.frame,
-            side: self.side,
-            progress: self.progress,
-            fill_color: self.fill_color,
-        }
-        .paint(self.frame, ctx);
+            radius: 8.0,
+            color: self.fill_color,
+            alpha: self.alpha,
+        });
     }
 }
