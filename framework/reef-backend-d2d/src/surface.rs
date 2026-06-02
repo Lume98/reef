@@ -37,8 +37,8 @@ impl PaintSurface {
             usage: D2D1_RENDER_TARGET_USAGE_NONE,
             minLevel: D2D1_FEATURE_LEVEL_DEFAULT,
         };
-        let target = unsafe { factory.CreateDCRenderTarget(&target_props) }
-            .map_err(|e| e.to_string())?;
+        let target =
+            unsafe { factory.CreateDCRenderTarget(&target_props) }.map_err(|e| e.to_string())?;
         Ok(Self { dib, target })
     }
 
@@ -81,18 +81,12 @@ impl PaintSurface {
 
     pub fn end_draw(&self) -> Result<(), String> {
         unsafe {
-            self.target
-                .EndDraw(None, None)
-                .map_err(|e| e.to_string())?;
+            self.target.EndDraw(None, None).map_err(|e| e.to_string())?;
         }
         Ok(())
     }
 
-    pub fn update_layered_window(
-        &self,
-        hwnd: isize,
-        position: PhysicalRect,
-    ) -> Result<(), String> {
+    pub fn update_layered_window(&self, hwnd: isize, position: PhysicalRect) -> Result<(), String> {
         self.dib.update_layered_window(hwnd, position.x, position.y)
     }
 }
@@ -226,20 +220,42 @@ pub struct PaintSurface;
 
 #[cfg(not(target_os = "windows"))]
 impl PaintSurface {
-    pub fn new(_factory: &(), _physical: PhysicalRect, _dpi_scale: DpiScale) -> Result<Self, String> {
+    pub fn new(
+        _factory: &(),
+        _physical: PhysicalRect,
+        _dpi_scale: DpiScale,
+    ) -> Result<Self, String> {
         Ok(Self)
     }
-    pub fn begin_draw(&self, _physical: PhysicalRect) -> Result<(), String> { Ok(()) }
-    pub fn target(&self) -> &() { &() }
-    pub fn end_draw(&self) -> Result<(), String> { Ok(()) }
-    pub fn update_layered_window(&self, _hwnd: isize, _position: PhysicalRect) -> Result<(), String> { Ok(()) }
+    pub fn begin_draw(&self, _physical: PhysicalRect) -> Result<(), String> {
+        Ok(())
+    }
+    pub fn target(&self) -> &() {
+        &()
+    }
+    pub fn end_draw(&self) -> Result<(), String> {
+        Ok(())
+    }
+    pub fn update_layered_window(
+        &self,
+        _hwnd: isize,
+        _position: PhysicalRect,
+    ) -> Result<(), String> {
+        Ok(())
+    }
 }
 
 #[cfg(target_os = "windows")]
 mod d2d_helpers {
-    use reef_core::{color::Color, geometry::{Point, Rect}};
+    use reef_core::{
+        color::Color,
+        geometry::{Point, Rect},
+    };
 
-    pub fn color_f(color: Color, alpha: f64) -> windows::Win32::Graphics::Direct2D::Common::D2D1_COLOR_F {
+    pub fn color_f(
+        color: Color,
+        alpha: f64,
+    ) -> windows::Win32::Graphics::Direct2D::Common::D2D1_COLOR_F {
         windows::Win32::Graphics::Direct2D::Common::D2D1_COLOR_F {
             r: color.r as f32 / 255.0,
             g: color.g as f32 / 255.0,

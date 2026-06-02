@@ -51,15 +51,26 @@ pub fn resolve_native_panel_compact_bar_visual_plan(
     let compact_content = compact_content_layout(compact_frame, false);
     let collapsed_alpha = compact_collapsed_alpha(chrome_visibility);
     push_compact_headline_primitive(
-        &mut primitives, input, compact_frame, compact_content, collapsed_alpha,
+        &mut primitives,
+        input,
+        compact_frame,
+        compact_content,
+        collapsed_alpha,
         expanded_display_mode,
     );
     push_compact_metrics_primitives(
-        &mut primitives, input, compact_frame, compact_content, chrome_visibility,
+        &mut primitives,
+        input,
+        compact_frame,
+        compact_content,
+        chrome_visibility,
         collapsed_alpha,
     );
     push_compact_action_button_primitives(
-        &mut primitives, input, compact_frame, action_button_visibility,
+        &mut primitives,
+        input,
+        compact_frame,
+        action_button_visibility,
     );
 
     NativePanelVisualPlan {

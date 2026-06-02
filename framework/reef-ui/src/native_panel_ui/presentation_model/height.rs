@@ -177,7 +177,12 @@ fn session_card_height(session: &SessionSnapshotView, card_width: f64) -> f64 {
         default_body_width: body_width,
         metrics: default_panel_card_metric_constants(),
     });
-    resolve_session_card_height(false, true, content_height, default_panel_card_metric_constants())
+    resolve_session_card_height(
+        false,
+        true,
+        content_height,
+        default_panel_card_metric_constants(),
+    )
 }
 
 fn chat_body_width_for_card_width(card_width: f64) -> f64 {

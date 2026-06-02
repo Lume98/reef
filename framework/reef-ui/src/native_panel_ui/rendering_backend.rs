@@ -6,9 +6,14 @@ use crate::native_panel_core::{PanelPoint, PanelRect};
 
 #[derive(Clone, Debug, PartialEq)]
 pub enum NativePanelRenderCommand {
-    ClipStart { frame: PanelRect },
+    ClipStart {
+        frame: PanelRect,
+    },
     ClipEnd,
-    CompletionGlow { frame: PanelRect, opacity: f64 },
+    CompletionGlow {
+        frame: PanelRect,
+        opacity: f64,
+    },
     RoundRect {
         frame: PanelRect,
         radius: f64,
@@ -66,9 +71,7 @@ impl From<NativePanelVisualPrimitive> for NativePanelRenderCommand {
                 color,
             },
             NativePanelVisualPrimitive::Rect { frame, color } => Self::Rect { frame, color },
-            NativePanelVisualPrimitive::Ellipse { frame, color } => {
-                Self::Ellipse { frame, color }
-            }
+            NativePanelVisualPrimitive::Ellipse { frame, color } => Self::Ellipse { frame, color },
             NativePanelVisualPrimitive::StrokeLine {
                 from,
                 to,
@@ -109,10 +112,7 @@ impl From<NativePanelVisualPrimitive> for NativePanelRenderCommand {
 pub trait NativePanelRenderBackend {
     type Error;
 
-    fn submit_frame(
-        &mut self,
-        submission: &NativePanelFrameSubmission,
-    ) -> Result<(), Self::Error>;
+    fn submit_frame(&mut self, submission: &NativePanelFrameSubmission) -> Result<(), Self::Error>;
 }
 
 pub fn native_panel_frame_submission_from_visual_plan(

@@ -817,8 +817,7 @@ fn windows_runtime_expanded_target_height_uses_compact_width_when_scene_has_no_l
     );
     let expected_body_height =
         reef_ui::native_panel_ui::presentation::estimated_scene_content_height_for_card_width(
-            scene,
-            card_width,
+            scene, card_width,
         )
         .min(crate::native_panel_core::EXPANDED_MAX_BODY_HEIGHT);
     let expected_height = crate::native_panel_core::DEFAULT_COMPACT_PILL_HEIGHT

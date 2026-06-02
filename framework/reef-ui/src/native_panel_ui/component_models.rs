@@ -1,11 +1,11 @@
 use crate::native_panel_core::{PanelPoint, PanelRect};
 
-use super::visual_primitives::NativePanelVisualColor;
+use super::presentation_model::NativePanelPresentationModel;
 use super::visual_plan::{
     NativePanelVisualCardInput, NativePanelVisualCardStyle, NativePanelVisualDisplayMode,
     NativePanelVisualPlanInput,
 };
-use super::presentation_model::NativePanelPresentationModel;
+use super::visual_primitives::NativePanelVisualColor;
 use crate::native_panel_scene::SceneText;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -196,13 +196,17 @@ pub fn build_native_panel_component_tree_from_presentation_and_cards(
     }
 
     if display_mode != NativePanelVisualDisplayMode::Hidden {
-        tree.push(NativePanelComponent::Masthead(NativePanelMastheadComponent {
-            anchor: PanelPoint {
-                x: presentation.compact_bar.frame.x + presentation.compact_bar.frame.width / 2.0,
-                y: presentation.compact_bar.frame.y + presentation.compact_bar.frame.height / 2.0,
+        tree.push(NativePanelComponent::Masthead(
+            NativePanelMastheadComponent {
+                anchor: PanelPoint {
+                    x: presentation.compact_bar.frame.x
+                        + presentation.compact_bar.frame.width / 2.0,
+                    y: presentation.compact_bar.frame.y
+                        + presentation.compact_bar.frame.height / 2.0,
+                },
+                radius: 11.0,
             },
-            radius: 11.0,
-        }));
+        ));
     }
 
     tree
@@ -221,16 +225,16 @@ fn build_native_panel_presentation_model_from_visual_plan_input(
             separator_visibility: input.separator_visibility,
             shared_visible: input.window_state.visible,
             chrome_transition_progress: input.chrome_transition_progress,
+        },
+        compact_bar: super::presentation_model::NativePanelCompactBarPresentation {
+            frame: input.compact_bar_frame,
+            left_shoulder_frame: input.left_shoulder_frame,
+            right_shoulder_frame: input.right_shoulder_frame,
+            shoulder_progress: input.shoulder_progress,
+            headline: SceneText {
+                text: input.headline_text.clone(),
+                emphasized: input.headline_emphasized,
             },
-            compact_bar: super::presentation_model::NativePanelCompactBarPresentation {
-                frame: input.compact_bar_frame,
-                left_shoulder_frame: input.left_shoulder_frame,
-                right_shoulder_frame: input.right_shoulder_frame,
-                shoulder_progress: input.shoulder_progress,
-                headline: SceneText {
-                    text: input.headline_text.clone(),
-                    emphasized: input.headline_emphasized,
-                },
             active_count: input.active_count.clone(),
             total_count: input.total_count.clone(),
             completion_count: input.completion_count,
@@ -282,7 +286,9 @@ fn push_card_components(
                         x: frame.x + spacing.card_body_inset,
                         y: frame.y + spacing.card_title_height + spacing.card_body_inset,
                         width: (frame.width - spacing.card_body_inset * 2.0).max(0.0),
-                        height: (frame.height - spacing.card_title_height - spacing.card_body_inset * 2.0)
+                        height: (frame.height
+                            - spacing.card_title_height
+                            - spacing.card_body_inset * 2.0)
                             .max(0.0),
                     },
                 },
@@ -439,8 +445,14 @@ mod tests {
     }
 
     fn assert_rect_eq(actual: PanelRect, expected: PanelRect) {
-        assert!((actual.x - expected.x).abs() < 0.001, "x mismatch: {actual:?} vs {expected:?}");
-        assert!((actual.y - expected.y).abs() < 0.001, "y mismatch: {actual:?} vs {expected:?}");
+        assert!(
+            (actual.x - expected.x).abs() < 0.001,
+            "x mismatch: {actual:?} vs {expected:?}"
+        );
+        assert!(
+            (actual.y - expected.y).abs() < 0.001,
+            "y mismatch: {actual:?} vs {expected:?}"
+        );
         assert!(
             (actual.width - expected.width).abs() < 0.001,
             "width mismatch: {actual:?} vs {expected:?}"
@@ -507,13 +519,19 @@ mod tests {
                 height: 200.0,
             },
         );
-        assert_eq!(container.radius, crate::native_panel_core::EXPANDED_PANEL_RADIUS);
-        assert_eq!(container.separator, Some(PanelRect {
-            x: 20.0,
-            y: 44.0,
-            width: 360.0,
-            height: 1.0,
-        }));
+        assert_eq!(
+            container.radius,
+            crate::native_panel_core::EXPANDED_PANEL_RADIUS
+        );
+        assert_eq!(
+            container.separator,
+            Some(PanelRect {
+                x: 20.0,
+                y: 44.0,
+                width: 360.0,
+                height: 1.0,
+            })
+        );
 
         let compact_bar = component_ref(&tree, |component| match component {
             NativePanelComponent::CompactBar(component) => Some(component),

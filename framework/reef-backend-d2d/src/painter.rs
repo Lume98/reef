@@ -1,5 +1,8 @@
 use reef_core::geometry::Rect;
-use reef_render::{primitive::{PathSegment, VisualPrimitive}, render_backend::RenderBackend};
+use reef_render::{
+    primitive::{PathSegment, VisualPrimitive},
+    render_backend::RenderBackend,
+};
 
 use crate::dpi::{DpiScale, PhysicalRect};
 use crate::surface::PaintSurface;
@@ -48,7 +51,11 @@ impl Direct2DPainter {
     }
 
     #[cfg(target_os = "windows")]
-    fn ensure_surface(&mut self, physical: PhysicalRect, dpi_scale: DpiScale) -> Result<(), String> {
+    fn ensure_surface(
+        &mut self,
+        physical: PhysicalRect,
+        dpi_scale: DpiScale,
+    ) -> Result<(), String> {
         if self.surface.is_some() {
             return Ok(());
         }
@@ -71,15 +78,14 @@ impl Direct2DPainter {
         match primitive {
             VisualPrimitive::ClipStart { frame } => {
                 unsafe {
-                    target.PushAxisAlignedClip(
-                        &rect_f(*frame),
-                        D2D1_ANTIALIAS_MODE_PER_PRIMITIVE,
-                    );
+                    target.PushAxisAlignedClip(&rect_f(*frame), D2D1_ANTIALIAS_MODE_PER_PRIMITIVE);
                 }
                 Ok(())
             }
             VisualPrimitive::ClipEnd => {
-                unsafe { target.PopAxisAlignedClip(); }
+                unsafe {
+                    target.PopAxisAlignedClip();
+                }
                 Ok(())
             }
             VisualPrimitive::RoundRect {
@@ -148,13 +154,7 @@ impl Direct2DPainter {
                         .map_err(|e| e.to_string())?
                 };
                 unsafe {
-                    target.DrawLine(
-                        point_f(*from),
-                        point_f(*to),
-                        &brush,
-                        *width as f32,
-                        None,
-                    );
+                    target.DrawLine(point_f(*from), point_f(*to), &brush, *width as f32, None);
                 }
                 Ok(())
             }
@@ -299,8 +299,10 @@ impl Direct2DPainter {
         &self,
         size: i32,
     ) -> Result<windows::Win32::Graphics::DirectWrite::IDWriteTextFormat, String> {
-        use windows::Win32::Graphics::DirectWrite::{DWriteCreateFactory, DWRITE_FACTORY_TYPE_SHARED};
         use windows::core::PCWSTR;
+        use windows::Win32::Graphics::DirectWrite::{
+            DWriteCreateFactory, DWRITE_FACTORY_TYPE_SHARED,
+        };
 
         let factory: windows::Win32::Graphics::DirectWrite::IDWriteFactory = unsafe {
             DWriteCreateFactory(DWRITE_FACTORY_TYPE_SHARED)
@@ -487,7 +489,9 @@ pub fn resolve_paint_operations(plan: &reef_render::primitive::VisualPlan) -> Ve
 
 #[derive(Clone, Debug, PartialEq)]
 pub enum PaintOperation {
-    PushClip { frame: Rect },
+    PushClip {
+        frame: Rect,
+    },
     PopClip,
     FillRoundRect {
         frame: Rect,
@@ -561,7 +565,10 @@ pub enum PaintOperation {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use reef_core::{color::Color, geometry::{Point, Rect}};
+    use reef_core::{
+        color::Color,
+        geometry::{Point, Rect},
+    };
     use reef_render::primitive::{FontWeight, TextAlignment, VisualPrimitive};
 
     #[test]
@@ -617,10 +624,7 @@ mod tests {
                 },
                 VisualPrimitive::StrokeLine {
                     from: Point { x: 0.0, y: 0.0 },
-                    to: Point {
-                        x: 100.0,
-                        y: 100.0,
-                    },
+                    to: Point { x: 100.0, y: 100.0 },
                     color: Color::WHITE,
                     width: 1.0,
                     alpha: 1.0,

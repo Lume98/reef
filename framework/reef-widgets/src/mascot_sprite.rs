@@ -65,7 +65,10 @@ impl SpriteMascot {
 
     /// Compute which frame to render for the current pose and elapsed time.
     fn resolve_frame(&self) -> Option<(&SpriteAnimation, usize, Rect, Rect)> {
-        let anim = self.animations.iter().find(|a| a.pose == self.current_pose)?;
+        let anim = self
+            .animations
+            .iter()
+            .find(|a| a.pose == self.current_pose)?;
         let frame_count = anim.frames.max(1);
         let cycle_ms = anim.frame_ms * frame_count as u128;
         let elapsed_in_cycle = if anim.looped {
@@ -102,9 +105,15 @@ impl SpriteMascot {
 impl Widget for SpriteMascot {
     fn measure(&self, _constraints: Constraints) -> Size {
         if let Some((anim, _, _, _)) = self.resolve_frame() {
-            Size { width: anim.logical_width, height: anim.logical_height }
+            Size {
+                width: anim.logical_width,
+                height: anim.logical_height,
+            }
         } else {
-            Size { width: 0.0, height: 0.0 }
+            Size {
+                width: 0.0,
+                height: 0.0,
+            }
         }
     }
 

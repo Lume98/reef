@@ -3,7 +3,7 @@ use reef_core::{
     geometry::{point_in_rect, Point, Rect, Size},
 };
 use reef_layout::Constraints;
-use reef_render::primitive::{VisualPrimitive, VisualPlan};
+use reef_render::primitive::{VisualPlan, VisualPrimitive};
 
 /// Reef UI 树中的可视化组件。
 ///
@@ -20,12 +20,7 @@ pub trait Widget {
     /// 处理事件。返回 true 表示事件已被消费（停止冒泡）。
     /// 容器组件应先尝试将事件转发给命中的子组件，
     /// 若未被消费，再自行处理。
-    fn handle_event(
-        &mut self,
-        _event: &Event,
-        _rect: Rect,
-        _ctx: &mut EventContext,
-    ) -> bool {
+    fn handle_event(&mut self, _event: &Event, _rect: Rect, _ctx: &mut EventContext) -> bool {
         false
     }
 }

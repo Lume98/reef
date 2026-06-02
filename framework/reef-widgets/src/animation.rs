@@ -26,7 +26,12 @@ pub struct AnimatedValue {
 
 impl AnimatedValue {
     pub fn new(from: f64, to: f64, duration_ms: u64) -> Self {
-        Self { from, to, duration_ms, started_at: None }
+        Self {
+            from,
+            to,
+            duration_ms,
+            started_at: None,
+        }
     }
 
     pub fn start(&mut self) {
@@ -82,10 +87,22 @@ pub const PANEL_CARD_CONTENT_EARLY_EXIT_PROGRESS: f64 = 0.35;
 /// Compute the staggered phase for a card in a stack.
 pub fn staggered_card_phase(progress: f64, index: usize, total: usize, entering: bool) -> f64 {
     let progress = progress.clamp(0.0, 1.0);
-    let duration_ms = if entering { PANEL_CARD_REVEAL_MS } else { PANEL_CARD_EXIT_MS };
-    let stagger_ms = if entering { PANEL_CARD_REVEAL_STAGGER_MS } else { PANEL_CARD_EXIT_STAGGER_MS };
+    let duration_ms = if entering {
+        PANEL_CARD_REVEAL_MS
+    } else {
+        PANEL_CARD_EXIT_MS
+    };
+    let stagger_ms = if entering {
+        PANEL_CARD_REVEAL_STAGGER_MS
+    } else {
+        PANEL_CARD_EXIT_STAGGER_MS
+    };
     let total_ms = duration_ms + stagger_ms * (total.saturating_sub(1)) as u64;
-    let order_index = if entering { index } else { total.saturating_sub(index + 1) };
+    let order_index = if entering {
+        index
+    } else {
+        total.saturating_sub(index + 1)
+    };
     let elapsed_ms = progress * total_ms as f64;
     let delay_ms = order_index as f64 * stagger_ms as f64;
     ((elapsed_ms - delay_ms) / duration_ms as f64).clamp(0.0, 1.0)
@@ -107,11 +124,7 @@ pub fn card_content_visibility(phase: f64, entering: bool) -> f64 {
 }
 
 /// Compute compact shoulder progress from island width.
-pub fn shoulder_progress_from_width(
-    width: f64,
-    compact_width: f64,
-    expanded_width: f64,
-) -> f64 {
+pub fn shoulder_progress_from_width(width: f64, compact_width: f64, expanded_width: f64) -> f64 {
     ((width - compact_width) / (expanded_width - compact_width)).clamp(0.0, 1.0)
 }
 

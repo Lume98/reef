@@ -36,7 +36,10 @@ impl MascotDot {
 impl Widget for MascotDot {
     fn measure(&self, constraints: Constraints) -> Size {
         let frame = self.frame();
-        constraints.constrain(Size { width: frame.width, height: frame.height })
+        constraints.constrain(Size {
+            width: frame.width,
+            height: frame.height,
+        })
     }
 
     fn paint(&self, rect: Rect, ctx: &mut PaintContext) {

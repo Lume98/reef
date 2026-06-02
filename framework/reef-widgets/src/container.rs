@@ -71,7 +71,10 @@ impl Widget for Container {
 
         let child_size = match &self.child {
             Some(child) => child.measure(inner),
-            None => Size { width: 0.0, height: 0.0 },
+            None => Size {
+                width: 0.0,
+                height: 0.0,
+            },
         };
 
         let width = child_size.width + doubled;
@@ -104,9 +107,8 @@ impl Widget for Container {
                 width: (rect.width - self.padding * 2.0).max(0.0),
                 height: (rect.height - self.padding * 2.0).max(0.0),
             };
-            ctx.primitives.push(VisualPrimitive::ClipStart {
-                frame: child_rect,
-            });
+            ctx.primitives
+                .push(VisualPrimitive::ClipStart { frame: child_rect });
             child.paint(child_rect, ctx);
             ctx.primitives.push(VisualPrimitive::ClipEnd);
         }

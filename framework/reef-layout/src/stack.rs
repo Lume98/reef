@@ -63,7 +63,10 @@ mod tests {
 
     #[test]
     fn stacked_total_height_sums_with_gaps() {
-        assert_eq!(resolve_stacked_total_height(&[60.0, 40.0, 30.0], 8.0), 146.0);
+        assert_eq!(
+            resolve_stacked_total_height(&[60.0, 40.0, 30.0], 8.0),
+            146.0
+        );
         assert_eq!(resolve_stacked_total_height(&[], 8.0), 0.0);
     }
 }

@@ -41,13 +41,14 @@ pub struct NativeWindow {
 impl NativeWindow {
     pub fn create(config: &WindowConfig) -> Result<Self, String> {
         use windows_sys::Win32::UI::WindowsAndMessaging::{
-            CreateWindowExW, DefWindowProcW, RegisterClassW, CS_HREDRAW, CS_VREDRAW,
-            WS_EX_LAYERED, WS_EX_TOPMOST, WS_EX_TOOLWINDOW, WS_OVERLAPPED, WNDCLASSW,
+            CreateWindowExW, DefWindowProcW, RegisterClassW, CS_HREDRAW, CS_VREDRAW, WNDCLASSW,
+            WS_EX_LAYERED, WS_EX_TOOLWINDOW, WS_EX_TOPMOST, WS_OVERLAPPED,
         };
 
         let class_name = encode_wide("ReefWindowClass");
-        let instance =
-            unsafe { windows_sys::Win32::System::LibraryLoader::GetModuleHandleW(std::ptr::null()) };
+        let instance = unsafe {
+            windows_sys::Win32::System::LibraryLoader::GetModuleHandleW(std::ptr::null())
+        };
         if instance.is_null() {
             return Err(format!(
                 "GetModuleHandleW failed: {}",

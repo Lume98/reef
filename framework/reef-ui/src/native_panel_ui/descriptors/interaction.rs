@@ -126,9 +126,9 @@ pub fn native_panel_platform_event_for_pointer_region(
         NativePanelPointerRegionKind::DebugModeTrigger => {
             Some(NativePanelPlatformEvent::DebugModeTrigger)
         }
-        NativePanelPointerRegionKind::HitTarget(target) => {
-            Some(super::commands::native_panel_platform_event_for_hit_target(target))
-        }
+        NativePanelPointerRegionKind::HitTarget(target) => Some(
+            super::commands::native_panel_platform_event_for_hit_target(target),
+        ),
         NativePanelPointerRegionKind::Shell
         | NativePanelPointerRegionKind::CompactBar
         | NativePanelPointerRegionKind::CardsContainer => None,
@@ -185,10 +185,7 @@ pub fn queue_native_panel_platform_event_at_point(
     regions: &[NativePanelPointerRegion],
     point: PanelPoint,
 ) -> Option<NativePanelPlatformEvent> {
-    queue_native_panel_platform_event(
-        events,
-        native_panel_platform_event_at_point(regions, point),
-    )
+    queue_native_panel_platform_event(events, native_panel_platform_event_at_point(regions, point))
 }
 
 pub fn native_panel_pointer_state_at_point(
@@ -514,7 +511,10 @@ pub(super) fn absolute_panel_rect(layout: PanelLayout, local_frame: PanelRect) -
 }
 
 pub(super) fn absolute_expanded_rect(layout: PanelLayout, local_frame: PanelRect) -> PanelRect {
-    absolute_panel_rect(layout, compose_local_rect(layout.expanded_frame, local_frame))
+    absolute_panel_rect(
+        layout,
+        compose_local_rect(layout.expanded_frame, local_frame),
+    )
 }
 
 fn push_region(

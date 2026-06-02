@@ -1,10 +1,14 @@
 use reef_core::color::Color as ReefColor;
+use reef_render::primitive::{
+    PathSegment, VisualPlan as ReefVisualPlan, VisualPrimitive as ReefVisualPrimitive,
+};
+use reef_ui::native_panel_ui::rendering::{
+    native_panel_submit_visual_plan, NativePanelFrameSubmission,
+};
 use reef_ui::native_panel_ui::visual::{
     NativePanelVisualColor, NativePanelVisualPlan, NativePanelVisualPrimitive,
     NativePanelVisualTextAlignment, NativePanelVisualTextRole, NativePanelVisualTextWeight,
 };
-use reef_ui::native_panel_ui::rendering::{native_panel_submit_visual_plan, NativePanelFrameSubmission};
-use reef_render::primitive::{PathSegment, VisualPlan as ReefVisualPlan, VisualPrimitive as ReefVisualPrimitive};
 
 use crate::native_panel_core::{PanelPoint, PanelRect};
 use crate::native_panel_renderer::visual_plan::resolve_native_panel_visual_plan;
@@ -462,22 +466,22 @@ fn windows_native_panel_paint_operations_from_visual_primitive(
             alignment: native_text_alignment_from_reef(*alignment),
             alpha: *alpha,
         }],
-        ReefVisualPrimitive::NineSliceImage {
-            frame,
-            opacity,
-            ..
-        } => vec![WindowsNativePanelPaintOperation::DrawCompletionGlowImage {
-            frame: panel_rect_from_rect(*frame),
-            opacity: *opacity,
-        }],
+        ReefVisualPrimitive::NineSliceImage { frame, opacity, .. } => {
+            vec![WindowsNativePanelPaintOperation::DrawCompletionGlowImage {
+                frame: panel_rect_from_rect(*frame),
+                opacity: *opacity,
+            }]
+        }
         ReefVisualPrimitive::SpriteImage { .. } => Vec::new(),
-        ReefVisualPrimitive::BezierPath { segments, fill, alpha } => vec![
-            WindowsNativePanelPaintOperation::FillBezierPath {
-                segments: segments.clone(),
-                color: *fill,
-                alpha: *alpha,
-            },
-        ],
+        ReefVisualPrimitive::BezierPath {
+            segments,
+            fill,
+            alpha,
+        } => vec![WindowsNativePanelPaintOperation::FillBezierPath {
+            segments: segments.clone(),
+            color: *fill,
+            alpha: *alpha,
+        }],
         ReefVisualPrimitive::StrokedRoundRect {
             frame,
             radius,
@@ -809,7 +813,9 @@ fn panel_point_from_point(point: reef_core::geometry::Point) -> PanelPoint {
     }
 }
 
-fn native_text_weight_from_reef(weight: reef_render::primitive::FontWeight) -> NativePanelVisualTextWeight {
+fn native_text_weight_from_reef(
+    weight: reef_render::primitive::FontWeight,
+) -> NativePanelVisualTextWeight {
     match weight {
         reef_render::primitive::FontWeight::Normal => NativePanelVisualTextWeight::Normal,
         reef_render::primitive::FontWeight::Semibold => NativePanelVisualTextWeight::Semibold,
@@ -1100,14 +1106,10 @@ mod tests {
                 origin: crate::native_panel_core::PanelPoint { x: 12.0, y: 34.0 },
                 max_width: 48.0,
                 text: "Idle".to_string(),
-                color: reef_ui::native_panel_ui::visual::NativePanelVisualColor::rgb(
-                    230, 235, 245,
-                ),
+                color: reef_ui::native_panel_ui::visual::NativePanelVisualColor::rgb(230, 235, 245),
                 size: 10,
-                weight:
-                    reef_ui::native_panel_ui::visual::NativePanelVisualTextWeight::Semibold,
-                alignment:
-                    reef_ui::native_panel_ui::visual::NativePanelVisualTextAlignment::Center,
+                weight: reef_ui::native_panel_ui::visual::NativePanelVisualTextWeight::Semibold,
+                alignment: reef_ui::native_panel_ui::visual::NativePanelVisualTextAlignment::Center,
                 alpha: 1.0,
             },
         );

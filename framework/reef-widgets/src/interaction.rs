@@ -37,8 +37,18 @@ pub struct PointerRegion {
 }
 
 impl PointerRegion {
-    pub fn new(kind: PointerRegionKind, frame: Rect, action: HitAction, value: impl Into<String>) -> Self {
-        Self { kind, frame, action, value: value.into() }
+    pub fn new(
+        kind: PointerRegionKind,
+        frame: Rect,
+        action: HitAction,
+        value: impl Into<String>,
+    ) -> Self {
+        Self {
+            kind,
+            frame,
+            action,
+            value: value.into(),
+        }
     }
 
     pub fn contains(&self, point: Point) -> bool {
@@ -57,7 +67,9 @@ pub struct PointerRegionSet {
 
 impl PointerRegionSet {
     pub fn new() -> Self {
-        Self { regions: Vec::new() }
+        Self {
+            regions: Vec::new(),
+        }
     }
 
     pub fn push(&mut self, region: PointerRegion) {
@@ -122,15 +134,27 @@ pub fn build_compact_pointer_regions(
 
     // Settings button
     if settings_visible {
-        let settings_frame = Rect { x: bar_frame.x, y: bar_frame.y, width: 44.0, height: bar_frame.height };
+        let settings_frame = Rect {
+            x: bar_frame.x,
+            y: bar_frame.y,
+            width: 44.0,
+            height: bar_frame.height,
+        };
         set.push(PointerRegion::new(
-            PointerRegionKind::ActionButton { action: HitAction::ToggleSettings },
+            PointerRegionKind::ActionButton {
+                action: HitAction::ToggleSettings,
+            },
             settings_frame,
             HitAction::ToggleSettings,
             "",
         ));
         // Debug trigger next to settings
-        let debug_frame = Rect { x: bar_frame.x + 44.0, y: bar_frame.y, width: 36.0, height: bar_frame.height };
+        let debug_frame = Rect {
+            x: bar_frame.x + 44.0,
+            y: bar_frame.y,
+            width: 36.0,
+            height: bar_frame.height,
+        };
         set.push(PointerRegion::new(
             PointerRegionKind::DebugTrigger,
             debug_frame,
@@ -148,7 +172,9 @@ pub fn build_compact_pointer_regions(
             height: bar_frame.height,
         };
         set.push(PointerRegion::new(
-            PointerRegionKind::ActionButton { action: HitAction::Quit },
+            PointerRegionKind::ActionButton {
+                action: HitAction::Quit,
+            },
             quit_frame,
             HitAction::Quit,
             "",
@@ -157,7 +183,12 @@ pub fn build_compact_pointer_regions(
 
     // Mascot
     if let Some(frame) = mascot_frame {
-        set.push(PointerRegion::new(PointerRegionKind::Mascot, frame, HitAction::FocusSession, ""));
+        set.push(PointerRegion::new(
+            PointerRegionKind::Mascot,
+            frame,
+            HitAction::FocusSession,
+            "",
+        ));
     }
 
     set

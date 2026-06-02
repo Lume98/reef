@@ -32,13 +32,21 @@ impl CompletionBadge {
 
 impl Widget for CompletionBadge {
     fn measure(&self, constraints: Constraints) -> Size {
-        constraints.constrain(Size { width: self.badge_width, height: self.badge_height })
+        constraints.constrain(Size {
+            width: self.badge_width,
+            height: self.badge_height,
+        })
     }
 
     fn paint(&self, _rect: Rect, ctx: &mut PaintContext) {
         let bx = self.center_x - self.badge_width / 2.0;
         let by = self.center_y - self.badge_height / 2.0;
-        let frame = Rect { x: bx, y: by, width: self.badge_width, height: self.badge_height };
+        let frame = Rect {
+            x: bx,
+            y: by,
+            width: self.badge_width,
+            height: self.badge_height,
+        };
 
         // Outline
         ctx.primitives.push(VisualPrimitive::RoundRect {
@@ -65,7 +73,10 @@ impl Widget for CompletionBadge {
         // Label
         let label = self.count.to_string();
         ctx.primitives.push(VisualPrimitive::Text {
-            origin: Point { x: bx + 4.0, y: by + 3.0 },
+            origin: Point {
+                x: bx + 4.0,
+                y: by + 3.0,
+            },
             max_width: self.badge_width - 8.0,
             text: label,
             color: Color::rgb(102, 222, 145),

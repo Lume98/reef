@@ -3,12 +3,8 @@ mod height;
 pub use height::*;
 
 use crate::{
-    native_panel_core::{
-        PanelLayout, PanelRect, PanelRenderState, EXPANDED_MAX_BODY_HEIGHT,
-    },
-    native_panel_scene::{
-        PanelRuntimeRenderState, PanelScene, SceneCard, SceneText,
-    },
+    native_panel_core::{PanelLayout, PanelRect, PanelRenderState, EXPANDED_MAX_BODY_HEIGHT},
+    native_panel_scene::{PanelRuntimeRenderState, PanelScene, SceneCard, SceneText},
 };
 
 use super::descriptors::{

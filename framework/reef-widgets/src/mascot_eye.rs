@@ -15,7 +15,10 @@ pub struct MascotEye {
 
 impl Widget for MascotEye {
     fn measure(&self, constraints: Constraints) -> Size {
-        constraints.constrain(Size { width: self.frame.width, height: self.frame.height })
+        constraints.constrain(Size {
+            width: self.frame.width,
+            height: self.frame.height,
+        })
     }
 
     fn paint(&self, _rect: Rect, ctx: &mut PaintContext) {

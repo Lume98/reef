@@ -213,10 +213,7 @@ impl NativePanelRenderer for WindowsNativePanelRenderer {
 impl NativePanelRenderBackend for WindowsNativePanelRenderer {
     type Error = String;
 
-    fn submit_frame(
-        &mut self,
-        submission: &NativePanelFrameSubmission,
-    ) -> Result<(), Self::Error> {
+    fn submit_frame(&mut self, submission: &NativePanelFrameSubmission) -> Result<(), Self::Error> {
         self.last_frame_submission = Some(submission.clone());
         Ok(())
     }
@@ -454,8 +451,10 @@ impl WindowsNativePanelRenderer {
         let mut widget = build_island_widget(snapshot, panel_expanded, settings_active);
         widget.width = layout.panel_frame.width.max(1.0);
         widget.compact_height = crate::native_panel_core::DEFAULT_COMPACT_PILL_HEIGHT;
-        widget.expanded_height =
-            layout.panel_frame.height.max(crate::native_panel_core::COLLAPSED_PANEL_HEIGHT);
+        widget.expanded_height = layout
+            .panel_frame
+            .height
+            .max(crate::native_panel_core::COLLAPSED_PANEL_HEIGHT);
         widget.reveal_progress = animation_plan.card_stack.visibility_progress;
         widget.entering = animation_plan.card_stack.entering;
         widget.compact_bar.chrome = if panel_expanded {

@@ -79,7 +79,9 @@ impl Widget for Label {
         let text_width = estimate_text_width(&self.text, self.font_size);
         let max_w = self.max_width.unwrap_or(constraints.max_width);
         let width = text_width.min(max_w);
-        let lh = self.line_height.unwrap_or_else(|| default_line_height(self.font_size));
+        let lh = self
+            .line_height
+            .unwrap_or_else(|| default_line_height(self.font_size));
         let height = lh * line_count as f64;
         constraints.constrain(Size { width, height })
     }

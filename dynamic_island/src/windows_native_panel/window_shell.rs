@@ -137,7 +137,9 @@ impl WindowsNativePanelWindowShell {
         self.last_painted_job.as_ref()
     }
 
-    pub(super) fn take_pending_widget_plan(&mut self) -> Option<reef_render::primitive::VisualPlan> {
+    pub(super) fn take_pending_widget_plan(
+        &mut self,
+    ) -> Option<reef_render::primitive::VisualPlan> {
         self.pending_widget_plan.take()
     }
 

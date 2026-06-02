@@ -1,7 +1,5 @@
 use crate::native_panel_core::PanelPoint;
-use reef_ui::native_panel_ui::descriptor::{
-    NativePanelInteractionPlan, NativePanelPointerRegion,
-};
+use reef_ui::native_panel_ui::descriptor::{NativePanelInteractionPlan, NativePanelPointerRegion};
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub(super) enum WindowsNativePanelHitTest {

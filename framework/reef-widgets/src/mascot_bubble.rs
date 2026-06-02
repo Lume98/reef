@@ -34,7 +34,10 @@ impl MessageBubble {
 
 impl Widget for MessageBubble {
     fn measure(&self, constraints: Constraints) -> Size {
-        constraints.constrain(Size { width: self.bubble_width, height: self.bubble_height })
+        constraints.constrain(Size {
+            width: self.bubble_width,
+            height: self.bubble_height,
+        })
     }
 
     fn paint(&self, _rect: Rect, ctx: &mut PaintContext) {
@@ -43,7 +46,12 @@ impl Widget for MessageBubble {
 
         // Bubble background
         ctx.primitives.push(VisualPrimitive::RoundRect {
-            frame: Rect { x: bx, y: by, width: self.bubble_width, height: self.bubble_height },
+            frame: Rect {
+                x: bx,
+                y: by,
+                width: self.bubble_width,
+                height: self.bubble_height,
+            },
             radius: 8.0,
             color: self.fill_color,
             alpha: self.alpha,

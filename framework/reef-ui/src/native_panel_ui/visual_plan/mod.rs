@@ -18,9 +18,9 @@ pub use card_input::{
     native_panel_visual_card_input_from_scene_card_with_height,
 };
 use compact::{
-    compact_content_layout, push_compact_action_button_primitives,
-    push_compact_headline_primitive, push_compact_island_background,
-    push_compact_metrics_primitives, push_completion_glow_if_visible,
+    compact_content_layout, push_compact_action_button_primitives, push_compact_headline_primitive,
+    push_compact_island_background, push_compact_metrics_primitives,
+    push_completion_glow_if_visible,
 };
 use expanded::push_expanded_card_shells;
 pub use input::{

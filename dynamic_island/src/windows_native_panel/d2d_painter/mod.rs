@@ -8,13 +8,15 @@ use super::{
 };
 use crate::native_panel_core::{PanelPoint, PanelRect};
 use reef_core::color::Color as ReefColor;
-#[cfg(all(windows, not(test)))]
-use reef_ui::native_panel_ui::visual::native_panel_visual_text_box_height_for_role;
+use reef_render::primitive::{
+    PathSegment, VisualPlan as ReefVisualPlan, VisualPrimitive as ReefVisualPrimitive,
+};
 use reef_ui::native_panel_ui::rendering::{
     native_panel_submit_visual_plan, NativePanelFrameSubmission, NativePanelRenderBackend,
 };
+#[cfg(all(windows, not(test)))]
+use reef_ui::native_panel_ui::visual::native_panel_visual_text_box_height_for_role;
 use reef_ui::native_panel_ui::visual::NativePanelVisualShoulderSide;
-use reef_render::primitive::{PathSegment, VisualPlan as ReefVisualPlan, VisualPrimitive as ReefVisualPrimitive};
 
 #[cfg(all(windows, not(test)))]
 use super::{
@@ -122,7 +124,9 @@ fn directwrite_text_request_from_visual_primitive(
     }
 }
 
-fn native_text_weight_from_reef(weight: reef_render::primitive::FontWeight) -> reef_ui::native_panel_ui::visual::NativePanelVisualTextWeight {
+fn native_text_weight_from_reef(
+    weight: reef_render::primitive::FontWeight,
+) -> reef_ui::native_panel_ui::visual::NativePanelVisualTextWeight {
     match weight {
         reef_render::primitive::FontWeight::Normal => {
             reef_ui::native_panel_ui::visual::NativePanelVisualTextWeight::Normal
@@ -504,7 +508,9 @@ impl Direct2DWindowsNativePanelPainter {
 
             let mut operations = resolve_windows_native_panel_hit_test_blocker_operations(job);
             if let Some(widget_plan) = widget_plan {
-                operations.extend(resolve_windows_native_panel_widget_paint_operations(widget_plan));
+                operations.extend(resolve_windows_native_panel_widget_paint_operations(
+                    widget_plan,
+                ));
             } else {
                 operations.extend(resolve_windows_native_panel_paint_operations(plan));
             }
@@ -922,8 +928,7 @@ fn draw_completion_glow_image(
 ) {
     use windows::Win32::Graphics::Direct2D::D2D1_BITMAP_INTERPOLATION_MODE_LINEAR;
 
-    for slice in
-        reef_ui::native_panel_ui::presentation::resolve_completion_glow_image_slices(frame)
+    for slice in reef_ui::native_panel_ui::presentation::resolve_completion_glow_image_slices(frame)
     {
         let dest = slice.dest;
         let source = slice.source;

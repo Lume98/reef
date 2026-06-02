@@ -36,8 +36,16 @@ pub fn column_total_size(sizes: &[Size], gap: f64) -> Size {
 }
 
 /// Constrain column child heights to fit within available space.
-pub fn column_child_constraints(constraints: Constraints, gap: f64, child_count: usize) -> Constraints {
-    let total_gap = if child_count > 1 { gap * (child_count - 1) as f64 } else { 0.0 };
+pub fn column_child_constraints(
+    constraints: Constraints,
+    gap: f64,
+    child_count: usize,
+) -> Constraints {
+    let total_gap = if child_count > 1 {
+        gap * (child_count - 1) as f64
+    } else {
+        0.0
+    };
     Constraints {
         min_width: constraints.min_width,
         max_width: constraints.max_width,

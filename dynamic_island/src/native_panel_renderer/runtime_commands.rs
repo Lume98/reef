@@ -149,9 +149,7 @@ pub(crate) fn execute_native_panel_debug_mode_trigger_command(
 }
 
 #[cfg(feature = "tauri-host")]
-pub(crate) fn execute_native_panel_open_settings_location_command<H>(
-    host: &H,
-) -> Result<(), String>
+pub(crate) fn execute_native_panel_open_settings_location_command<H>(host: &H) -> Result<(), String>
 where
     H: NativePanelHostPlatform,
 {
@@ -159,9 +157,7 @@ where
 }
 
 #[cfg(feature = "tauri-host")]
-pub(crate) fn execute_native_panel_open_release_page_command<H>(
-    host: &H,
-) -> Result<(), String>
+pub(crate) fn execute_native_panel_open_release_page_command<H>(host: &H) -> Result<(), String>
 where
     H: NativePanelHostPlatform,
 {
@@ -193,11 +189,8 @@ pub(crate) fn dispatch_native_panel_click_command_with_host<H>(
 where
     H: NativePanelHostPlatform,
 {
-    let mut executor = native_panel_host_runtime_command_executor(
-        host,
-        toggle_settings_surface,
-        dispatch_mode,
-    );
+    let mut executor =
+        native_panel_host_runtime_command_executor(host, toggle_settings_surface, dispatch_mode);
     dispatch_native_panel_click_command_with_handler(&mut executor, command)
 }
 
@@ -211,11 +204,8 @@ pub(crate) fn dispatch_native_panel_platform_events_with_host<H>(
 where
     H: NativePanelHostPlatform,
 {
-    let mut executor = native_panel_host_runtime_command_executor(
-        host,
-        toggle_settings_surface,
-        dispatch_mode,
-    );
+    let mut executor =
+        native_panel_host_runtime_command_executor(host, toggle_settings_surface, dispatch_mode);
     dispatch_native_panel_platform_events(&mut executor, events)
 }
 
@@ -325,10 +315,7 @@ pub(crate) fn spawn_native_panel_platform_loops_with_event_dispatch<H>(
 }
 
 #[cfg(feature = "tauri-host")]
-pub(crate) fn dispatch_native_panel_app_command<H, F>(
-    host: &H,
-    command: F,
-) -> Result<(), String>
+pub(crate) fn dispatch_native_panel_app_command<H, F>(host: &H, command: F) -> Result<(), String>
 where
     H: NativePanelHostPlatform,
     F: FnOnce(H) -> Result<(), String> + Send + 'static,
@@ -337,11 +324,8 @@ where
 }
 
 #[cfg(feature = "tauri-host")]
-pub(crate) fn spawn_native_panel_app_command<H, F>(
-    host: H,
-    command: F,
-    error_message: &'static str,
-) where
+pub(crate) fn spawn_native_panel_app_command<H, F>(host: H, command: F, error_message: &'static str)
+where
     H: NativePanelHostPlatform,
     F: FnOnce(H) -> Result<(), String> + Send + 'static,
 {
@@ -420,9 +404,7 @@ pub(crate) trait NativePanelAppHandleRuntimeCommandBackend {
         )
     }
 
-    fn reposition_to_selected_display_with_host(
-        host: &Self::Host,
-    ) -> Result<(), String> {
+    fn reposition_to_selected_display_with_host(host: &Self::Host) -> Result<(), String> {
         NativePanelPlatformRuntimeBackend::reposition_to_selected_display(
             &current_native_panel_runtime_backend(),
             host,

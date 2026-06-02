@@ -1,4 +1,7 @@
-use reef_core::{color::Color, geometry::{Point, Rect}};
+use reef_core::{
+    color::Color,
+    geometry::{Point, Rect},
+};
 
 #[derive(Clone, Debug, PartialEq)]
 pub enum VisualPrimitive {

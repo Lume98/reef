@@ -61,7 +61,9 @@ impl<R: tauri::Runtime + 'static> NativePanelHostPlatform for AppHandle<R> {
     fn open_settings_location(&self) -> Result<(), String> {
         tauri_plugin_opener::OpenerExt::opener(self)
             .open_path(
-                crate::config::get_app_config_dir().to_string_lossy().to_string(),
+                crate::config::get_app_config_dir()
+                    .to_string_lossy()
+                    .to_string(),
                 None::<&str>,
             )
             .map_err(|error| error.to_string())
@@ -69,7 +71,10 @@ impl<R: tauri::Runtime + 'static> NativePanelHostPlatform for AppHandle<R> {
 
     fn open_release_page(&self) -> Result<(), String> {
         tauri_plugin_opener::OpenerExt::opener(self)
-            .open_url("https://github.com/Lume98/ai-gateway/releases", None::<&str>)
+            .open_url(
+                "https://github.com/Lume98/ai-gateway/releases",
+                None::<&str>,
+            )
             .map_err(|error| error.to_string())
     }
 

@@ -6,9 +6,9 @@
 mod action_button_visual_spec;
 mod animation_plan;
 mod animation_scheduler;
-mod component_models;
 mod card_visual_spec;
 mod completion_glow_visual_spec;
+mod component_models;
 mod descriptors;
 mod env_flags;
 mod mascot_sprite_spec;

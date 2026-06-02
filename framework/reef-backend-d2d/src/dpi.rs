@@ -146,9 +146,6 @@ mod tests {
     #[test]
     fn dpi_scale_maps_physical_point_back_to_logical() {
         let scale = DpiScale::from_scale(1.25);
-        assert_eq!(
-            scale.point_to_logical(150, 75),
-            Point { x: 120.0, y: 60.0 }
-        );
+        assert_eq!(scale.point_to_logical(150, 75), Point { x: 120.0, y: 60.0 });
     }
 }

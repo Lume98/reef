@@ -14,7 +14,11 @@ use echoisland_runtime::RuntimeSnapshot;
 ///
 /// `panel_expanded` 控制展示模式（Compact / Expanded）。
 /// `settings_active` 控制是否展示设置卡片。
-pub fn build_island_widget(snapshot: &RuntimeSnapshot, panel_expanded: bool, settings_active: bool) -> IslandWidget {
+pub fn build_island_widget(
+    snapshot: &RuntimeSnapshot,
+    panel_expanded: bool,
+    settings_active: bool,
+) -> IslandWidget {
     let mode = if panel_expanded {
         reef_widgets::island_widget::DisplayMode::Expanded
     } else {
@@ -34,14 +38,22 @@ pub fn build_island_widget(snapshot: &RuntimeSnapshot, panel_expanded: bool, set
         compact_bar,
         cards,
         mascot,
-        chrome: if panel_expanded { ChromeVisibility::expanded() } else { ChromeVisibility::compact() },
+        chrome: if panel_expanded {
+            ChromeVisibility::expanded()
+        } else {
+            ChromeVisibility::compact()
+        },
         reveal_progress: 1.0,
         entering: true,
         ..IslandWidget::new()
     }
 }
 
-fn build_compact_bar(snapshot: &RuntimeSnapshot, expanded: bool, settings_active: bool) -> CompactBar {
+fn build_compact_bar(
+    snapshot: &RuntimeSnapshot,
+    expanded: bool,
+    settings_active: bool,
+) -> CompactBar {
     let mut bar = CompactBar::new();
     bar.headline = "Reef".to_string();
     bar.headline_emphasized = expanded;
@@ -72,7 +84,10 @@ fn build_status_cards(snapshot: &RuntimeSnapshot) -> Vec<Card> {
             .badge(Badge::source(&pending.source))
             .body_line(BodyLine::plain(
                 Some("!"),
-                pending.tool_description.clone().unwrap_or_else(|| "Waiting for your approval".to_string()),
+                pending
+                    .tool_description
+                    .clone()
+                    .unwrap_or_else(|| "Waiting for your approval".to_string()),
             ))
             .action_hint("Allow / Deny in terminal")
             .height(80.0);
@@ -82,7 +97,12 @@ fn build_status_cards(snapshot: &RuntimeSnapshot) -> Vec<Card> {
     // Pending questions → PendingQuestion cards
     for pending in &snapshot.pending_questions {
         let card = Card::new(CardStyle::PendingQuestion)
-            .title(pending.header.clone().unwrap_or_else(|| "Question".to_string()))
+            .title(
+                pending
+                    .header
+                    .clone()
+                    .unwrap_or_else(|| "Question".to_string()),
+            )
             .subtitle(format!("#{} · Question", short_id(&pending.session_id)))
             .badge(Badge::status("Question", true))
             .badge(Badge::source(&pending.source))
@@ -94,8 +114,20 @@ fn build_status_cards(snapshot: &RuntimeSnapshot) -> Vec<Card> {
 
     // Active sessions → Default cards
     for session in &snapshot.sessions {
-        let title = if session.status.is_empty() { "Session" } else { &session.status };
-        let subtitle = format!("{} · {}", session.source, if session.model.as_deref().unwrap_or("") == "claude" { "Claude" } else { &session.source });
+        let title = if session.status.is_empty() {
+            "Session"
+        } else {
+            &session.status
+        };
+        let subtitle = format!(
+            "{} · {}",
+            session.source,
+            if session.model.as_deref().unwrap_or("") == "claude" {
+                "Claude"
+            } else {
+                &session.source
+            }
+        );
         let mut card = Card::new(CardStyle::Default)
             .title(title.to_string())
             .subtitle(subtitle)
@@ -121,7 +153,10 @@ fn build_status_cards(snapshot: &RuntimeSnapshot) -> Vec<Card> {
         cards.push(
             Card::new(CardStyle::Empty)
                 .title("No active sessions")
-                .body_line(BodyLine::plain(None, "Reef UI is watching for new activity."))
+                .body_line(BodyLine::plain(
+                    None,
+                    "Reef UI is watching for new activity.",
+                ))
                 .height(60.0),
         );
     }
@@ -134,12 +169,36 @@ fn build_settings_cards() -> Vec<Card> {
         .title("Settings")
         .subtitle("v0.1.0")
         .settings_rows(vec![
-            SettingsRow { title: "Display".into(), value: "1".into(), active: true },
-            SettingsRow { title: "Width".into(), value: "Auto".into(), active: false },
-            SettingsRow { title: "Language".into(), value: "En".into(), active: false },
-            SettingsRow { title: "Sound".into(), value: "On".into(), active: true },
-            SettingsRow { title: "Mascot".into(), value: "On".into(), active: true },
-            SettingsRow { title: "Updates".into(), value: "Check".into(), active: false },
+            SettingsRow {
+                title: "Display".into(),
+                value: "1".into(),
+                active: true,
+            },
+            SettingsRow {
+                title: "Width".into(),
+                value: "Auto".into(),
+                active: false,
+            },
+            SettingsRow {
+                title: "Language".into(),
+                value: "En".into(),
+                active: false,
+            },
+            SettingsRow {
+                title: "Sound".into(),
+                value: "On".into(),
+                active: true,
+            },
+            SettingsRow {
+                title: "Mascot".into(),
+                value: "On".into(),
+                active: true,
+            },
+            SettingsRow {
+                title: "Updates".into(),
+                value: "Check".into(),
+                active: false,
+            },
         ])
         .height(230.0)]
 }
@@ -163,11 +222,11 @@ fn build_mascot(snapshot: &RuntimeSnapshot, expanded: bool) -> Option<MascotWidg
 
     // Completion badge when sessions exist
     if snapshot.total_session_count > 0 && snapshot.active_session_count == 0 {
-        mascot.completion_badge = Some(
-            reef_widgets::mascot_badge::CompletionBadge::new(
-                200.0, 10.0, snapshot.total_session_count,
-            ),
-        );
+        mascot.completion_badge = Some(reef_widgets::mascot_badge::CompletionBadge::new(
+            200.0,
+            10.0,
+            snapshot.total_session_count,
+        ));
     }
 
     Some(mascot)

@@ -104,7 +104,10 @@ pub fn native_panel_timeline_descriptor(
 pub fn native_panel_timeline_descriptor_for_animation(
     animation: PanelAnimationDescriptor,
 ) -> NativePanelTimelineDescriptor {
-    native_panel_timeline_descriptor(animation, native_panel_cards_entering_for_animation(animation))
+    native_panel_timeline_descriptor(
+        animation,
+        native_panel_cards_entering_for_animation(animation),
+    )
 }
 
 pub fn native_panel_cards_entering_for_animation(animation: PanelAnimationDescriptor) -> bool {

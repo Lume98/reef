@@ -23,7 +23,13 @@ fn main() {
     let x = 400.0;
     let y = 100.0;
 
-    let config = WindowConfig::new(Rect { x, y, width, height }).style(WindowStyle::LayeredTopmost);
+    let config = WindowConfig::new(Rect {
+        x,
+        y,
+        width,
+        height,
+    })
+    .style(WindowStyle::LayeredTopmost);
 
     let window = match NativeWindow::create(&config) {
         Ok(w) => w,
@@ -72,7 +78,12 @@ fn main() {
         },
     ];
 
-    let screen_rect = Rect { x, y, width, height };
+    let screen_rect = Rect {
+        x,
+        y,
+        width,
+        height,
+    };
 
     if let Err(e) = painter.render_to_window(&primitives, screen_rect) {
         eprintln!("Render error: {e}");
@@ -89,13 +100,23 @@ fn main() {
         .radius(24.0)
         .border(Color::rgb(44, 44, 50), 1.0)
         .padding(10.0)
-        .child(Box::new(Label::new("Hello from Widget!").color(Color::rgb(230, 235, 245)).font_size(16)));
+        .child(Box::new(
+            Label::new("Hello from Widget!")
+                .color(Color::rgb(230, 235, 245))
+                .font_size(16),
+        ));
 
     let mut host = WidgetHost::new();
-    host.set_size(reef_core::geometry::Size { width: 320.0, height: 48.0 });
+    host.set_size(reef_core::geometry::Size {
+        width: 320.0,
+        height: 48.0,
+    });
     host.set_root(Box::new(container));
     let plan = host.render();
-    println!("Container+Label produced {} primitives", plan.primitives.len());
+    println!(
+        "Container+Label produced {} primitives",
+        plan.primitives.len()
+    );
 
     // Card widget demo: showcase all card styles and features
     println!();
@@ -151,9 +172,21 @@ fn main() {
         Card::new(CardStyle::Settings)
             .title("Settings")
             .settings_rows(vec![
-                SettingsRow { title: "Auto-approve".into(), value: "On".into(), active: true },
-                SettingsRow { title: "Theme".into(), value: "Dark".into(), active: false },
-                SettingsRow { title: "Font Size".into(), value: "14px".into(), active: false },
+                SettingsRow {
+                    title: "Auto-approve".into(),
+                    value: "On".into(),
+                    active: true,
+                },
+                SettingsRow {
+                    title: "Theme".into(),
+                    value: "Dark".into(),
+                    active: false,
+                },
+                SettingsRow {
+                    title: "Font Size".into(),
+                    value: "14px".into(),
+                    active: false,
+                },
             ])
             .height(140.0),
         300.0,
@@ -177,9 +210,7 @@ fn main() {
     // 6. Empty — placeholder card
     demo_card(
         "Empty",
-        Card::new(CardStyle::Empty)
-            .title("No content")
-            .height(80.0),
+        Card::new(CardStyle::Empty).title("No content").height(80.0),
         300.0,
         80.0,
     );
@@ -192,6 +223,11 @@ fn main() {
         host.set_size(reef_core::geometry::Size { width, height });
         host.set_root(Box::new(card));
         let plan = host.render();
-        println!("  {label}: {} primitives ({}x{})", plan.primitives.len(), width as u32, height as u32);
+        println!(
+            "  {label}: {} primitives ({}x{})",
+            plan.primitives.len(),
+            width as u32,
+            height as u32
+        );
     }
 }

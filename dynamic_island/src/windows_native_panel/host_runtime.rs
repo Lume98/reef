@@ -586,8 +586,7 @@ impl WindowsNativePanelRuntime {
     pub(super) fn advance_animation_frame_at(
         &mut self,
         now: Instant,
-    ) -> Result<Option<reef_ui::native_panel_ui::render::NativePanelAnimationFrame>, String>
-    {
+    ) -> Result<Option<reef_ui::native_panel_ui::render::NativePanelAnimationFrame>, String> {
         if let Some(request) = self.last_transition_request.take() {
             // If this transition is anything other than Close, any in-flight
             // hover-close state from an earlier (now-superseded) close request

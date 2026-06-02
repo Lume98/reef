@@ -118,8 +118,14 @@ mod tests {
         let curve = AnimationCurve {
             easing: EasingFunction::Linear,
             keyframes: vec![
-                Keyframe { time: 0.0, value: 0.0 },
-                Keyframe { time: 1.0, value: 100.0 },
+                Keyframe {
+                    time: 0.0,
+                    value: 0.0,
+                },
+                Keyframe {
+                    time: 1.0,
+                    value: 100.0,
+                },
             ],
         };
         assert_eq!(curve.sample(0.0), 0.0);

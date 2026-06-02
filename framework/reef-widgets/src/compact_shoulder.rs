@@ -27,18 +27,39 @@ impl CompactShoulder {
         let r = self.frame;
         match self.side {
             ShoulderSide::Left => vec![
-                PathSegment::LineTo(Point { x: r.x, y: r.y + r.height * self.progress }),
+                PathSegment::LineTo(Point {
+                    x: r.x,
+                    y: r.y + r.height * self.progress,
+                }),
                 PathSegment::CubicBezier {
-                    control1: Point { x: r.x, y: r.y + r.height * 0.3 },
-                    control2: Point { x: r.x + r.width * 0.6, y: r.y },
-                    end: Point { x: r.x + r.width, y: r.y },
+                    control1: Point {
+                        x: r.x,
+                        y: r.y + r.height * 0.3,
+                    },
+                    control2: Point {
+                        x: r.x + r.width * 0.6,
+                        y: r.y,
+                    },
+                    end: Point {
+                        x: r.x + r.width,
+                        y: r.y,
+                    },
                 },
             ],
             ShoulderSide::Right => vec![
-                PathSegment::LineTo(Point { x: r.x + r.width, y: r.y + r.height * self.progress }),
+                PathSegment::LineTo(Point {
+                    x: r.x + r.width,
+                    y: r.y + r.height * self.progress,
+                }),
                 PathSegment::CubicBezier {
-                    control1: Point { x: r.x + r.width, y: r.y + r.height * 0.3 },
-                    control2: Point { x: r.x + r.width * 0.4, y: r.y },
+                    control1: Point {
+                        x: r.x + r.width,
+                        y: r.y + r.height * 0.3,
+                    },
+                    control2: Point {
+                        x: r.x + r.width * 0.4,
+                        y: r.y,
+                    },
                     end: Point { x: r.x, y: r.y },
                 },
             ],
@@ -48,7 +69,10 @@ impl CompactShoulder {
 
 impl Widget for CompactShoulder {
     fn measure(&self, constraints: Constraints) -> Size {
-        constraints.constrain(Size { width: self.frame.width, height: self.frame.height })
+        constraints.constrain(Size {
+            width: self.frame.width,
+            height: self.frame.height,
+        })
     }
 
     fn paint(&self, _rect: Rect, ctx: &mut PaintContext) {

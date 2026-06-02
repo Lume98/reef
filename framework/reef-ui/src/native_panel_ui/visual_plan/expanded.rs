@@ -12,6 +12,10 @@ use super::super::card_visual_spec::{
     card_visual_shell_reveal_frame, card_visual_stack_reveal_frame, card_visual_tool_pill_layout,
     CardVisualBadgeRole, CardVisualBadgeSpec, CardVisualRowSpec,
 };
+use super::super::visual_primitives::{
+    NativePanelVisualColor, NativePanelVisualPrimitive, NativePanelVisualTextAlignment,
+    NativePanelVisualTextRole, NativePanelVisualTextWeight,
+};
 use super::card_input::{
     card_visual_body_role_from_visual_role, card_visual_style_from_visual_style,
     visual_color_from_card_spec,
@@ -20,13 +24,9 @@ use super::input::{
     NativePanelVisualCardBadgeInput, NativePanelVisualCardBodyRole, NativePanelVisualCardInput,
     NativePanelVisualCardStyle,
 };
-use super::super::visual_primitives::{
-    NativePanelVisualColor, NativePanelVisualPrimitive, NativePanelVisualTextAlignment,
-    NativePanelVisualTextRole, NativePanelVisualTextWeight,
-};
 use super::utils::{
-    apply_card_content_reveal_to_primitives, clip_rect_vertically, extend_visible_content_primitives,
-    fit_text_to_lines, fit_text_to_width, inset_rect,
+    apply_card_content_reveal_to_primitives, clip_rect_vertically,
+    extend_visible_content_primitives, fit_text_to_lines, fit_text_to_width, inset_rect,
 };
 
 pub(super) fn push_expanded_card_shells(
@@ -78,12 +78,9 @@ pub(super) fn push_expanded_card_shells(
         if stable_visible_height.is_none_or(|height| height <= 6.0) && !single_empty_card {
             continue;
         }
-        let phase = card_visual_stack_reveal_frame(
-            input.separator_visibility,
-            input.cards.len(),
-            index,
-        )
-        .card_phase;
+        let phase =
+            card_visual_stack_reveal_frame(input.separator_visibility, input.cards.len(), index)
+                .card_phase;
         if phase <= 0.001 {
             continue;
         }
@@ -159,8 +156,7 @@ pub(super) fn push_expanded_card_content(
     phase: f64,
 ) {
     let content_reveal = card_visual_content_transition_frame(phase, card.removing);
-    if content_reveal.visibility_progress <= 0.001
-        || frame.height < card.collapsed_height.min(48.0)
+    if content_reveal.visibility_progress <= 0.001 || frame.height < card.collapsed_height.min(48.0)
     {
         return;
     }
