@@ -2,9 +2,11 @@ use crate::native_panel_core::{PanelPoint, PanelRect};
 
 use super::visual_primitives::NativePanelVisualColor;
 use super::visual_plan::{
-    NativePanelVisualCardBodyRole, NativePanelVisualCardInput, NativePanelVisualCardStyle,
-    NativePanelVisualDisplayMode, NativePanelVisualPlanInput,
+    NativePanelVisualCardInput, NativePanelVisualCardStyle, NativePanelVisualDisplayMode,
+    NativePanelVisualPlanInput,
 };
+use super::presentation_model::NativePanelPresentationModel;
+use crate::native_panel_scene::SceneText;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct NativePanelPanelColors {
@@ -115,23 +117,43 @@ impl Default for NativePanelLayoutSpacing {
 pub fn build_native_panel_component_tree(
     input: &NativePanelVisualPlanInput,
 ) -> NativePanelComponentTree {
+    let presentation = build_native_panel_presentation_model_from_visual_plan_input(input);
+    build_native_panel_component_tree_from_presentation_and_cards(
+        &presentation,
+        input.display_mode,
+        &input.cards,
+    )
+}
+
+pub fn build_native_panel_component_tree_from_presentation(
+    presentation: &NativePanelPresentationModel,
+    display_mode: NativePanelVisualDisplayMode,
+) -> NativePanelComponentTree {
+    build_native_panel_component_tree_from_presentation_and_cards(presentation, display_mode, &[])
+}
+
+pub fn build_native_panel_component_tree_from_presentation_and_cards(
+    presentation: &NativePanelPresentationModel,
+    display_mode: NativePanelVisualDisplayMode,
+    cards: &[NativePanelVisualCardInput],
+) -> NativePanelComponentTree {
     let mut tree = NativePanelComponentTree::default();
     let spacing = NativePanelLayoutSpacing::default();
 
     tree.push(NativePanelComponent::Container(
         NativePanelContainerComponent {
-            frame: input.panel_frame,
-            radius: if input.display_mode == NativePanelVisualDisplayMode::Expanded {
+            frame: presentation.panel_frame,
+            radius: if display_mode == NativePanelVisualDisplayMode::Expanded {
                 crate::native_panel_core::EXPANDED_PANEL_RADIUS
             } else {
                 crate::native_panel_core::COMPACT_PILL_RADIUS
             },
             fill: NativePanelVisualColor::rgb(12, 12, 15),
             border: Some(NativePanelVisualColor::rgb(44, 44, 50)),
-            separator: (input.separator_visibility > 0.01).then_some(PanelRect {
-                x: input.shell_frame.x + 20.0,
-                y: input.compact_bar_frame.y + input.compact_bar_frame.height + 8.0,
-                width: (input.shell_frame.width - 40.0).max(0.0),
+            separator: (presentation.shell.separator_visibility > 0.01).then_some(PanelRect {
+                x: presentation.shell.frame.x + 20.0,
+                y: presentation.compact_bar.frame.y + presentation.compact_bar.frame.height + 8.0,
+                width: (presentation.shell.frame.width - 40.0).max(0.0),
                 height: 1.0,
             }),
         },
@@ -139,51 +161,101 @@ pub fn build_native_panel_component_tree(
 
     tree.push(NativePanelComponent::CompactBar(
         NativePanelCompactBarComponent {
-            frame: input.compact_bar_frame,
+            frame: presentation.compact_bar.frame,
             headline_origin: PanelPoint {
-                x: input.compact_bar_frame.x + input.compact_bar_frame.width / 2.0,
-                y: input.compact_bar_frame.y + 8.0,
+                x: presentation.compact_bar.frame.x + presentation.compact_bar.frame.width / 2.0,
+                y: presentation.compact_bar.frame.y + 8.0,
             },
-            headline_width: input.compact_bar_frame.width * 0.6,
+            headline_width: presentation.compact_bar.frame.width * 0.6,
             active_origin: PanelPoint {
-                x: input.compact_bar_frame.x + 16.0,
-                y: input.compact_bar_frame.y + 8.0,
+                x: presentation.compact_bar.frame.x + 16.0,
+                y: presentation.compact_bar.frame.y + 8.0,
             },
             total_origin: PanelPoint {
-                x: input.compact_bar_frame.x + input.compact_bar_frame.width - 36.0,
-                y: input.compact_bar_frame.y + 8.0,
+                x: presentation.compact_bar.frame.x + presentation.compact_bar.frame.width - 36.0,
+                y: presentation.compact_bar.frame.y + 8.0,
             },
         },
     ));
 
     tree.push(NativePanelComponent::Stack(NativePanelStackComponent {
-        frame: input.card_stack_frame,
-        content_height: input.card_stack_content_height,
+        frame: presentation.card_stack.frame,
+        content_height: presentation.card_stack.content_height,
     }));
 
-    let mut cursor_y = input.card_stack_frame.y;
-    for card in &input.cards {
+    let mut cursor_y = presentation.card_stack.frame.y;
+    for card in cards {
         let card_frame = PanelRect {
-            x: input.card_stack_frame.x,
+            x: presentation.card_stack.frame.x,
             y: cursor_y,
-            width: input.card_stack_frame.width,
+            width: presentation.card_stack.frame.width,
             height: card.height.max(card.collapsed_height).max(1.0),
         };
         push_card_components(&mut tree, card_frame, card, &spacing);
         cursor_y += card_frame.height + spacing.card_gap;
     }
 
-    if input.display_mode != NativePanelVisualDisplayMode::Hidden {
+    if display_mode != NativePanelVisualDisplayMode::Hidden {
         tree.push(NativePanelComponent::Masthead(NativePanelMastheadComponent {
             anchor: PanelPoint {
-                x: input.compact_bar_frame.x + input.compact_bar_frame.width / 2.0,
-                y: input.compact_bar_frame.y + input.compact_bar_frame.height / 2.0,
+                x: presentation.compact_bar.frame.x + presentation.compact_bar.frame.width / 2.0,
+                y: presentation.compact_bar.frame.y + presentation.compact_bar.frame.height / 2.0,
             },
             radius: 11.0,
         }));
     }
 
     tree
+}
+
+fn build_native_panel_presentation_model_from_visual_plan_input(
+    input: &NativePanelVisualPlanInput,
+) -> NativePanelPresentationModel {
+    NativePanelPresentationModel {
+        panel_frame: input.panel_frame,
+        content_frame: input.content_frame,
+        shell: super::presentation_model::NativePanelShellPresentation {
+            surface: input.surface,
+            frame: input.shell_frame,
+            visible: input.window_state.visible,
+            separator_visibility: input.separator_visibility,
+            shared_visible: input.window_state.visible,
+            chrome_transition_progress: input.chrome_transition_progress,
+            },
+            compact_bar: super::presentation_model::NativePanelCompactBarPresentation {
+                frame: input.compact_bar_frame,
+                left_shoulder_frame: input.left_shoulder_frame,
+                right_shoulder_frame: input.right_shoulder_frame,
+                shoulder_progress: input.shoulder_progress,
+                headline: SceneText {
+                    text: input.headline_text.clone(),
+                    emphasized: input.headline_emphasized,
+                },
+            active_count: input.active_count.clone(),
+            total_count: input.total_count.clone(),
+            completion_count: input.completion_count,
+            headline_emphasized: input.headline_emphasized,
+            actions_visible: input.action_buttons_visible,
+        },
+        card_stack: super::presentation_model::NativePanelCardStackPresentation {
+            frame: input.card_stack_frame,
+            surface: input.surface,
+            cards: Vec::new(),
+            content_height: input.card_stack_content_height,
+            body_height: input.card_stack_content_height,
+            visible: input.cards_visible,
+        },
+        mascot: super::presentation_model::NativePanelMascotPresentation {
+            pose: input.mascot_pose,
+            debug_mode_enabled: input.mascot_debug_mode_enabled,
+        },
+        glow: None,
+        action_buttons: Default::default(),
+        metrics: super::presentation_model::NativePanelPresentationMetrics {
+            expanded_content_height: input.card_stack_content_height,
+            expanded_body_height: input.card_stack_content_height,
+        },
+    }
 }
 
 fn push_card_components(
