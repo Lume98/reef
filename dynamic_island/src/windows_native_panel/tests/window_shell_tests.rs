@@ -346,6 +346,7 @@ fn windows_runtime_window_message_expands_hover_after_presenting_shared_absolute
             kind: NativePanelPointerRegionKind::CompactBar,
         }],
         None,
+        None,
     );
     let frame = runtime
         .host
@@ -520,6 +521,7 @@ fn windows_runtime_pump_window_messages_consumes_paint_job() {
         },
         pointer_regions: Vec::new(),
         presentation_model: None,
+        widget_plan: None,
     });
     runtime.pump_platform_loop().expect("pump presenter frame");
 

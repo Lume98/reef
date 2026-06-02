@@ -233,8 +233,12 @@ impl NativePanelPlatformWindowMessagePump for WindowsNativePanelRuntime {
         if let Some(job) = self.host.shell.paint_next_frame() {
             self.platform_loop
                 .sync_paint_surface_resources_for_current_revision();
-            let paint_plan =
-                paint_windows_native_panel_job(self.host.shell.raw_window_handle(), &job)?;
+            let widget_plan = self.host.shell.take_pending_widget_plan();
+            let paint_plan = paint_windows_native_panel_job(
+                self.host.shell.raw_window_handle(),
+                &job,
+                widget_plan.as_ref(),
+            )?;
             self.platform_loop.paint_dispatch_count += 1;
             self.platform_loop.last_paint_plan = Some(paint_plan);
             self.platform_loop.last_painted_job = Some(job);

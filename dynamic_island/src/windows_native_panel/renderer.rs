@@ -30,6 +30,11 @@ use crate::{
     },
     native_panel_scene::{PanelRuntimeRenderState, PanelScene},
 };
+use reef_core::geometry::Size;
+use reef_render::primitive::VisualPlan;
+use reef_widgets::ChromeVisibility;
+
+use crate::island_widget_bridge::build_island_widget;
 
 use super::{host_runtime::WindowsNativePanelHost, WINDOWS_FALLBACK_PANEL_SCREEN_FRAME};
 
@@ -45,6 +50,7 @@ pub(crate) struct WindowsNativePanelRenderer {
     pub(super) last_pointer_regions: Vec<NativePanelPointerRegion>,
     pub(super) last_presentation_model: Option<NativePanelPresentationModel>,
     pub(super) last_frame_submission: Option<NativePanelFrameSubmission>,
+    pub(super) last_widget_plan: Option<VisualPlan>,
     pub(super) active_close_presentation_plan: Option<NativePanelClosePresentationPlan>,
 }
 
@@ -62,6 +68,7 @@ impl Default for WindowsNativePanelRenderer {
             last_pointer_regions: Vec::new(),
             last_presentation_model: None,
             last_frame_submission: None,
+            last_widget_plan: None,
             active_close_presentation_plan: None,
         }
     }
@@ -402,6 +409,7 @@ impl WindowsNativePanelRenderer {
                 && !suppress_edge_actions,
         });
         self.refresh_cached_window_state(descriptor, screen_frame);
+        self.refresh_cached_widget_plan(&layout, &animation_plan);
 
         if scene.is_none() {
             self.last_layout = Some(layout);
@@ -409,6 +417,7 @@ impl WindowsNativePanelRenderer {
             self.last_pointer_regions = Vec::new();
             self.last_presentation_model = None;
             self.scene_cache.last_render_command_bundle = None;
+            self.last_widget_plan = None;
             return;
         }
         let _ = resolve_and_cache_presentation_from_scene_cache_on_renderer(
@@ -420,6 +429,55 @@ impl WindowsNativePanelRenderer {
         if suppress_edge_actions {
             self.suppress_edge_actions_for_close_transition();
         }
+    }
+
+    fn refresh_cached_widget_plan(
+        &mut self,
+        layout: &PanelLayout,
+        animation_plan: &reef_ui::native_panel_ui::render::NativePanelAnimationPlan,
+    ) {
+        let Some(snapshot) = self.scene_cache.last_snapshot.as_ref() else {
+            self.last_widget_plan = None;
+            return;
+        };
+        let Some(presentation) = self.last_presentation_model.as_ref() else {
+            self.last_widget_plan = None;
+            return;
+        };
+        if !layout.shell_visible {
+            self.last_widget_plan = None;
+            return;
+        }
+
+        let panel_expanded = presentation.shell.visible;
+        let settings_active = presentation.shell.surface == ExpandedSurface::Settings;
+        let mut widget = build_island_widget(snapshot, panel_expanded, settings_active);
+        widget.width = layout.panel_frame.width.max(1.0);
+        widget.compact_height = crate::native_panel_core::DEFAULT_COMPACT_PILL_HEIGHT;
+        widget.expanded_height =
+            layout.panel_frame.height.max(crate::native_panel_core::COLLAPSED_PANEL_HEIGHT);
+        widget.reveal_progress = animation_plan.card_stack.visibility_progress;
+        widget.entering = animation_plan.card_stack.entering;
+        widget.compact_bar.chrome = if panel_expanded {
+            ChromeVisibility::interpolate(
+                &ChromeVisibility::compact(),
+                &ChromeVisibility::expanded(),
+                animation_plan.card_stack.separator_visibility,
+            )
+        } else {
+            ChromeVisibility::compact()
+        };
+        widget.compact_bar.chrome.shoulder_progress =
+            animation_plan.card_stack.separator_visibility;
+        widget.compact_bar.show_actions = panel_expanded || settings_active;
+
+        let mut widget_host = reef_app::widget_host::WidgetHost::new();
+        widget_host.set_size(Size {
+            width: widget.width,
+            height: widget.expanded_height.max(widget.compact_height),
+        });
+        widget_host.set_root(Box::new(widget));
+        self.last_widget_plan = Some(widget_host.render());
     }
 
     fn refresh_cached_window_state(

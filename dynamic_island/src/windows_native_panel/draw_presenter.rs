@@ -56,6 +56,7 @@ mod tests {
             },
             pointer_regions: Vec::<NativePanelPointerRegion>::new(),
             presentation_model: None,
+            widget_plan: None,
         };
 
         presenter.present(frame.clone());
