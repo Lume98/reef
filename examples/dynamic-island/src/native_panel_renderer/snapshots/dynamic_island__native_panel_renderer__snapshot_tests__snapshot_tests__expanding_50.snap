@@ -1,5 +1,5 @@
 ---
-source: extensions/dynamic_island/src/native_panel_renderer/snapshot_tests.rs
+source: examples/dynamic-island/src/native_panel_renderer/snapshot_tests.rs
 assertion_line: 97
 expression: snapshot
 ---

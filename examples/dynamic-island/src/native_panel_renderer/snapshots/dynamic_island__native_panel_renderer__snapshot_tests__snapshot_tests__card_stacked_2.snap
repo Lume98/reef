@@ -1,9 +1,9 @@
 ---
-source: extensions/dynamic_island/src/native_panel_renderer/snapshot_tests.rs
-assertion_line: 144
+source: examples/dynamic-island/src/native_panel_renderer/snapshot_tests.rs
+assertion_line: 159
 expression: snapshot
 ---
-scenario: card_single
+scenario: card_stacked_2
 primitives:
   - type: RoundRect
     frame:
@@ -28,6 +28,26 @@ primitives:
       y: 85
     max_width: 340
     text: Session 1
+    color: "rgb(255, 255, 255)"
+    size: 13
+    weight: Semibold
+    alignment: Left
+    alpha: 1
+  - type: RoundRect
+    frame:
+      x: 20
+      y: 150
+      width: 360
+      height: 70
+    radius: 8
+    color: "rgb(24, 24, 27)"
+  - type: Text
+    role: CardTitle
+    origin:
+      x: 30
+      y: 165
+    max_width: 340
+    text: Session 2
     color: "rgb(255, 255, 255)"
     size: 13
     weight: Semibold

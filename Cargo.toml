@@ -1,6 +1,5 @@
 [workspace]
 members = [
-    "dynamic_island",
     "echoisland-runtime",
     "framework/reef-app",
     "framework/reef-backend-d2d",
@@ -9,6 +8,7 @@ members = [
     "framework/reef-render",
     "framework/reef-ui",
     "framework/reef-widgets",
+    "examples/dynamic-island",
     "examples/hello-reef",
 ]
 resolver = "2"
