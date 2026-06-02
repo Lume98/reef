@@ -1,0 +1,16 @@
+[package]
+name = "hello-reef"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "hello-reef"
+path = "src/main.rs"
+
+[dependencies]
+reef-core = { path = "../../reef-core" }
+reef-render = { path = "../../reef-render" }
+reef-layout = { path = "../../reef-layout" }
+reef-app = { path = "../../reef-app" }
+reef-widgets = { path = "../../reef-widgets" }
+reef-backend-d2d = { path = "../../reef-backend-d2d" }

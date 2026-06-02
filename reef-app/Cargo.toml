@@ -1,0 +1,9 @@
+[package]
+name = "reef-app"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+reef-core = { path = "../reef-core" }
+reef-render = { path = "../reef-render" }
+reef-layout = { path = "../reef-layout" }

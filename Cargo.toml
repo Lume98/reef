@@ -2,7 +2,14 @@
 members = [
     "dynamic_island",
     "echoisland-runtime",
+    "reef-app",
+    "reef-backend-d2d",
+    "reef-core",
+    "reef-layout",
+    "reef-render",
     "reef-ui",
+    "reef-widgets",
+    "examples/hello-reef",
 ]
 resolver = "2"
 

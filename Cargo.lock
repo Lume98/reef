@@ -1513,6 +1513,18 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2304e00983f87ffb38b55b444b5e3b60a884b5d30c0fca7d82fe33449bbe55ea"
 
 [[package]]
+name = "hello-reef"
+version = "0.1.0"
+dependencies = [
+ "reef-app",
+ "reef-backend-d2d",
+ "reef-core",
+ "reef-layout",
+ "reef-render",
+ "reef-widgets",
+]
+
+[[package]]
 name = "hermit-abi"
 version = "0.5.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2799,6 +2811,42 @@ dependencies = [
 ]
 
 [[package]]
+name = "reef-app"
+version = "0.1.0"
+dependencies = [
+ "reef-core",
+ "reef-layout",
+ "reef-render",
+]
+
+[[package]]
+name = "reef-backend-d2d"
+version = "0.1.0"
+dependencies = [
+ "reef-core",
+ "reef-render",
+ "windows 0.58.0",
+]
+
+[[package]]
+name = "reef-core"
+version = "0.1.0"
+
+[[package]]
+name = "reef-layout"
+version = "0.1.0"
+dependencies = [
+ "reef-core",
+]
+
+[[package]]
+name = "reef-render"
+version = "0.1.0"
+dependencies = [
+ "reef-core",
+]
+
+[[package]]
 name = "reef-ui"
 version = "0.1.0"
 dependencies = [
@@ -2810,6 +2858,16 @@ dependencies = [
  "serde_json",
  "tauri",
  "tauri-plugin-opener",
+]
+
+[[package]]
+name = "reef-widgets"
+version = "0.1.0"
+dependencies = [
+ "reef-app",
+ "reef-core",
+ "reef-layout",
+ "reef-render",
 ]
 
 [[package]]

@@ -1,0 +1,11 @@
+[package]
+name = "reef-backend-d2d"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+reef-core = { path = "../reef-core" }
+reef-render = { path = "../reef-render" }
+
+[target.'cfg(target_os = "windows")'.dependencies]
+windows = { workspace = true }
