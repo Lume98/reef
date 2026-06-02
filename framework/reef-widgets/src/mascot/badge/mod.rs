@@ -2,8 +2,11 @@ use reef_app::widget_host::{PaintContext, Widget};
 use reef_core::geometry::{Rect, Size};
 use reef_layout::Constraints;
 
-use crate::completion_badge_label::CompletionBadgeLabel;
-use crate::completion_badge_outline::CompletionBadgeOutline;
+mod label;
+mod outline;
+
+pub use label::CompletionBadgeLabel;
+pub use outline::CompletionBadgeOutline;
 
 /// Completion badge shown on the mascot (outline + fill + label).
 #[derive(Clone)]

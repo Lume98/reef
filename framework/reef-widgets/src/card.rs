@@ -260,15 +260,10 @@ fn settings_value_badge_fg(active: bool) -> Color {
     }
 }
 
-#[path = "card_badges.rs"]
 mod card_badges;
-#[path = "card_body.rs"]
 mod card_body;
-#[path = "card_header.rs"]
 mod card_header;
-#[path = "card_settings_panel.rs"]
 mod card_settings_panel;
-#[path = "card_shell.rs"]
 mod card_shell;
 
 pub use card_badges::CardBadges;

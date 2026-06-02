@@ -4,8 +4,8 @@
 //! 当前作为概念验证，验证 Widget 框架可以承载生产级的灵动岛 UI。
 
 use reef_widgets::{
-    Badge, BodyLine, Card, CardStyle, ChromeVisibility, CompactBar, IslandWidget, MascotPose,
-    MascotWidget, SettingsRow,
+    Badge, BodyLine, Card, CardStyle, ChromeVisibility, CompactBar, DisplayMode, IslandWidget,
+    MascotPose, MascotWidget, SettingsRow,
 };
 
 use echoisland_runtime::RuntimeSnapshot;
@@ -20,9 +20,9 @@ pub fn build_island_widget(
     settings_active: bool,
 ) -> IslandWidget {
     let mode = if panel_expanded {
-        reef_widgets::island_widget::DisplayMode::Expanded
+        DisplayMode::Expanded
     } else {
-        reef_widgets::island_widget::DisplayMode::Compact
+        DisplayMode::Compact
     };
 
     let compact_bar = build_compact_bar(snapshot, panel_expanded, settings_active);
@@ -222,7 +222,7 @@ fn build_mascot(snapshot: &RuntimeSnapshot, expanded: bool) -> Option<MascotWidg
 
     // Completion badge when sessions exist
     if snapshot.total_session_count > 0 && snapshot.active_session_count == 0 {
-        mascot.completion_badge = Some(reef_widgets::mascot_badge::CompletionBadge::new(
+        mascot.completion_badge = Some(reef_widgets::CompletionBadge::new(
             200.0,
             10.0,
             snapshot.total_session_count,

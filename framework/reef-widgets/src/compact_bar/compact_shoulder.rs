@@ -5,7 +5,7 @@ use reef_core::{
 };
 use reef_layout::Constraints;
 
-use crate::shoulder_path::{ShoulderPath, ShoulderSide};
+use super::shoulder_path::{ShoulderPath, ShoulderSide};
 
 /// Animated shoulder nubbin (bezier path).
 #[derive(Clone)]

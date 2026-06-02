@@ -8,21 +8,12 @@ use reef_render::primitive::VisualPrimitive;
 
 use crate::{
     card::Card,
-    compact_bar::{ChromeVisibility, CompactBar},
-    compact_shoulder::CompactShoulder,
-    completion_glow::CompletionGlow,
-    expanded_card_stack::ExpandedCardStack,
-    expanded_shell::ExpandedShell,
+    compact_bar::{ChromeVisibility, CompactBar, CompactShoulder, CompletionGlow},
+    island::{ExpandedCardStack, ExpandedShell},
     mascot::MascotWidget,
 };
 
-/// Top-level display mode.
-#[derive(Clone, Copy, Debug, PartialEq)]
-pub enum DisplayMode {
-    Hidden,
-    Compact,
-    Expanded,
-}
+use super::DisplayMode;
 
 /// Top-level widget that composes the entire Dynamic Island UI.
 #[derive(Clone)]

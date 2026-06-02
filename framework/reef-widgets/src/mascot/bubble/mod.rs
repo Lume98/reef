@@ -5,8 +5,11 @@ use reef_core::{
 };
 use reef_layout::Constraints;
 
-use crate::message_bubble_background::MessageBubbleBackground;
-use crate::message_bubble_dots::MessageBubbleDots;
+mod background;
+mod dots;
+
+pub use background::MessageBubbleBackground;
+pub use dots::MessageBubbleDots;
 
 /// Message bubble shown above the mascot (3 dots + rounded rect).
 #[derive(Clone)]
