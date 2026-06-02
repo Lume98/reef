@@ -1,4 +1,0 @@
-pub const STATUS_QUEUE_REFRESH_MS: u64 = 33;
-pub const HOVER_POLL_MS: u64 = 120;
-pub const HOVER_DELAY_MS: u64 = 500;
-pub const CARD_FOCUS_CLICK_DEBOUNCE_MS: u128 = 600;

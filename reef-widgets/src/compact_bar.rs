@@ -6,7 +6,7 @@ use reef_core::{
 use reef_layout::Constraints;
 use reef_render::primitive::{FontWeight, TextAlignment, VisualPrimitive};
 
-use crate::{action_button::ActionButton, mascot::MascotWidget};
+use crate::mascot::MascotWidget;
 
 /// Collapsed mini-pill bar.
 pub struct CompactBar {

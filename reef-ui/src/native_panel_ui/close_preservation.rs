@@ -7,7 +7,7 @@ use crate::{
 
 use super::{
     presentation_model::NativePanelPresentationModel,
-    render_commands::NativePanelRenderCommandBundle,
+    render_bundle::NativePanelRenderCommandBundle,
     runtime_scene_cache::NativePanelRuntimeSceneCache,
 };
 

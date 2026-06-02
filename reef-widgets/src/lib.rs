@@ -1,7 +1,4 @@
-pub mod action_button;
-pub mod badge;
 pub mod card;
-pub mod column;
 pub mod compact_bar;
 pub mod compact_shoulder;
 pub mod completion_glow;
@@ -12,7 +9,3 @@ pub mod label;
 pub mod mascot;
 pub mod mascot_dot;
 pub mod mascot_eye;
-pub mod row;
-pub mod settings_row;
-pub mod stack;
-pub mod tool_pill;

@@ -14,7 +14,7 @@ mod env_flags;
 mod mascot_sprite_spec;
 mod mascot_visual_spec;
 mod presentation_model;
-mod render_commands;
+mod render_bundle;
 mod rendering_backend;
 mod transition_controller;
 mod visual_plan;
@@ -31,7 +31,7 @@ pub mod presentation {
     pub use super::mascot_sprite_spec::*;
     pub use super::mascot_visual_spec::*;
     pub use super::presentation_model::*;
-    pub use super::render_commands::{
+    pub use super::render_bundle::{
         NativePanelActionButtonCommand, NativePanelCardStackCommand, NativePanelCompactBarCommand,
     };
     pub use super::visual_plan::{
@@ -74,7 +74,7 @@ pub mod components {
 pub mod render {
     pub use super::animation_plan::*;
     pub use super::animation_scheduler::*;
-    pub use super::render_commands::*;
+    pub use super::render_bundle::*;
     pub use super::transition_controller::*;
 }
 

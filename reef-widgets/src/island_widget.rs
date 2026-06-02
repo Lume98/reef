@@ -1,10 +1,7 @@
 use reef_app::widget_host::{PaintContext, Widget};
-use reef_core::{
-    color::Color,
-    geometry::{Rect, Size},
-};
+use reef_core::geometry::{Rect, Size};
 use reef_layout::Constraints;
-use reef_render::primitive::{FontWeight, TextAlignment, VisualPrimitive};
+use reef_render::primitive::VisualPrimitive;
 
 use crate::{
     card::Card,
@@ -12,7 +9,6 @@ use crate::{
     completion_glow::CompletionGlow,
     expanded_shell::ExpandedShell,
     mascot::MascotWidget,
-    stack::Stack,
 };
 
 /// Top-level display mode.
