@@ -4,23 +4,13 @@ use reef_layout::Constraints;
 
 mod badge;
 mod bubble;
-mod mascot_body;
-mod mascot_dot;
-mod mascot_expression;
-mod mascot_eye;
-mod mascot_eyes;
-mod mascot_shadow;
-mod mascot_sprite;
+mod parts;
 
 pub use badge::{CompletionBadge, CompletionBadgeLabel, CompletionBadgeOutline};
-pub use mascot_body::MascotBody;
 pub use bubble::{MessageBubble, MessageBubbleBackground, MessageBubbleDots};
-pub use mascot_dot::MascotDot;
-pub use mascot_expression::MascotExpression;
-pub use mascot_eye::MascotEye;
-pub use mascot_eyes::MascotEyes;
-pub use mascot_shadow::MascotShadow;
-pub use mascot_sprite::SpriteMascot as MascotSprite;
+pub use parts::{
+    MascotBody, MascotDot, MascotExpression, MascotEye, MascotEyes, MascotShadow, MascotSprite,
+};
 
 /// Mascot pose enum.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]

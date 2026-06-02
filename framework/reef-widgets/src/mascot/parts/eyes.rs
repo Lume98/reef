@@ -2,7 +2,7 @@ use reef_app::widget_host::{PaintContext, Widget};
 use reef_core::geometry::{Rect, Size};
 use reef_layout::Constraints;
 
-use super::mascot_eye::MascotEye;
+use super::eye::MascotEye;
 
 /// Mascot eye pair.
 #[derive(Clone)]

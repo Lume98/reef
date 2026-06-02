@@ -3,7 +3,7 @@ use reef_core::geometry::{Rect, Size};
 use reef_layout::Constraints;
 use reef_render::primitive::VisualPrimitive;
 
-use crate::animation::{card_content_visibility, lerp, shell_reveal_frame, staggered_card_phase};
+use crate::base::{card_content_visibility, lerp, shell_reveal_frame, staggered_card_phase};
 use crate::card::Card;
 
 /// Expanded-mode card stack renderer.

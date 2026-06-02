@@ -157,7 +157,7 @@ mod tests {
     fn container_with_child_measures_including_padding() {
         let container = Container::new(Color::BLACK)
             .padding(10.0)
-            .child(Box::new(crate::label::Label::new("Hi")));
+            .child(Box::new(crate::base::Label::new("Hi")));
         let constraints = Constraints::loose(Size {
             width: 800.0,
             height: 600.0,
@@ -171,7 +171,7 @@ mod tests {
     fn container_with_child_paints_clip_and_child() {
         let container = Container::new(Color::BLACK)
             .padding(8.0)
-            .child(Box::new(crate::label::Label::new("Hi")));
+            .child(Box::new(crate::base::Label::new("Hi")));
         let rect = Rect {
             x: 0.0,
             y: 0.0,

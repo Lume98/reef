@@ -260,17 +260,9 @@ fn settings_value_badge_fg(active: bool) -> Color {
     }
 }
 
-mod card_badges;
-mod card_body;
-mod card_header;
-mod card_settings_panel;
-mod card_shell;
+mod components;
 
-pub use card_badges::CardBadges;
-pub use card_body::CardBody;
-pub use card_header::CardHeader;
-pub use card_settings_panel::CardSettingsPanel;
-pub use card_shell::CardShell;
+pub use components::{CardBadges, CardBody, CardHeader, CardSettingsPanel, CardShell};
 
 // ── Card widget ───────────────────────────────────────────────────────────
 

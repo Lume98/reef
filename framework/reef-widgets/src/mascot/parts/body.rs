@@ -2,7 +2,7 @@ use reef_app::widget_host::{PaintContext, Widget};
 use reef_core::geometry::{Rect, Size};
 use reef_layout::Constraints;
 
-use super::mascot_dot::MascotDot;
+use super::dot::MascotDot;
 
 /// Mascot body layer.
 #[derive(Clone)]

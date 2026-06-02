@@ -5,22 +5,13 @@ use reef_core::{
 };
 use reef_layout::Constraints;
 
-mod compact_bar_actions;
-mod compact_bar_background;
-mod compact_bar_counts;
-mod compact_bar_headline;
-mod compact_shoulder;
-mod completion_glow;
-mod shoulder_path;
+mod components;
 
 use crate::mascot::MascotWidget;
-pub use compact_bar_actions::CompactBarActions;
-pub use compact_bar_background::CompactBarBackground;
-pub use compact_bar_counts::CompactBarCounts;
-pub use compact_bar_headline::CompactBarHeadline;
-pub use compact_shoulder::CompactShoulder;
-pub use completion_glow::CompletionGlow;
-pub use shoulder_path::{ShoulderPath, ShoulderSide};
+pub use components::{
+    CompactBarActions, CompactBarBackground, CompactBarCounts, CompactBarHeadline, CompactShoulder,
+    CompletionGlow, ShoulderPath, ShoulderSide,
+};
 
 /// Chrome visibility spec for transitions between compact and expanded modes.
 #[derive(Clone, Copy, Debug, PartialEq)]
