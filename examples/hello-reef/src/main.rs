@@ -1,97 +1,86 @@
-use reef_app::app::App;
-use reef_backend_d2d::painter::Direct2DPainter;
+use reef_backend_d2d::{
+    dpi::ensure_process_dpi_awareness,
+    painter::Direct2DPainter,
+    window::{NativeWindow, WindowConfig, WindowStyle},
+};
 use reef_core::{
     color::Color,
-    geometry::{Rect, Size},
+    geometry::{Point, Rect},
 };
-use reef_render::primitive::VisualPrimitive;
-use std::any::Any;
-use reef_app::widget_host::{MeasureContext, PaintContext, Widget};
-use reef_layout::Constraints;
+use reef_render::primitive::{FontWeight, TextAlignment, VisualPrimitive};
 
-struct HelloWidget {
-    width: f64,
-    height: f64,
-}
+fn main() {
+    ensure_process_dpi_awareness();
 
-impl Widget for HelloWidget {
-    fn as_any(&self) -> &dyn Any {
-        self
-    }
-    fn as_any_mut(&mut self) -> &mut dyn Any {
-        self
-    }
-    fn measure(&self, constraints: Constraints, _ctx: &mut MeasureContext) -> Size {
-        constraints.constrain(Size {
-            width: self.width,
-            height: self.height,
-        })
-    }
-    fn paint(&self, rect: Rect, ctx: &mut PaintContext) {
-        // Background pill
-        ctx.primitives.push(VisualPrimitive::RoundRect {
-            frame: rect,
+    let width = 320.0;
+    let height = 48.0;
+    let x = 400.0;
+    let y = 100.0;
+
+    let config = WindowConfig::new(Rect { x, y, width, height }).style(WindowStyle::LayeredTopmost);
+
+    let window = match NativeWindow::create(&config) {
+        Ok(w) => w,
+        Err(e) => {
+            eprintln!("Failed to create window: {e}");
+            return;
+        }
+    };
+
+    let mut painter = Direct2DPainter::new();
+    painter.set_window(window.hwnd());
+
+    let primitives = vec![
+        VisualPrimitive::RoundRect {
+            frame: Rect {
+                x: 0.0,
+                y: 0.0,
+                width,
+                height,
+            },
             radius: 24.0,
             color: Color::rgb(18, 18, 22),
             alpha: 1.0,
-        });
-        // Border
-        ctx.primitives.push(VisualPrimitive::RoundRect {
+        },
+        VisualPrimitive::RoundRect {
             frame: Rect {
-                x: rect.x + 0.5,
-                y: rect.y + 0.5,
-                width: rect.width - 1.0,
-                height: rect.height - 1.0,
+                x: 0.5,
+                y: 0.5,
+                width: width - 1.0,
+                height: height - 1.0,
             },
             radius: 23.5,
             color: Color::rgb(44, 44, 50),
             alpha: 0.6,
-        });
-        // Text
-        ctx.primitives.push(VisualPrimitive::Text {
-            origin: reef_core::geometry::Point {
-                x: rect.x + 12.0,
-                y: rect.y + 10.0,
-            },
-            max_width: rect.width - 24.0,
+        },
+        VisualPrimitive::Text {
+            origin: Point { x: 12.0, y: 10.0 },
+            max_width: width - 24.0,
             text: "Hello, Reef!".to_string(),
             color: Color::rgb(230, 235, 245),
             size: 16,
-            weight: reef_render::primitive::FontWeight::Semibold,
-            alignment: reef_render::primitive::TextAlignment::Center,
+            weight: FontWeight::Semibold,
+            alignment: TextAlignment::Center,
             alpha: 1.0,
-        });
-    }
-}
+        },
+    ];
 
-fn main() {
-    println!("=== Hello Reef ===");
-    println!("Building a visual plan with the reef framework...");
-
-    let backend = Direct2DPainter::new();
-    let mut app = App::new(backend).with_size(320.0, 48.0);
-    app.host_mut()
-        .set_root(Box::new(HelloWidget {
-            width: 320.0,
-            height: 48.0,
-        }));
-
-    match app.render() {
-        Ok(()) => println!("Frame submitted successfully."),
-        Err(e) => eprintln!("Render error: {e}"),
+    if let Err(e) = painter.render_to_window(
+        &primitives,
+        Rect {
+            x: 0.0,
+            y: 0.0,
+            width,
+            height,
+        },
+    ) {
+        eprintln!("Render error: {e}");
     }
 
-    let plan = app.host_mut().render();
-    println!("Visual plan: {} primitives, hidden={}", plan.primitives.len(), plan.hidden);
-    println!(
-        "  Primitives: {:?}",
-        plan.primitives
-            .iter()
-            .map(|p| match p {
-                VisualPrimitive::RoundRect { .. } => "RoundRect".to_string(),
-                VisualPrimitive::Text { text, .. } => format!("Text(\"{text}\")"),
-                _ => "Other".to_string(),
-            })
-            .collect::<Vec<_>>()
-    );
+    window.show();
+
+    println!("Hello Reef! Window displayed at ({x}, {y}), size {width}x{height}");
+    println!("Close the window or press Ctrl+C to exit.");
+
+    while window.poll_message() {}
 }
