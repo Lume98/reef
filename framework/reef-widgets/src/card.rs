@@ -111,6 +111,11 @@ impl Card {
         self
     }
 
+    pub fn settings_rows(mut self, rows: Vec<(String, String, bool)>) -> Self {
+        self.settings_rows = rows;
+        self
+    }
+
     pub fn height(mut self, height: f64) -> Self {
         self.height = height;
         self
