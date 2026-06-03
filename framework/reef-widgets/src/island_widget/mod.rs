@@ -6,6 +6,7 @@ mod display_mode;
 mod empty_card;
 mod input;
 mod mascot_builder;
+mod render;
 mod question_card;
 mod session_card;
 mod settings_cards;
@@ -20,5 +21,6 @@ pub use input::{
     IslandPendingApprovalInput, IslandPendingQuestionInput, IslandSessionInput,
     IslandWidgetContentInput,
 };
+pub use render::render_island_widget;
 pub use spec::IslandWidgetLayout;
 pub use widget::IslandWidget;

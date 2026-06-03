@@ -1,19 +1,18 @@
 use reef_app::widget_host::{PaintContext, Widget};
 use reef_core::{
-    color::Color,
     geometry::{Rect, Size},
 };
 use reef_layout::Constraints;
-use reef_render::primitive::VisualPrimitive;
 
 use crate::{
     card::Card,
     compact_bar::{ChromeVisibility, CompactBar, CompactShoulder, CompletionGlow},
-    island::{ExpandedCardStack, ExpandedShell},
+    island::ExpandedShell,
     mascot::MascotWidget,
 };
 
 use super::{display_mode::DisplayMode, spec::IslandWidgetSpec};
+use super::render::paint_island_widget;
 
 /// Top-level widget that composes the entire Dynamic Island UI.
 #[derive(Clone)]
@@ -113,66 +112,7 @@ impl Widget for IslandWidget {
     }
 
     fn paint(&self, rect: Rect, ctx: &mut PaintContext) {
-        if self.mode == DisplayMode::Hidden {
-            return;
-        }
-
-        if let Some(glow) = &self.glow {
-            glow.paint(rect, ctx);
-        }
-
-        if self.mode == DisplayMode::Expanded {
-            let shell_alpha = 1.0 - self.chrome.collapsed_alpha;
-            let mut shell = self.expanded_shell.clone();
-            shell.alpha = shell_alpha;
-
-            let sep_vis = self.chrome.separator_visibility.clamp(0.0, 1.0);
-            if sep_vis > 0.0 {
-                let bar_y = rect.height - self.compact_height;
-                shell.separator_y = Some(bar_y);
-                shell.separator_color = Color::rgba(40, 44, 54, (0.5 * sep_vis * 255.0) as u8);
-            }
-            shell.paint(rect, ctx);
-
-            ExpandedCardStack::new(
-                self.cards.clone(),
-                self.compact_height,
-                self.reveal_progress,
-                self.entering,
-            )
-            .paint(rect, ctx);
-        }
-
-        let bar_rect = if self.mode == DisplayMode::Compact {
-            rect
-        } else {
-            Rect {
-                x: rect.x,
-                y: rect.y + rect.height - self.compact_height,
-                width: rect.width,
-                height: self.compact_height,
-            }
-        };
-
-        if let Some(shoulder) = &self.shoulder_left {
-            shoulder.paint(bar_rect, ctx);
-        }
-        if let Some(shoulder) = &self.shoulder_right {
-            shoulder.paint(bar_rect, ctx);
-        }
-
-        ctx.primitives
-            .push(VisualPrimitive::ClipStart { frame: bar_rect });
-        let mut bar = self.compact_bar.clone();
-        if self.mode == DisplayMode::Expanded {
-            bar.chrome = self.chrome;
-        }
-        bar.paint(bar_rect, ctx);
-        ctx.primitives.push(VisualPrimitive::ClipEnd);
-
-        if let Some(mascot) = &self.mascot {
-            mascot.paint(rect, ctx);
-        }
+        paint_island_widget(self, rect, ctx);
     }
 }
 

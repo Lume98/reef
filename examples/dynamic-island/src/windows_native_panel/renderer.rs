@@ -30,8 +30,8 @@ use crate::{
     },
     native_panel_scene::{PanelRuntimeRenderState, PanelScene},
 };
-use reef_core::geometry::Size;
 use reef_render::primitive::VisualPlan;
+use reef_widgets::island_widget::render_island_widget;
 use reef_widgets::ChromeVisibility;
 
 use crate::island_widget_bridge::build_island_widget;
@@ -470,13 +470,7 @@ impl WindowsNativePanelRenderer {
             animation_plan.card_stack.separator_visibility;
         widget.compact_bar.show_actions = panel_expanded || settings_active;
 
-        let mut widget_host = reef_app::widget_host::WidgetHost::new();
-        widget_host.set_size(Size {
-            width: widget.width,
-            height: widget.expanded_height.max(widget.compact_height),
-        });
-        widget_host.set_root(Box::new(widget));
-        self.last_widget_plan = Some(widget_host.render());
+        self.last_widget_plan = Some(render_island_widget(&widget));
     }
 
     fn refresh_cached_window_state(
