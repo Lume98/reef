@@ -16,6 +16,7 @@ pub mod layered_window;
 pub mod resource_cache;
 pub mod hit_region;
 pub mod screen_geometry;
+pub mod window_geometry;
 
 pub use dpi::{
     ensure_windows_process_dpi_awareness, resolve_windows_dpi_scale_for_window,
@@ -36,6 +37,9 @@ pub use layered_window::{
 };
 pub use resource_cache::{
     WindowsDirect2DResourceCacheState, WindowsDirect2DResourceKey,
+};
+pub use window_geometry::{
+    resolve_windows_panel_window_frame, windows_client_pointer_regions,
 };
 
 pub fn create_native_panel() -> Result<(), String> {

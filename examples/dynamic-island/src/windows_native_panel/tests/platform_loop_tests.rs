@@ -361,7 +361,7 @@ fn windows_runtime_display_reposition_updates_platform_physical_rect() {
     let width_spec = crate::native_panel_core::island_width_spec(
         crate::app_settings::current_app_settings().island_width_preset,
     );
-    let expected_frame = super::host_window::resolve_windows_panel_window_frame(
+    let expected_frame = reef_native_panel_windows::resolve_windows_panel_window_frame(
         PanelAnimationDescriptor {
             kind: PanelAnimationKind::Open,
             canvas_height: 120.0,

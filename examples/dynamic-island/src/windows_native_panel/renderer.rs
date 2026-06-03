@@ -479,7 +479,7 @@ impl WindowsNativePanelRenderer {
         screen_frame: PanelRect,
     ) {
         let width_spec = self.current_width_spec();
-        let frame = super::host_window::resolve_windows_panel_window_frame(
+        let frame = reef_native_panel_windows::resolve_windows_panel_window_frame(
             descriptor,
             screen_frame,
             width_spec.canvas_width,

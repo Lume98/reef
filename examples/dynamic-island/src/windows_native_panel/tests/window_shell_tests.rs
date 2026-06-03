@@ -939,7 +939,7 @@ fn windows_host_recomputes_cached_frame_when_display_changes() {
     let width_spec = crate::native_panel_core::island_width_spec(
         crate::app_settings::current_app_settings().island_width_preset,
     );
-    let expected_frame = super::host_window::resolve_windows_panel_window_frame(
+    let expected_frame = reef_native_panel_windows::resolve_windows_panel_window_frame(
         descriptor,
         PanelRect {
             x: 500.0,
@@ -972,7 +972,7 @@ fn windows_window_frame_uses_canvas_width_to_contain_local_layout() {
         cards_progress: 0.0,
     };
 
-    let frame = super::host_window::resolve_windows_panel_window_frame(
+    let frame = reef_native_panel_windows::resolve_windows_panel_window_frame(
         descriptor,
         PanelRect {
             x: 100.0,

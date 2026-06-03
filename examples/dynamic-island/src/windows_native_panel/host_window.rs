@@ -1,5 +1,5 @@
 use crate::{
-    native_panel_core::{resolve_native_panel_host_frame, PanelAnimationDescriptor, PanelRect},
+    native_panel_core::{PanelRect},
     native_panel_renderer::facade::{
         descriptor::{
             NativePanelComputedHostWindow, NativePanelHostWindowDescriptor,
@@ -7,6 +7,11 @@ use crate::{
         },
         presentation::NativePanelPresentationModel,
     },
+};
+
+use reef_native_panel_windows::{
+    resolve_windows_panel_window_frame as windows_resolve_windows_panel_window_frame,
+    windows_client_pointer_regions as windows_client_pointer_regions_for_window,
 };
 
 const FALLBACK_SCREEN_FRAME: PanelRect = PanelRect {
@@ -88,7 +93,7 @@ impl WindowsNativePanelHostWindow {
         widget_plan: Option<reef_render::primitive::VisualPlan>,
     ) {
         self.presented_window_state = Some(window_state);
-        self.presented_pointer_regions = windows_client_pointer_regions(
+        self.presented_pointer_regions = windows_client_pointer_regions_for_window(
             window_state.frame,
             self.descriptor.screen_frame,
             pointer_regions,
@@ -121,49 +126,6 @@ impl WindowsNativePanelHostWindow {
         } else {
             &self.presented_pointer_regions
         }
-    }
-}
-
-fn windows_client_pointer_regions(
-    panel_frame: Option<PanelRect>,
-    screen_frame: Option<PanelRect>,
-    regions: &[NativePanelPointerRegion],
-) -> Vec<NativePanelPointerRegion> {
-    let Some(panel_frame) = panel_frame else {
-        return regions.to_vec();
-    };
-    let shared_panel_frame = windows_shared_pointer_region_panel_frame(panel_frame, screen_frame);
-
-    regions
-        .iter()
-        .map(|region| NativePanelPointerRegion {
-            frame: windows_client_pointer_region_frame(shared_panel_frame, region.frame),
-            kind: region.kind.clone(),
-        })
-        .collect()
-}
-
-fn windows_shared_pointer_region_panel_frame(
-    panel_frame: PanelRect,
-    screen_frame: Option<PanelRect>,
-) -> PanelRect {
-    let Some(screen_frame) = screen_frame else {
-        return panel_frame;
-    };
-    PanelRect {
-        y: screen_frame.y + screen_frame.height - panel_frame.height,
-        ..panel_frame
-    }
-}
-
-fn windows_client_pointer_region_frame(panel_frame: PanelRect, frame: PanelRect) -> PanelRect {
-    let local_x = frame.x - panel_frame.x;
-    let local_bottom_y = frame.y - panel_frame.y;
-    PanelRect {
-        x: local_x,
-        y: panel_frame.height - local_bottom_y - frame.height,
-        width: frame.width,
-        height: frame.height,
     }
 }
 
@@ -210,7 +172,7 @@ impl NativePanelComputedHostWindow for WindowsNativePanelHostWindow {
         let Some(animation) = self.descriptor.animation_descriptor() else {
             return;
         };
-        self.last_frame = Some(resolve_windows_panel_window_frame(
+        self.last_frame = Some(windows_resolve_windows_panel_window_frame(
             animation,
             self.descriptor
                 .screen_frame
@@ -221,32 +183,9 @@ impl NativePanelComputedHostWindow for WindowsNativePanelHostWindow {
     }
 }
 
-pub(super) fn resolve_windows_panel_window_frame(
-    descriptor: PanelAnimationDescriptor,
-    screen_frame: PanelRect,
-    compact_width: f64,
-    expanded_width: f64,
-) -> PanelRect {
-    let host_compact_width =
-        compact_width.max(crate::native_panel_core::DEFAULT_PANEL_CANVAS_WIDTH);
-    let host_expanded_width =
-        expanded_width.max(crate::native_panel_core::DEFAULT_PANEL_CANVAS_WIDTH);
-    let mut frame = resolve_native_panel_host_frame(
-        descriptor,
-        screen_frame,
-        host_compact_width,
-        host_expanded_width,
-    );
-    // Shared native layout uses AppKit's bottom-left coordinate semantics.
-    // Windows screen coordinates are top-left, so top alignment is the
-    // monitor frame's y origin rather than maxY - height.
-    frame.y = screen_frame.y.round();
-    frame
-}
-
 #[cfg(test)]
 mod tests {
-    use super::{resolve_windows_panel_window_frame, WindowsNativePanelHostWindow};
+    use super::{windows_resolve_windows_panel_window_frame, WindowsNativePanelHostWindow};
     use crate::native_panel_core::{
         resolve_panel_layout, PanelAnimationDescriptor, PanelAnimationKind, PanelGeometryMetrics,
         PanelLayoutInput, PanelRect,
@@ -291,7 +230,7 @@ mod tests {
         let width_spec = crate::native_panel_core::island_width_spec(
             crate::app_settings::current_app_settings().island_width_preset,
         );
-        let expected_frame = resolve_windows_panel_window_frame(
+        let expected_frame = windows_resolve_windows_panel_window_frame(
             host.descriptor.animation_descriptor().expect("animation"),
             host.descriptor.screen_frame.expect("screen frame"),
             width_spec.canvas_width,
@@ -455,7 +394,7 @@ mod tests {
             separator_side_inset: crate::native_panel_core::EXPANDED_SEPARATOR_SIDE_INSET,
         });
 
-        let frame = super::resolve_windows_panel_window_frame(
+        let frame = windows_resolve_windows_panel_window_frame(
             animation,
             screen_frame,
             crate::native_panel_core::DEFAULT_COMPACT_PILL_WIDTH,
