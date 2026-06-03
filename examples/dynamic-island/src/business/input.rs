@@ -49,12 +49,12 @@ pub(crate) fn panel_scene_build_input_from_app_settings(
     selected_display_index: usize,
     settings: &AppSettings,
 ) -> reef_ui::native_panel_scene::PanelSceneBuildInput {
-    reef_ui::native_panel_scene::PanelSceneBuildInput {
-        display_options: sanitize_panel_display_options(display_options),
-        settings: panel_settings_state_from_app_settings(selected_display_index, settings),
-        app_version: env!("CARGO_PKG_VERSION").to_string(),
-        update_status: crate::updater_service::current_update_status(),
-    }
+    reef_native_panel_core::panel_scene_build_input_from_parts(
+        display_options,
+        panel_settings_state_from_app_settings(selected_display_index, settings),
+        env!("CARGO_PKG_VERSION").to_string(),
+        crate::updater_service::current_update_status(),
+    )
 }
 
 pub(crate) fn native_panel_runtime_input_descriptor_from_app_settings(
@@ -63,25 +63,25 @@ pub(crate) fn native_panel_runtime_input_descriptor_from_app_settings(
     settings: &AppSettings,
     screen_frame: Option<PanelRect>,
 ) -> NativePanelRuntimeInputDescriptor {
-    NativePanelRuntimeInputDescriptor {
-        scene_input: panel_scene_build_input_from_app_settings(
-            display_options,
-            selected_display_index,
-            settings,
-        ),
+    reef_native_panel_core::native_panel_runtime_input_descriptor_from_parts(
+        display_options,
+        panel_settings_state_from_app_settings(selected_display_index, settings),
         screen_frame,
-    }
+        env!("CARGO_PKG_VERSION").to_string(),
+        crate::updater_service::current_update_status(),
+    )
 }
 
 pub(crate) fn native_panel_runtime_input_descriptor_from_context(
     settings: &AppSettings,
     context: NativePanelRuntimeInputContext,
 ) -> NativePanelRuntimeInputDescriptor {
-    native_panel_runtime_input_descriptor_from_app_settings(
-        context.display_options,
-        context.selected_display_index,
-        settings,
-        context.screen_frame,
+    let selected_display_index = context.selected_display_index;
+    reef_native_panel_core::native_panel_runtime_input_descriptor_from_context(
+        context,
+        panel_settings_state_from_app_settings(selected_display_index, settings),
+        env!("CARGO_PKG_VERSION").to_string(),
+        crate::updater_service::current_update_status(),
     )
 }
 
@@ -152,12 +152,3 @@ pub(crate) fn native_panel_runtime_input_context_from_display_options_with_scree
     context
 }
 
-fn sanitize_panel_display_options(
-    display_options: Vec<PanelDisplayOptionState>,
-) -> Vec<PanelDisplayOptionState> {
-    if display_options.is_empty() {
-        vec![crate::native_panel_scene::fallback_panel_display_option()]
-    } else {
-        display_options
-    }
-}
