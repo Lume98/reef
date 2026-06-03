@@ -17,6 +17,7 @@ pub mod resource_cache;
 pub mod hit_region;
 pub mod screen_geometry;
 pub mod window_geometry;
+pub mod platform_loop_control;
 
 pub use dpi::{
     ensure_windows_process_dpi_awareness, resolve_windows_dpi_scale_for_window,
@@ -40,6 +41,11 @@ pub use resource_cache::{
 };
 pub use window_geometry::{
     resolve_windows_panel_window_frame, windows_client_pointer_regions,
+};
+pub use platform_loop_control::{
+    ensure_windows_native_platform_loop_thread, platform_loop_thread_started,
+    schedule_windows_native_platform_loop_wake, wait_windows_native_platform_loop_processed_at_least,
+    wake_windows_native_platform_loop, windows_native_platform_loop_generations,
 };
 
 pub fn create_native_panel() -> Result<(), String> {
