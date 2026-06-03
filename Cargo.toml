@@ -8,6 +8,7 @@ members = [
     "framework/reef-native-panel-core",
     "framework/reef-native-panel-windows",
     "framework/reef-render",
+    "framework/reef-view",
     "framework/reef-ui",
     "framework/reef-widgets",
     "examples/dynamic-island",

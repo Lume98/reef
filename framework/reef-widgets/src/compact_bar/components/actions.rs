@@ -1,4 +1,4 @@
-use reef_app::widget_host::{PaintContext, Widget};
+use reef_view::widget_host::{PaintContext, Widget};
 use reef_core::{
     color::Color,
     geometry::{Point, Rect, Size},

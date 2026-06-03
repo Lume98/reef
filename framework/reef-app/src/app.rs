@@ -1,7 +1,7 @@
 use reef_core::geometry::Size;
 use reef_render::render_backend::RenderBackend;
 
-use crate::widget_host::WidgetHost;
+use reef_view::widget_host::WidgetHost;
 
 /// 应用程序主结构体，负责管理渲染后端和控件树。
 ///

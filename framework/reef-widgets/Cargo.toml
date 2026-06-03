@@ -7,4 +7,4 @@ edition = "2021"
 reef-core = { path = "../reef-core" }
 reef-render = { path = "../reef-render" }
 reef-layout = { path = "../reef-layout" }
-reef-app = { path = "../reef-app" }
+reef-view = { path = "../reef-view" }

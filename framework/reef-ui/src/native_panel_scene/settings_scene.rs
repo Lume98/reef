@@ -110,14 +110,14 @@ pub fn build_settings_surface_scene(
             },
             SettingsSurfaceRowScene {
                 id: "mascot".to_string(),
-                label: texts.hide_mascot.to_string(),
+                label: texts.mascot.to_string(),
                 control_kind: SettingsSurfaceControlKind::Toggle,
-                value_text: if !settings.mascot_enabled {
+                value_text: if settings.mascot_enabled {
                     texts.on.to_string()
                 } else {
                     texts.off.to_string()
                 },
-                checked: Some(!settings.mascot_enabled),
+                checked: Some(settings.mascot_enabled),
                 enabled: true,
                 action_key: settings_action_key(4),
                 update_phase: None,
@@ -171,7 +171,7 @@ struct SettingsSurfaceTexts {
     island_width: &'static str,
     language: &'static str,
     mute_sound: &'static str,
-    hide_mascot: &'static str,
+    mascot: &'static str,
     on: &'static str,
     off: &'static str,
     release: &'static str,
@@ -185,7 +185,7 @@ fn settings_texts(language: PanelLanguage) -> SettingsSurfaceTexts {
             island_width: "灵动岛宽度",
             language: "面板语言",
             mute_sound: "静音",
-            hide_mascot: "隐藏助手",
+            mascot: "助手",
             on: "开",
             off: "关",
             release: "发布",
@@ -196,7 +196,7 @@ fn settings_texts(language: PanelLanguage) -> SettingsSurfaceTexts {
             island_width: "アイランド幅",
             language: "パネル言語",
             mute_sound: "ミュート",
-            hide_mascot: "マスコット非表示",
+            mascot: "マスコット",
             on: "オン",
             off: "オフ",
             release: "リリース",
@@ -207,7 +207,7 @@ fn settings_texts(language: PanelLanguage) -> SettingsSurfaceTexts {
             island_width: "Island Width",
             language: "Panel Language",
             mute_sound: "Mute Sound",
-            hide_mascot: "Hide Mascot",
+            mascot: "Mascot",
             on: "On",
             off: "Off",
             release: "Release",

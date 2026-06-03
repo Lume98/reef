@@ -12,8 +12,22 @@ pub mod native_panel_scene;
 // 原生宿主消费的纯 UI 描述、表现模型、视觉计划和渲染命令。
 pub mod native_panel_ui;
 
-// 可选的上层入口层，向外暴露组件模型和渲染抽象。
-pub use native_panel_ui::{components, rendering};
+// 稳定 facade：保留根级入口，兼容旧调用方，同时让对外 API 更清晰。
+pub mod components {
+    pub use crate::native_panel_ui::components::*;
+}
+
+pub mod presentation {
+    pub use crate::native_panel_ui::presentation::*;
+}
+
+pub mod rendering {
+    pub use crate::native_panel_ui::rendering::*;
+}
+
+pub mod visual {
+    pub use crate::native_panel_ui::visual::*;
+}
 
 // 更新状态：为设置面板和状态卡片提供应用更新阶段的共享模型。
 pub mod updater_service;

@@ -217,7 +217,7 @@ mod tests {
 
     #[test]
     fn dispatch_event_outside_root_returns_false() {
-        use reef_core::event::{PointerButton, PointerEvent, PointerEventKind};
+        use reef_core::event::{PointerEvent, PointerEventKind};
 
         let mut host = WidgetHost::new();
         host.set_size(Size {

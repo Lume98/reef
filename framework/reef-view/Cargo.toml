@@ -1,10 +1,12 @@
 [package]
-name = "reef-app"
+name = "reef-view"
 version = "0.1.0"
 edition = "2021"
+description = "Reef widget view contracts and host"
+authors = ["Jason Young"]
 
 [dependencies]
 reef-core = { path = "../reef-core" }
-reef-render = { path = "../reef-render" }
 reef-layout = { path = "../reef-layout" }
-reef-view = { path = "../reef-view" }
+reef-render = { path = "../reef-render" }
+

@@ -1,4 +1,4 @@
-use reef_app::widget_host::{PaintContext, Widget};
+use reef_view::widget_host::{PaintContext, Widget};
 use reef_core::{
     color::Color,
     geometry::{Point, Rect, Size},
@@ -36,7 +36,8 @@ impl Widget for CardBody {
         let body_bottom = if action_hint_present { 36.0 } else { 10.0 };
         let mut y = rect.y + body_bottom + self.content_translate_y;
 
-        for line in self.body_lines.iter().rev() {
+        // Preserve the semantic order of body lines as supplied by the card builder.
+        for line in self.body_lines.iter() {
             let (prefix_color, text_color) = {
                 let p = line.prefix.as_deref().unwrap_or_default();
                 (

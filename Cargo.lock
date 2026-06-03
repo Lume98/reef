@@ -2823,6 +2823,7 @@ dependencies = [
  "reef-core",
  "reef-layout",
  "reef-render",
+ "reef-view",
 ]
 
 [[package]]
@@ -2893,13 +2894,22 @@ dependencies = [
 ]
 
 [[package]]
-name = "reef-widgets"
+name = "reef-view"
 version = "0.1.0"
 dependencies = [
- "reef-app",
  "reef-core",
  "reef-layout",
  "reef-render",
+]
+
+[[package]]
+name = "reef-widgets"
+version = "0.1.0"
+dependencies = [
+ "reef-core",
+ "reef-layout",
+ "reef-render",
+ "reef-view",
 ]
 
 [[package]]

@@ -1,4 +1,4 @@
-use reef_app::widget_host::{PaintContext, Widget};
+use reef_view::widget_host::{PaintContext, Widget};
 use reef_core::geometry::{Rect, Size};
 use reef_layout::Constraints;
 use reef_render::primitive::VisualPrimitive;

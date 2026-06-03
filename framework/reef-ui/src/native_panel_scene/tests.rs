@@ -506,7 +506,7 @@ fn scene_builder_emits_settings_rows_and_value_badges() {
     assert_eq!(rows[2].value.text, "English");
     assert_eq!(rows[2].action, PanelHitAction::CycleLanguage);
     assert_eq!(rows[3].value.text, "On");
-    assert_eq!(rows[4].value.text, "Off");
+    assert_eq!(rows[4].value.text, "On");
     assert_eq!(rows[5].action, PanelHitAction::OpenReleasePage);
     assert_eq!(scene.settings_surface.title, "Settings");
     assert_eq!(scene.settings_surface.version_text, "Reef UI v0.6.1");
@@ -529,7 +529,8 @@ fn scene_builder_emits_settings_rows_and_value_badges() {
     assert_eq!(scene.settings_surface.rows[2].action_key, "cycle_language");
     assert_eq!(scene.settings_surface.rows[3].label, "Mute Sound");
     assert_eq!(scene.settings_surface.rows[3].checked, Some(true));
-    assert_eq!(scene.settings_surface.rows[4].checked, Some(false));
+    assert_eq!(scene.settings_surface.rows[4].label, "Mascot");
+    assert_eq!(scene.settings_surface.rows[4].checked, Some(true));
     assert_eq!(scene.settings_surface.rows[5].id, "update");
     assert_eq!(scene.settings_surface.rows[5].label, "AI Gateway");
     assert_eq!(scene.settings_surface.rows[5].value_text, "Release");

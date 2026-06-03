@@ -1,4 +1,4 @@
-use reef_app::widget_host::{PaintContext, Widget};
+use reef_view::widget_host::{PaintContext, Widget};
 use reef_core::geometry::Rect;
 use reef_render::primitive::{VisualPlan, VisualPrimitive};
 
@@ -32,7 +32,7 @@ pub(crate) fn render_island_widget_primitives(
         return;
     }
 
-    let mut ctx = reef_app::widget_host::PaintContext { primitives };
+    let mut ctx = reef_view::widget_host::PaintContext { primitives };
     paint_island_widget(widget, rect, &mut ctx);
 }
 
