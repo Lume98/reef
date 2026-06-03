@@ -2845,6 +2845,28 @@ dependencies = [
 ]
 
 [[package]]
+name = "reef-native-panel-core"
+version = "0.1.0"
+dependencies = [
+ "chrono",
+ "echoisland-runtime",
+ "log",
+ "reef-ui",
+]
+
+[[package]]
+name = "reef-native-panel-windows"
+version = "0.1.0"
+dependencies = [
+ "echoisland-runtime",
+ "log",
+ "reef-native-panel-core",
+ "tauri",
+ "windows 0.58.0",
+ "windows-sys 0.59.0",
+]
+
+[[package]]
 name = "reef-render"
 version = "0.1.0"
 dependencies = [

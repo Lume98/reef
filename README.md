@@ -5,6 +5,8 @@
 - `examples/dynamic-island`：灵动岛原生窗口扩展，带可执行入口 `island-ui`
 - `echoisland-runtime`：共享运行时类型定义
 - `framework/reef-ui`：Reef UI 模型与场景包
+- `framework/reef-native-panel-core`：灵动岛共享核心契约与预览辅助
+- `framework/reef-native-panel-windows`：灵动岛 Windows 适配层 facade
 
 ## 目录结构
 
@@ -16,6 +18,8 @@ island/
     dynamic-island/
     hello-reef/
   framework/
+    reef-native-panel-core/
+    reef-native-panel-windows/
 ```
 
 ## 运行

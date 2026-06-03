@@ -1,0 +1,16 @@
+[package]
+name = "reef-native-panel-core"
+version = "0.1.0"
+edition = "2021"
+description = "Reef native panel shared contracts and preview helpers"
+
+[dependencies]
+echoisland-runtime = { path = "../../echoisland-runtime" }
+reef-ui = { path = "../reef-ui" }
+chrono = { version = "0.4", features = ["serde"] }
+log = { workspace = true }
+
+[features]
+default = []
+tauri-host = []
+

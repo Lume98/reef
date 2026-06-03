@@ -5,6 +5,8 @@ members = [
     "framework/reef-backend-d2d",
     "framework/reef-core",
     "framework/reef-layout",
+    "framework/reef-native-panel-core",
+    "framework/reef-native-panel-windows",
     "framework/reef-render",
     "framework/reef-ui",
     "framework/reef-widgets",

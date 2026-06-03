@@ -24,6 +24,7 @@
   - 原生渲染协调层。
   - `visual_plan.rs` 负责把场景模型转换为 visual plan。
   - `facade.rs` 负责向 Windows 平台层集中导出命令、描述符、运行时和视觉能力。
+  - 共享契约后续抽到了 `framework/reef-native-panel-core`，Windows 适配层对应 `framework/reef-native-panel-windows`。
 
 - `framework/reef-ui/src/native_panel_ui/`
   - 共享的场景、表现模型、视觉计划和渲染计划定义。
