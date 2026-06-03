@@ -3,8 +3,6 @@ use crate::native_panel_core::PanelRect;
 use tauri::AppHandle;
 #[cfg(feature = "tauri-host")]
 use tauri::Manager;
-#[cfg(feature = "tauri-host")]
-use crate::updater_service::NativePanelReleasePageHost;
 
 use crate::native_panel_scene::PanelDisplayOptionState;
 
@@ -66,7 +64,9 @@ impl<R: tauri::Runtime + 'static> NativePanelHostPlatform for AppHandle<R> {
 }
 
 #[cfg(feature = "tauri-host")]
-impl<R: tauri::Runtime + 'static> NativePanelReleasePageHost for AppHandle<R> {
+impl<R: tauri::Runtime + 'static> crate::updater_service::NativePanelReleasePageHost
+    for AppHandle<R>
+{
     fn open_release_page(&self) -> Result<(), String> {
         tauri_plugin_opener::OpenerExt::opener(self)
             .open_url(

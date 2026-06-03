@@ -9,9 +9,12 @@ use crate::{
     native_panel_core::{PanelDisplayGeometry, PanelRect},
     native_panel_scene_input::native_panel_runtime_input_descriptor_from_display_options_with_screen_frame,
 };
+use reef_native_panel_windows::screen_geometry::{
+    fallback_standalone_display_geometry, windows_standalone_screen_frame_with_scale,
+};
 use reef_ui::native_panel_ui::descriptor::NativePanelRuntimeInputDescriptor;
 
-use super::dpi::{resolve_windows_system_dpi_scale, WindowsDpiScale};
+use super::dpi::resolve_windows_system_dpi_scale;
 
 #[cfg(feature = "tauri-host")]
 pub(super) fn windows_runtime_input_descriptor<R: tauri::Runtime>(
@@ -71,27 +74,6 @@ fn windows_standalone_display_geometry() -> PanelDisplayGeometry {
 
 fn windows_standalone_screen_frame(display_geometry: PanelDisplayGeometry) -> PanelRect {
     windows_standalone_screen_frame_with_scale(display_geometry, resolve_windows_system_dpi_scale())
-}
-
-fn windows_standalone_screen_frame_with_scale(
-    display_geometry: PanelDisplayGeometry,
-    dpi_scale: WindowsDpiScale,
-) -> PanelRect {
-    PanelRect {
-        x: display_geometry.x as f64 / dpi_scale.scale,
-        y: display_geometry.y as f64 / dpi_scale.scale,
-        width: display_geometry.width as f64 / dpi_scale.scale,
-        height: display_geometry.height as f64 / dpi_scale.scale,
-    }
-}
-
-fn fallback_standalone_display_geometry() -> PanelDisplayGeometry {
-    PanelDisplayGeometry {
-        x: 0,
-        y: 0,
-        width: 1440,
-        height: 900,
-    }
 }
 
 #[cfg(test)]

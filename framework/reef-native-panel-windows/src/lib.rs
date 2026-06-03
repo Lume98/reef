@@ -11,12 +11,16 @@ use echoisland_runtime::RuntimeSnapshot;
 
 pub mod dpi;
 pub mod hit_region;
+pub mod screen_geometry;
 
 pub use dpi::{
     ensure_windows_process_dpi_awareness, resolve_windows_dpi_scale_for_window,
     resolve_windows_system_dpi_scale, WindowsDpiScale, WindowsPhysicalRect,
 };
 pub use hit_region::{resolve_windows_native_panel_hit_test, WindowsNativePanelHitTest};
+pub use screen_geometry::{
+    fallback_standalone_display_geometry, windows_standalone_screen_frame_with_scale,
+};
 
 pub fn create_native_panel() -> Result<(), String> {
     Ok(())
