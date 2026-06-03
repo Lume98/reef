@@ -1,10 +1,11 @@
+use super::spec::{IslandRevealSpec, IslandWidgetSpec};
 use super::{
     cards_builder::build_cards, compact_bar_builder::build_compact_bar,
     mascot_builder::build_mascot, IslandWidgetContentInput,
 };
-use crate::{IslandRevealSpec, IslandWidget, IslandWidgetSpec};
+use crate::IslandWidget;
 
-pub fn build_island_widget_spec(input: &IslandWidgetContentInput) -> IslandWidgetSpec {
+pub(crate) fn build_island_widget_spec(input: &IslandWidgetContentInput) -> IslandWidgetSpec {
     let compact_bar = build_compact_bar(input);
     let chrome = compact_bar.chrome;
 

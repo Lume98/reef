@@ -22,9 +22,8 @@ pub use compact_bar::{
 };
 pub use island::{ExpandedCardStack, ExpandedShell};
 pub use island_widget::{
-    build_island_widget, build_island_widget_spec, DisplayMode, IslandPendingApprovalInput,
-    IslandPendingQuestionInput, IslandRevealSpec, IslandSessionInput, IslandWidget,
-    IslandWidgetContentInput, IslandWidgetLayout, IslandWidgetSpec,
+    build_island_widget, DisplayMode, IslandPendingApprovalInput, IslandPendingQuestionInput,
+    IslandSessionInput, IslandWidget, IslandWidgetContentInput, IslandWidgetLayout,
 };
 pub use mascot::{
     CompletionBadge, CompletionBadgeLabel, CompletionBadgeOutline, MascotBody, MascotDot,

@@ -13,7 +13,7 @@ use crate::{
     mascot::MascotWidget,
 };
 
-use super::{DisplayMode, IslandWidgetSpec};
+use super::{display_mode::DisplayMode, spec::IslandWidgetSpec};
 
 /// Top-level widget that composes the entire Dynamic Island UI.
 #[derive(Clone)]
