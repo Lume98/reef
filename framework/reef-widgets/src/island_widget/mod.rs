@@ -1,6 +1,9 @@
 mod builder;
+mod cards_builder;
+mod compact_bar_builder;
 mod display_mode;
 mod input;
+mod mascot_builder;
 mod spec;
 mod widget;
 
