@@ -4,7 +4,7 @@ use tauri::AppHandle;
 #[cfg(feature = "tauri-host")]
 use crate::display_settings::{display_options_from_monitors, panel_rect_from_monitor};
 use crate::{
-    app_settings::current_app_settings,
+    app_settings::{current_app_settings, AppSettings},
     display_settings::display_option_from_panel_geometry,
     native_panel_core::{PanelDisplayGeometry, PanelRect},
     native_panel_scene_input::native_panel_runtime_input_descriptor_from_display_options_with_screen_frame,
@@ -15,6 +15,34 @@ use reef_native_panel_windows::screen_geometry::{
 use reef_ui::native_panel_ui::descriptor::NativePanelRuntimeInputDescriptor;
 
 use super::dpi::resolve_windows_system_dpi_scale;
+
+pub(super) fn windows_platform_loop_runtime_input_descriptor(
+    preferred_display_index: usize,
+    screen_frame: Option<PanelRect>,
+) -> NativePanelRuntimeInputDescriptor {
+    let settings = current_app_settings();
+    reef_native_panel_core::native_panel_runtime_input_descriptor_from_parts(
+        vec![crate::native_panel_scene::fallback_panel_display_option()],
+        panel_settings_state_from_app_settings(preferred_display_index, &settings),
+        screen_frame,
+        env!("CARGO_PKG_VERSION").to_string(),
+        crate::updater_service::current_update_status(),
+    )
+}
+
+fn panel_settings_state_from_app_settings(
+    selected_display_index: usize,
+    settings: &AppSettings,
+) -> reef_native_panel_core::native_panel_core::PanelSettingsState {
+    reef_native_panel_core::native_panel_core::PanelSettingsState {
+        selected_display_index,
+        island_width_preset: settings.island_width_preset,
+        completion_sound_enabled: settings.completion_sound_enabled,
+        mascot_enabled: settings.mascot_enabled,
+        debug_mode_enabled: settings.debug_mode_enabled,
+        language: settings.language,
+    }
+}
 
 #[cfg(feature = "tauri-host")]
 pub(super) fn windows_runtime_input_descriptor<R: tauri::Runtime>(
