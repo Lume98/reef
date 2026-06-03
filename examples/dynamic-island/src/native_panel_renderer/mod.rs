@@ -18,9 +18,13 @@ pub(crate) use reef_ui::native_panel_ui::{
 
 mod close_preservation;
 mod env_flags;
+mod host_runtime_command;
+mod host_runtime_dispatch;
 mod host_runtime_facade;
+mod host_runtime_state;
 mod platform_adapter;
 mod renderer_backend;
+mod runtime_platform_backend;
 pub(crate) mod visual_plan;
 
 // 运行时同步：快照、输入、悬停、点击、设置面板和平台命令的协调。

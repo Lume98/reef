@@ -242,7 +242,7 @@ pub(crate) mod runtime {
     #[cfg(feature = "tauri-host")]
     pub(crate) use super::super::host_runtime_facade::dispatch_native_panel_runtime_payload_with_handles;
     #[cfg(feature = "tauri-host")]
-    pub(crate) use super::super::runtime_backend::{
+    pub(crate) use super::super::runtime_platform_backend::{
         current_native_panel_runtime_backend, reposition_native_panel_to_selected_display_then_refresh,
         NativePanelPlatformRuntimeBackendFacade, NativePanelPlatformRuntimeFacadeApi,
         NativePanelRuntimeBackend,

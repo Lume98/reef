@@ -35,7 +35,7 @@ use super::descriptors::{
 #[cfg(feature = "tauri-host")]
 use super::host_runtime_facade::NativePanelRuntimeDispatchMode;
 #[cfg(feature = "tauri-host")]
-use super::runtime_backend::{
+use super::runtime_platform_backend::{
     current_native_panel_runtime_backend, NativePanelPlatformRuntimeBackend,
 };
 #[cfg(feature = "tauri-host")]
