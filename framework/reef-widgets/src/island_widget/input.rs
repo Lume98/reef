@@ -1,5 +1,4 @@
-use super::DisplayMode;
-use crate::IslandWidgetLayout;
+use super::{spec::IslandWidgetLayout, DisplayMode};
 
 #[derive(Clone, Debug)]
 pub struct IslandPendingApprovalInput {

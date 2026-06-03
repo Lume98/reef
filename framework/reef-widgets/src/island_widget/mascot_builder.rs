@@ -1,6 +1,6 @@
-use crate::{CompletionBadge, DisplayMode, MascotPose, MascotWidget};
+use crate::{CompletionBadge, MascotPose, MascotWidget};
 
-use super::IslandWidgetContentInput;
+use super::{DisplayMode, IslandWidgetContentInput};
 
 pub(super) fn build_mascot(input: &IslandWidgetContentInput) -> Option<MascotWidget> {
     if input.mode != DisplayMode::Expanded {

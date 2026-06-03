@@ -4,9 +4,9 @@
 
 use echoisland_runtime::RuntimeSnapshot;
 use reef_widgets::{
-    build_island_widget as build_framework_island_widget, DisplayMode, IslandPendingApprovalInput,
-    IslandPendingQuestionInput, IslandSessionInput, IslandWidget, IslandWidgetContentInput,
-    IslandWidgetLayout,
+    build_island_widget as build_framework_island_widget, island_widget::DisplayMode,
+    island_widget::IslandPendingApprovalInput, island_widget::IslandPendingQuestionInput,
+    island_widget::IslandSessionInput, island_widget::IslandWidgetContentInput, IslandWidget,
 };
 
 /// 将运行时快照转换为可复用的岛屿输入模型。
@@ -21,7 +21,7 @@ pub fn build_island_widget_input(
         } else {
             DisplayMode::Compact
         },
-        layout: IslandWidgetLayout::default(),
+        layout: Default::default(),
         settings_active,
         active_session_count: snapshot.active_session_count,
         total_session_count: snapshot.total_session_count,
@@ -112,8 +112,9 @@ mod tests {
     fn bridge_builds_widget_from_snapshot() {
         let snapshot = empty_snapshot();
         let widget = build_island_widget(&snapshot, false, false);
+        let default_layout: reef_widgets::island_widget::IslandWidgetLayout = Default::default();
 
         assert_eq!(widget.mode, DisplayMode::Compact);
-        assert_eq!(widget.width, IslandWidgetLayout::default().width);
+        assert_eq!(widget.width, default_layout.width);
     }
 }

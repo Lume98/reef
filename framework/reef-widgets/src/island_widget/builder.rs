@@ -31,7 +31,8 @@ pub fn build_island_widget(input: &IslandWidgetContentInput) -> IslandWidget {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{ChromeVisibility, DisplayMode, IslandSessionInput, IslandWidgetLayout};
+    use crate::island_widget::{DisplayMode, IslandSessionInput};
+    use crate::ChromeVisibility;
 
     fn empty_input() -> IslandWidgetContentInput {
         IslandWidgetContentInput::default()
@@ -42,10 +43,11 @@ mod tests {
         let mut input = empty_input();
         input.mode = DisplayMode::Expanded;
         input.settings_active = true;
+        let default_layout = input.layout;
 
         let spec = build_island_widget_spec(&input);
         assert_eq!(spec.mode, DisplayMode::Expanded);
-        assert_eq!(spec.layout, IslandWidgetLayout::default());
+        assert_eq!(spec.layout, default_layout);
         assert_eq!(spec.chrome, ChromeVisibility::expanded());
         assert!(spec.compact_bar.show_actions);
         assert_eq!(spec.cards.len(), 1);

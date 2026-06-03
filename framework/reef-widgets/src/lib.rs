@@ -21,10 +21,7 @@ pub use compact_bar::{
     CompactBarHeadline, CompactShoulder, CompletionGlow, ShoulderPath, ShoulderSide,
 };
 pub use island::{ExpandedCardStack, ExpandedShell};
-pub use island_widget::{
-    build_island_widget, DisplayMode, IslandPendingApprovalInput, IslandPendingQuestionInput,
-    IslandSessionInput, IslandWidget, IslandWidgetContentInput, IslandWidgetLayout,
-};
+pub use island_widget::{build_island_widget, IslandWidget};
 pub use mascot::{
     CompletionBadge, CompletionBadgeLabel, CompletionBadgeOutline, MascotBody, MascotDot,
     MascotExpression, MascotEye, MascotEyes, MascotPose, MascotShadow, MascotSprite, MascotWidget,

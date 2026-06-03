@@ -1,6 +1,6 @@
-use crate::{ChromeVisibility, CompactBar, DisplayMode};
+use crate::{ChromeVisibility, CompactBar};
 
-use super::IslandWidgetContentInput;
+use super::{DisplayMode, IslandWidgetContentInput};
 
 const DEFAULT_HEADLINE: &str = "Reef";
 
