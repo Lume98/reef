@@ -9,6 +9,7 @@ mod mascot_builder;
 mod question_card;
 mod session_card;
 mod settings_cards;
+mod settings_rows;
 mod short_id;
 mod spec;
 mod widget;
