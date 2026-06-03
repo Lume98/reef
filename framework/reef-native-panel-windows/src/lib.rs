@@ -10,6 +10,10 @@ pub use reef_native_panel_core::native_panel_ui;
 use echoisland_runtime::RuntimeSnapshot;
 
 pub mod dpi;
+pub mod direct2d;
+pub mod directwrite;
+pub mod layered_window;
+pub mod resource_cache;
 pub mod hit_region;
 pub mod screen_geometry;
 
@@ -17,9 +21,21 @@ pub use dpi::{
     ensure_windows_process_dpi_awareness, resolve_windows_dpi_scale_for_window,
     resolve_windows_system_dpi_scale, WindowsDpiScale, WindowsPhysicalRect,
 };
+pub use direct2d::WindowsDirect2DFactory;
+pub use directwrite::{
+    WindowsDirectWriteFactory, WindowsDirectWriteFontFallback, WindowsDirectWriteTextLayoutRequest,
+};
 pub use hit_region::{resolve_windows_native_panel_hit_test, WindowsNativePanelHitTest};
 pub use screen_geometry::{
     fallback_standalone_display_geometry, windows_standalone_screen_frame_with_scale,
+};
+pub use layered_window::{
+    apply_windows_layered_window_initial_attributes,
+    windows_layered_window_composition_mode_for_painter, WindowsLayeredAlphaBitmap,
+    WindowsLayeredBitmapSize, WindowsLayeredWindowCompositionMode,
+};
+pub use resource_cache::{
+    WindowsDirect2DResourceCacheState, WindowsDirect2DResourceKey,
 };
 
 pub fn create_native_panel() -> Result<(), String> {
