@@ -16,21 +16,18 @@
 
 ## UI 结构与绘制
 
-- `src/native_panel_renderer/visual_plan.rs`
-  - 主要 UI 布局和视觉元素生成位置。
-  - 决定紧凑态/展开态的背景、标题、数字、按钮、卡片等 visual primitives。
+- `src/business/`
+  - 业务规则、显示器选择、面板输入构造和测试。
+  - 这里不处理窗口绘制，只负责把应用设置和显示器信息归一化。
 
-- `src/native_panel_renderer/visual_primitives.rs`
-  - 定义可绘制的 primitive 类型，例如圆角矩形、文本、图片、吉祥物、紧凑态肩部形状等。
+- `src/native_panel_renderer/`
+  - 原生渲染协调层。
+  - `visual_plan.rs` 负责把场景模型转换为 visual plan。
+  - `facade.rs` 负责向 Windows 平台层集中导出命令、描述符、运行时和视觉能力。
 
-- `src/native_panel_renderer/card_visual_spec.rs`
-  - 卡片视觉规格。
-
-- `src/native_panel_renderer/action_button_visual_spec.rs`
-  - 操作按钮视觉规格。
-
-- `src/native_panel_renderer/mascot_visual_spec.rs`
-  - 吉祥物视觉规格。
+- `framework/reef-ui/src/native_panel_ui/`
+  - 共享的场景、表现模型、视觉计划和渲染计划定义。
+  - `dynamic-island` 只消费这些模型，不在这里重复实现布局规则。
 
 - `src/windows_native_panel/d2d_painter.rs`
   - Windows Direct2D 绘制实现。
@@ -43,6 +40,10 @@
 
 - `src/native_panel_scene/`
   - 维护设置、状态、会话、卡片等场景结构。
+
+- `src/native_panel_scene_input.rs`
+  - 从 `business` 层薄封装而来的场景输入适配层。
+  - 主要用于保留旧调用路径，同时让入口更集中。
 
 ## 前端关系
 
