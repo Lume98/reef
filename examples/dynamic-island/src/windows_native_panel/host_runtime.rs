@@ -7,17 +7,10 @@ use tauri::AppHandle;
 use super::runtime_input::windows_runtime_input_descriptor;
 use super::{
     draw_presenter::WindowsNativePanelDrawPresenter,
-    host_window::{WindowsNativePanelDrawFrame, WindowsNativePanelHostWindow},
+    host_window::WindowsNativePanelHostWindow,
     message_dispatch::pump_window_messages as pump_dispatched_window_messages,
-    paint_bridge::{
-        consume_presenter_into_shell, consume_presenter_into_shell_result,
-        present_window_into_presenter, take_pending_draw_frame,
-    },
     platform_loop::WindowsNativePanelPlatformLoopState,
-    window_shell::{
-        WindowsNativePanelShellCommand, WindowsNativePanelShellPresentResult,
-        WindowsNativePanelWindowShell,
-    },
+    window_shell::WindowsNativePanelWindowShell,
     WindowsNativePanelRenderer,
 };
 use crate::{
@@ -30,18 +23,7 @@ use crate::{
             NativePanelPlatformEvent, NativePanelPointerInput, NativePanelPointerInputOutcome,
             NativePanelRuntimeCommandHandler,
         },
-        descriptor::{
-            NativePanelHostWindowDescriptor, NativePanelHostWindowState, NativePanelPointerRegion,
-            NativePanelRuntimeInputDescriptor,
-        },
-        host::{
-            create_native_panel_via_host_controller, hide_native_panel_via_host_controller,
-            native_panel_presentation_cards_visible,
-            reposition_native_panel_host_from_input_descriptor_via_controller,
-            set_native_panel_host_shared_body_height_via_controller, NativePanelHost,
-            NativePanelHostDisplayReposition, NativePanelRuntimeHostController,
-            NativePanelSceneHost,
-        },
+        descriptor::NativePanelRuntimeInputDescriptor,
         interaction::{
             dispatch_native_panel_click_command_at_point_with_handler,
             handle_native_panel_pointer_input_with_handler,
@@ -51,7 +33,6 @@ use crate::{
             sync_native_panel_hover_interaction_and_rerender_for_inside_with_input_descriptor,
             sync_native_panel_hover_interaction_and_rerender_for_pointer_input_with_input_descriptor,
             sync_native_panel_hover_interaction_for_state, NativePanelHoverSyncResult,
-            NativePanelPointerRegionInteractionBridge, NativePanelQueuedPlatformEventBridge,
             NativePanelSettingsSurfaceToggleResult,
         },
         presentation::NativePanelPresentationModel,
@@ -63,6 +44,11 @@ use crate::{
             rerender_runtime_scene_sync_result_to_host_for_runtime_with_input_descriptor,
             toggle_native_panel_settings_surface_and_rerender_for_runtime_with_input_descriptor,
             NativePanelRuntimeSceneSyncResult,
+        },
+        host::{
+            create_native_panel_via_host_controller, hide_native_panel_via_host_controller,
+            reposition_native_panel_host_from_input_descriptor_via_controller,
+            set_native_panel_host_shared_body_height_via_controller, NativePanelHost,
         },
         shell::pump_native_panel_host_shell_runtime,
         transition::NativePanelTransitionRequest,
@@ -76,162 +62,6 @@ pub(crate) struct WindowsNativePanelHost {
     pub(super) presenter: WindowsNativePanelDrawPresenter,
     pub(super) shell: WindowsNativePanelWindowShell,
     pub(super) pending_events: Vec<NativePanelPlatformEvent>,
-}
-
-impl NativePanelHost for WindowsNativePanelHost {
-    type Error = String;
-    type Renderer = WindowsNativePanelRenderer;
-
-    fn renderer(&mut self) -> &mut Self::Renderer {
-        &mut self.renderer
-    }
-
-    fn host_window_descriptor(&self) -> NativePanelHostWindowDescriptor {
-        self.window.descriptor
-    }
-
-    fn host_window_descriptor_mut(&mut self) -> &mut NativePanelHostWindowDescriptor {
-        &mut self.window.descriptor
-    }
-
-    fn window_state(&self) -> NativePanelHostWindowState {
-        self.window.window_state()
-    }
-
-    fn create(&mut self) -> Result<(), Self::Error> {
-        self.window.create();
-        self.shell.create();
-        self.shell.sync_window_state(self.window.window_state());
-        self.sync_renderer_host_window_descriptor()
-    }
-
-    fn after_host_window_descriptor_updated(&mut self) -> Result<(), Self::Error> {
-        self.window.refresh_frame_from_descriptor();
-        self.shell.sync_window_state(self.window.window_state());
-        Ok(())
-    }
-
-    fn show(&mut self) -> Result<(), Self::Error> {
-        NativePanelHost::create(self)?;
-        self.window.show();
-        self.shell.show();
-        self.shell.sync_window_state(self.window.window_state());
-        self.sync_renderer_host_window_descriptor()
-    }
-
-    fn hide(&mut self) -> Result<(), Self::Error> {
-        self.window.hide();
-        self.shell.hide();
-        self.shell.sync_window_state(self.window.window_state());
-        self.sync_renderer_host_window_descriptor()
-    }
-
-    fn take_platform_events(&mut self) -> Vec<NativePanelPlatformEvent> {
-        std::mem::take(&mut self.pending_events)
-    }
-
-    fn present_renderer_state(&mut self) -> Result<(), Self::Error> {
-        let window_state = self
-            .renderer
-            .last_window_state
-            .unwrap_or_else(|| self.window.window_state());
-        present_window_into_presenter(
-            &mut self.window,
-            &mut self.presenter,
-            window_state,
-            &self.renderer.last_pointer_regions,
-            self.renderer.latest_scene_presentation_model(),
-            self.renderer.last_widget_plan.clone(),
-        );
-        Ok(())
-    }
-}
-
-impl WindowsNativePanelHost {
-    pub(super) fn record_platform_loop_spawn(&mut self) {
-        self.shell.record_platform_loop_spawn();
-    }
-
-    pub(super) fn take_pending_draw_frame(&mut self) -> Option<WindowsNativePanelDrawFrame> {
-        take_pending_draw_frame(&mut self.presenter)
-    }
-
-    pub(super) fn take_pending_shell_commands(&mut self) -> Vec<WindowsNativePanelShellCommand> {
-        self.shell.take_pending_commands()
-    }
-
-    pub(super) fn sync_shell_mouse_event_passthrough(&mut self, ignores_mouse_events: bool) {
-        self.shell
-            .sync_mouse_event_passthrough(ignores_mouse_events);
-    }
-
-    pub(super) fn consume_presenter_into_shell(&mut self) -> bool {
-        consume_presenter_into_shell(&mut self.presenter, &mut self.shell)
-    }
-
-    pub(super) fn consume_presenter_into_shell_result(
-        &mut self,
-    ) -> WindowsNativePanelShellPresentResult {
-        consume_presenter_into_shell_result(&mut self.presenter, &mut self.shell)
-    }
-
-    pub(super) fn resolved_pointer_regions(&self) -> &[NativePanelPointerRegion] {
-        self.window
-            .pointer_regions(&self.renderer.last_pointer_regions)
-    }
-
-    pub(super) fn cards_visible(&self) -> bool {
-        let current = self.renderer.latest_scene_presentation_model();
-        native_panel_presentation_cards_visible(
-            self.window.presented_presentation_model.as_ref(),
-            current.as_ref(),
-        )
-    }
-}
-
-impl NativePanelSceneHost for WindowsNativePanelHost {}
-
-impl NativePanelPointerRegionInteractionBridge for WindowsNativePanelHost {
-    fn interaction_pointer_regions(&self) -> &[NativePanelPointerRegion] {
-        self.resolved_pointer_regions()
-    }
-
-    fn interaction_cards_visible(&self) -> bool {
-        self.cards_visible()
-    }
-}
-
-impl NativePanelQueuedPlatformEventBridge for WindowsNativePanelHost {
-    fn queued_platform_events_mut(&mut self) -> &mut Vec<NativePanelPlatformEvent> {
-        &mut self.pending_events
-    }
-
-    fn queued_pointer_regions(&self) -> &[NativePanelPointerRegion] {
-        self.resolved_pointer_regions()
-    }
-}
-
-impl NativePanelRuntimeHostController for WindowsNativePanelHost {
-    type Error = String;
-
-    fn runtime_host_create_panel(&mut self) -> Result<(), Self::Error> {
-        self.show()
-    }
-
-    fn runtime_host_hide_panel(&mut self) -> Result<(), Self::Error> {
-        self.hide()
-    }
-
-    fn runtime_host_reposition(
-        &mut self,
-        reposition: NativePanelHostDisplayReposition,
-    ) -> Result<(), Self::Error> {
-        self.reposition_to_display_with_payload(reposition)
-    }
-
-    fn runtime_host_set_shared_body_height(&mut self, body_height: f64) -> Result<(), Self::Error> {
-        self.set_shared_body_height(body_height)
-    }
 }
 
 #[derive(Default)]
