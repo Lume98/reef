@@ -29,7 +29,7 @@ pub mod business;
 
 // 对外暴露平台无关的面板核心类型，避免调用方直接依赖 reef-ui crate 路径。
 pub mod native_panel_core {
-    pub use reef_ui::native_panel_core::*;
+    pub use reef_native_panel_core::native_panel_core::*;
 }
 
 // 原生渲染协调层：把场景模型转换为渲染命令，并处理运行时交互。
@@ -40,7 +40,7 @@ pub mod island_widget_bridge;
 
 // 对外暴露平台无关的场景类型，供扩展内外共享 UI 结构。
 pub mod native_panel_scene {
-    pub use reef_ui::native_panel_scene::*;
+    pub use reef_native_panel_core::native_panel_scene::*;
 }
 
 // 应用设置/显示器信息到场景构建输入的适配层。

@@ -9,6 +9,15 @@ pub use reef_native_panel_core::native_panel_ui;
 
 use echoisland_runtime::RuntimeSnapshot;
 
+pub mod dpi;
+pub mod hit_region;
+
+pub use dpi::{
+    ensure_windows_process_dpi_awareness, resolve_windows_dpi_scale_for_window,
+    resolve_windows_system_dpi_scale, WindowsDpiScale, WindowsPhysicalRect,
+};
+pub use hit_region::{resolve_windows_native_panel_hit_test, WindowsNativePanelHitTest};
+
 pub fn create_native_panel() -> Result<(), String> {
     Ok(())
 }
@@ -63,4 +72,3 @@ pub fn set_shared_expanded_body_height<R: tauri::Runtime>(
 ) -> Result<(), String> {
     Ok(())
 }
-

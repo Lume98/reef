@@ -888,6 +888,8 @@ dependencies = [
  "once_cell",
  "reef-app",
  "reef-core",
+ "reef-native-panel-core",
+ "reef-native-panel-windows",
  "reef-render",
  "reef-ui",
  "reef-widgets",
@@ -2852,6 +2854,8 @@ dependencies = [
  "echoisland-runtime",
  "log",
  "reef-ui",
+ "tauri",
+ "tauri-plugin-opener",
 ]
 
 [[package]]
@@ -2861,6 +2865,7 @@ dependencies = [
  "echoisland-runtime",
  "log",
  "reef-native-panel-core",
+ "reef-ui",
  "tauri",
  "windows 0.58.0",
  "windows-sys 0.59.0",

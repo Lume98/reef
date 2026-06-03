@@ -5,7 +5,7 @@ use tauri::AppHandle;
 #[cfg(feature = "tauri-host")]
 use tauri::Manager;
 
-pub(crate) trait NativePanelHostPlatform: Clone + Send + Sync + 'static {
+pub trait NativePanelHostPlatform: Clone + Send + Sync + 'static {
     fn focus_main_window(&self) -> Result<(), String>;
 
     fn quit_application(&self);

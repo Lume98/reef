@@ -6,6 +6,7 @@ description = "Reef native panel Windows adapter facade"
 
 [dependencies]
 reef-native-panel-core = { path = "../reef-native-panel-core" }
+reef-ui = { path = "../reef-ui" }
 echoisland-runtime = { path = "../../echoisland-runtime" }
 tauri = { workspace = true, optional = true }
 log = { workspace = true }
@@ -17,4 +18,3 @@ windows-sys = { workspace = true }
 [features]
 default = []
 tauri-host = ["dep:tauri", "reef-native-panel-core/tauri-host"]
-

@@ -1,9 +1,10 @@
 use crate::native_panel_core::PanelRect;
-
 #[cfg(feature = "tauri-host")]
 use tauri::AppHandle;
 #[cfg(feature = "tauri-host")]
 use tauri::Manager;
+#[cfg(feature = "tauri-host")]
+use crate::updater_service::NativePanelReleasePageHost;
 
 use crate::native_panel_scene::PanelDisplayOptionState;
 
@@ -64,6 +65,18 @@ impl<R: tauri::Runtime + 'static> NativePanelHostPlatform for AppHandle<R> {
     }
 }
 
+#[cfg(feature = "tauri-host")]
+impl<R: tauri::Runtime + 'static> NativePanelReleasePageHost for AppHandle<R> {
+    fn open_release_page(&self) -> Result<(), String> {
+        tauri_plugin_opener::OpenerExt::opener(self)
+            .open_url(
+                "https://github.com/Lume98/ai-gateway/releases",
+                None::<&str>,
+            )
+            .map_err(|error| error.to_string())
+    }
+}
+
 pub fn fallback_panel_frame() -> PanelRect {
     PanelRect {
         x: 0.0,
@@ -72,4 +85,3 @@ pub fn fallback_panel_frame() -> PanelRect {
         height: 900.0,
     }
 }
-
