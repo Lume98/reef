@@ -9,7 +9,6 @@ use crate::{
         shell::{apply_native_panel_host_shell_command, NativePanelHostShellCommandBackend},
     },
 };
-#[cfg(all(windows, not(test)))]
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub(super) struct WindowsNativePanelPointerPollingSample {
     pub(super) point: PanelPoint,
