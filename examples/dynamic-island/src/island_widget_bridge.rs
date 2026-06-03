@@ -1,52 +1,66 @@
-//! 桥接模块：将 PanelState + RuntimeSnapshot 转换为 reef-widgets 的 IslandWidget。
+//! 桥接模块：将 `RuntimeSnapshot` 转换为 `reef-widgets` 的 `IslandWidget`。
 //!
-//! 这是未来替代 reef-ui 场景→表现→视觉计划管线的入口点。
-//! 当前作为概念验证，验证 Widget 框架可以承载生产级的灵动岛 UI。
-
-use reef_widgets::{
-    Badge, BodyLine, Card, CardStyle, ChromeVisibility, CompactBar, DisplayMode, ExpandedShell,
-    IslandRevealSpec, IslandWidget, IslandWidgetLayout, IslandWidgetSpec, MascotPose, MascotWidget,
-    SettingsRow,
-};
+//! 这里只做运行时数据到通用输入模型的映射，不再维护卡片、Mascot 或 settings 的模板细节。
 
 use echoisland_runtime::RuntimeSnapshot;
+use reef_widgets::{
+    build_island_widget as build_framework_island_widget, DisplayMode, IslandPendingApprovalInput,
+    IslandPendingQuestionInput, IslandSessionInput, IslandWidget, IslandWidgetContentInput,
+    IslandWidgetLayout,
+};
 
-/// 将运行时快照转换为可复用的岛屿规格。
-pub fn build_island_widget_spec(
+/// 将运行时快照转换为可复用的岛屿输入模型。
+pub fn build_island_widget_input(
     snapshot: &RuntimeSnapshot,
     panel_expanded: bool,
     settings_active: bool,
-) -> IslandWidgetSpec {
-    let mode = if panel_expanded {
-        DisplayMode::Expanded
-    } else {
-        DisplayMode::Compact
-    };
-
-    IslandWidgetSpec {
-        mode,
+) -> IslandWidgetContentInput {
+    IslandWidgetContentInput {
+        mode: if panel_expanded {
+            DisplayMode::Expanded
+        } else {
+            DisplayMode::Compact
+        },
         layout: IslandWidgetLayout::default(),
-        compact_bar: build_compact_bar(snapshot, panel_expanded, settings_active),
-        expanded_shell: ExpandedShell::new(),
-        cards: if settings_active {
-            build_settings_cards()
-        } else {
-            build_status_cards(snapshot)
-        },
-        mascot: build_mascot(snapshot, panel_expanded),
-        glow: None,
-        shoulder_left: None,
-        shoulder_right: None,
-        chrome: if panel_expanded {
-            ChromeVisibility::expanded()
-        } else {
-            ChromeVisibility::compact()
-        },
-        reveal: IslandRevealSpec::default(),
+        settings_active,
+        active_session_count: snapshot.active_session_count,
+        total_session_count: snapshot.total_session_count,
+        pending_permissions: snapshot
+            .pending_permissions
+            .iter()
+            .map(|pending| IslandPendingApprovalInput {
+                session_id: pending.session_id.clone(),
+                source: pending.source.clone(),
+                tool_description: pending.tool_description.clone(),
+            })
+            .collect(),
+        pending_questions: snapshot
+            .pending_questions
+            .iter()
+            .map(|pending| IslandPendingQuestionInput {
+                session_id: pending.session_id.clone(),
+                source: pending.source.clone(),
+                header: pending.header.clone(),
+                text: pending.text.clone(),
+            })
+            .collect(),
+        sessions: snapshot
+            .sessions
+            .iter()
+            .map(|session| IslandSessionInput {
+                status: session.status.clone(),
+                source: session.source.clone(),
+                model: session.model.clone(),
+                last_user_prompt: session.last_user_prompt.clone(),
+                last_assistant_message: session.last_assistant_message.clone(),
+                current_tool: session.current_tool.clone(),
+                tool_description: session.tool_description.clone(),
+            })
+            .collect(),
     }
 }
 
-/// 将运行时快照转换为顶层 IslandWidget。
+/// 将运行时快照转换为顶层 `IslandWidget`。
 ///
 /// `panel_expanded` 控制展示模式（Compact / Expanded）。
 /// `settings_active` 控制是否展示设置卡片。
@@ -55,34 +69,11 @@ pub fn build_island_widget(
     panel_expanded: bool,
     settings_active: bool,
 ) -> IslandWidget {
-    IslandWidget::from_spec(build_island_widget_spec(
+    build_framework_island_widget(&build_island_widget_input(
         snapshot,
         panel_expanded,
         settings_active,
     ))
-}
-
-fn build_compact_bar(
-    snapshot: &RuntimeSnapshot,
-    expanded: bool,
-    settings_active: bool,
-) -> CompactBar {
-    let mut bar = CompactBar::new();
-    bar.headline = "Reef".to_string();
-    bar.headline_emphasized = expanded;
-    bar.active_count = snapshot.active_session_count.to_string();
-    bar.total_count = snapshot.total_session_count.to_string();
-    bar.completion_count = 0;
-    bar.show_actions = expanded || settings_active;
-    bar.debug_mode = false;
-
-    if expanded {
-        bar.chrome = ChromeVisibility::expanded();
-    } else {
-        bar.chrome = ChromeVisibility::compact();
-    }
-
-    bar
 }
 
 #[cfg(test)]
@@ -106,200 +97,23 @@ mod tests {
     }
 
     #[test]
-    fn island_widget_spec_maps_expanded_settings_state() {
+    fn bridge_maps_runtime_snapshot_to_input_model() {
         let snapshot = empty_snapshot();
-        let spec = build_island_widget_spec(&snapshot, true, true);
+        let input = build_island_widget_input(&snapshot, true, true);
 
-        assert_eq!(spec.mode, DisplayMode::Expanded);
-        assert_eq!(spec.layout, IslandWidgetLayout::default());
-        assert_eq!(spec.chrome, ChromeVisibility::expanded());
-        assert!(spec.compact_bar.show_actions);
-        assert_eq!(spec.cards.len(), 1);
-        assert!(spec.mascot.is_some());
-        assert!(spec.glow.is_none());
+        assert_eq!(input.mode, DisplayMode::Expanded);
+        assert!(input.settings_active);
+        assert_eq!(input.layout, Default::default());
+        assert_eq!(input.active_session_count, 0);
+        assert_eq!(input.total_session_count, 0);
     }
 
     #[test]
-    fn island_widget_from_spec_keeps_layout_and_chrome() {
+    fn bridge_builds_widget_from_snapshot() {
         let snapshot = empty_snapshot();
-        let spec = build_island_widget_spec(&snapshot, false, false);
-        let widget = IslandWidget::from_spec(spec);
+        let widget = build_island_widget(&snapshot, false, false);
 
         assert_eq!(widget.mode, DisplayMode::Compact);
         assert_eq!(widget.width, IslandWidgetLayout::default().width);
-        assert_eq!(
-            widget.compact_height,
-            IslandWidgetLayout::default().compact_height
-        );
-        assert_eq!(
-            widget.expanded_height,
-            IslandWidgetLayout::default().expanded_height
-        );
-        assert_eq!(widget.chrome, ChromeVisibility::compact());
-        assert_eq!(widget.compact_bar.chrome, ChromeVisibility::compact());
     }
-}
-
-fn build_status_cards(snapshot: &RuntimeSnapshot) -> Vec<Card> {
-    let mut cards = Vec::new();
-
-    // Pending approvals → PendingApproval cards
-    for pending in &snapshot.pending_permissions {
-        let card = Card::new(CardStyle::PendingApproval)
-            .title("Approval Required")
-            .subtitle(format!("#{} · Approval", short_id(&pending.session_id)))
-            .badge(Badge::status("Approval", true))
-            .badge(Badge::source(&pending.source))
-            .body_line(BodyLine::plain(
-                Some("!"),
-                pending
-                    .tool_description
-                    .clone()
-                    .unwrap_or_else(|| "Waiting for your approval".to_string()),
-            ))
-            .action_hint("Allow / Deny in terminal")
-            .height(80.0);
-        cards.push(card);
-    }
-
-    // Pending questions → PendingQuestion cards
-    for pending in &snapshot.pending_questions {
-        let card = Card::new(CardStyle::PendingQuestion)
-            .title(
-                pending
-                    .header
-                    .clone()
-                    .unwrap_or_else(|| "Question".to_string()),
-            )
-            .subtitle(format!("#{} · Question", short_id(&pending.session_id)))
-            .badge(Badge::status("Question", true))
-            .badge(Badge::source(&pending.source))
-            .body_line(BodyLine::plain(Some("?"), pending.text.clone()))
-            .action_hint("Answer in terminal")
-            .height(80.0);
-        cards.push(card);
-    }
-
-    // Active sessions → Default cards
-    for session in &snapshot.sessions {
-        let title = if session.status.is_empty() {
-            "Session"
-        } else {
-            &session.status
-        };
-        let subtitle = format!(
-            "{} · {}",
-            session.source,
-            if session.model.as_deref().unwrap_or("") == "claude" {
-                "Claude"
-            } else {
-                &session.source
-            }
-        );
-        let mut card = Card::new(CardStyle::Default)
-            .title(title.to_string())
-            .subtitle(subtitle)
-            .badge(Badge::status(&session.status, true))
-            .badge(Badge::source(&session.source));
-
-        if let Some(prompt) = &session.last_user_prompt {
-            card = card.body_line(BodyLine::plain(Some(">"), prompt.clone()));
-        }
-        if let Some(reply) = &session.last_assistant_message {
-            card = card.body_line(BodyLine::plain(Some("$"), reply.clone()));
-        }
-        if let Some(tool) = &session.current_tool {
-            card = card.tool(tool.clone(), session.tool_description.clone());
-        }
-
-        card = card.height(100.0);
-        cards.push(card);
-    }
-
-    // Empty placeholder
-    if cards.is_empty() {
-        cards.push(
-            Card::new(CardStyle::Empty)
-                .title("No active sessions")
-                .body_line(BodyLine::plain(
-                    None,
-                    "Reef UI is watching for new activity.",
-                ))
-                .height(60.0),
-        );
-    }
-
-    cards
-}
-
-fn build_settings_cards() -> Vec<Card> {
-    vec![Card::new(CardStyle::Settings)
-        .title("Settings")
-        .subtitle("v0.1.0")
-        .settings_rows(vec![
-            SettingsRow {
-                title: "Display".into(),
-                value: "1".into(),
-                active: true,
-            },
-            SettingsRow {
-                title: "Width".into(),
-                value: "Auto".into(),
-                active: false,
-            },
-            SettingsRow {
-                title: "Language".into(),
-                value: "En".into(),
-                active: false,
-            },
-            SettingsRow {
-                title: "Sound".into(),
-                value: "On".into(),
-                active: true,
-            },
-            SettingsRow {
-                title: "Mascot".into(),
-                value: "On".into(),
-                active: true,
-            },
-            SettingsRow {
-                title: "Updates".into(),
-                value: "Check".into(),
-                active: false,
-            },
-        ])
-        .height(230.0)]
-}
-
-fn build_mascot(snapshot: &RuntimeSnapshot, expanded: bool) -> Option<MascotWidget> {
-    if !expanded {
-        return None;
-    }
-
-    let pose = if snapshot.pending_permission_count > 0 {
-        MascotPose::Approval
-    } else if snapshot.pending_question_count > 0 {
-        MascotPose::Question
-    } else if snapshot.active_session_count > 0 {
-        MascotPose::Running
-    } else {
-        MascotPose::Idle
-    };
-
-    let mut mascot = MascotWidget::new(200.0, 24.0, 14.0).pose(pose);
-
-    // Completion badge when sessions exist
-    if snapshot.total_session_count > 0 && snapshot.active_session_count == 0 {
-        mascot.completion_badge = Some(reef_widgets::CompletionBadge::new(
-            200.0,
-            10.0,
-            snapshot.total_session_count,
-        ));
-    }
-
-    Some(mascot)
-}
-
-fn short_id(id: &str) -> String {
-    id.chars().take(6).collect()
 }

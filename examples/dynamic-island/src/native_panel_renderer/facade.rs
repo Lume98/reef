@@ -37,12 +37,12 @@ pub(crate) mod descriptor {
         native_panel_pointer_inside_for_input, native_panel_pointer_inside_regions,
         native_panel_pointer_state_at_point, native_panel_timeline_descriptor,
         native_panel_timeline_descriptor_for_animation, resolve_native_panel_interaction_plan,
-        resolve_native_panel_pointer_regions, NativePanelEdgeAction,
-        NativePanelEdgeActionFrames, NativePanelHostWindowDescriptor,
-        NativePanelHostWindowState, NativePanelInteractionPlan, NativePanelPointerInput,
-        NativePanelPointerPointState, NativePanelPointerRegion, NativePanelPointerRegionInput,
-        NativePanelPointerRegionKind, NativePanelRuntimeInputContext,
-        NativePanelRuntimeInputDescriptor, NativePanelTimelineDescriptor,
+        resolve_native_panel_pointer_regions, NativePanelEdgeAction, NativePanelEdgeActionFrames,
+        NativePanelHostWindowDescriptor, NativePanelHostWindowState, NativePanelInteractionPlan,
+        NativePanelPointerInput, NativePanelPointerPointState, NativePanelPointerRegion,
+        NativePanelPointerRegionInput, NativePanelPointerRegionKind,
+        NativePanelRuntimeInputContext, NativePanelRuntimeInputDescriptor,
+        NativePanelTimelineDescriptor,
     };
     pub(crate) use super::super::host_runtime_facade::NativePanelComputedHostWindow;
 }
@@ -88,13 +88,13 @@ pub(crate) mod interaction {
     pub(crate) use super::super::runtime_interaction::{
         native_panel_click_state_slots, record_native_panel_focus_click_session,
         resolve_native_panel_last_focus_click, NativePanelClickStateBridge,
-        NativePanelCoreStateBridge, NativePanelHostBehaviorCommand,
-        NativePanelHostBehaviorPlan, NativePanelHostInteractionStateBridge,
-        NativePanelHostPollingInteractionResult, NativePanelHoverFallbackFrames,
-        NativePanelHoverSyncResult, NativePanelPointerInputRuntimeBridge,
-        NativePanelPointerRegionInteractionBridge, NativePanelPollingHostFacts,
-        NativePanelPrimaryPointerStateBridge, NativePanelQueuedPlatformEventBridge,
-        NativePanelSettingsSurfaceSnapshotUpdate, NativePanelSettingsSurfaceToggleResult,
+        NativePanelCoreStateBridge, NativePanelHostBehaviorCommand, NativePanelHostBehaviorPlan,
+        NativePanelHostInteractionStateBridge, NativePanelHostPollingInteractionResult,
+        NativePanelHoverFallbackFrames, NativePanelHoverSyncResult,
+        NativePanelPointerInputRuntimeBridge, NativePanelPointerRegionInteractionBridge,
+        NativePanelPollingHostFacts, NativePanelPrimaryPointerStateBridge,
+        NativePanelQueuedPlatformEventBridge, NativePanelSettingsSurfaceSnapshotUpdate,
+        NativePanelSettingsSurfaceToggleResult,
     };
     pub(crate) use super::super::runtime_pointer_input::{
         handle_native_panel_pointer_input_with_handler,
@@ -120,9 +120,8 @@ pub(crate) mod interaction {
 // 场景到表现模型/视觉规格的转换。
 pub(crate) mod presentation {
     pub(crate) use super::super::action_button_visual_spec::{
-        action_button_transition_progress_from_compact_width,
-        action_button_visual_frame_for_phase, resolve_action_button_visibility_spec,
-        ActionButtonVisibilitySpecInput,
+        action_button_transition_progress_from_compact_width, action_button_visual_frame_for_phase,
+        resolve_action_button_visibility_spec, ActionButtonVisibilitySpecInput,
     };
     pub(crate) use super::super::card_visual_spec::{
         card_visual_action_hint_layout, card_visual_badge_layout, card_visual_body_layout,
@@ -137,10 +136,9 @@ pub(crate) mod presentation {
     };
     pub(crate) use super::super::completion_glow_visual_spec::{
         resolve_completion_glow_image_slices, resolve_completion_glow_visual_spec,
-        CompletionGlowImageSliceSpec, CompletionGlowVisualSpecInput,
-        COMPLETION_GLOW_IMAGE_HEIGHT, COMPLETION_GLOW_IMAGE_RADIUS,
-        COMPLETION_GLOW_IMAGE_WIDTH, COMPLETION_GLOW_SLICE_LEFT, COMPLETION_GLOW_SLICE_RIGHT,
-        COMPLETION_GLOW_VISIBLE_THRESHOLD,
+        CompletionGlowImageSliceSpec, CompletionGlowVisualSpecInput, COMPLETION_GLOW_IMAGE_HEIGHT,
+        COMPLETION_GLOW_IMAGE_RADIUS, COMPLETION_GLOW_IMAGE_WIDTH, COMPLETION_GLOW_SLICE_LEFT,
+        COMPLETION_GLOW_SLICE_RIGHT, COMPLETION_GLOW_VISIBLE_THRESHOLD,
     };
     pub(crate) use super::super::mascot_sprite_spec::{
         parse_mascot_sprite_manifest, resolve_mascot_sprite_animation_key,
@@ -158,26 +156,26 @@ pub(crate) mod presentation {
         native_panel_visual_display_mode_from_presentation,
         native_panel_visual_plan_input_from_presentation, resolve_native_panel_presentation,
         resolve_native_panel_presentation_model_for_scene,
-        resolve_native_panel_snapshot_render_plan_for_scene,
-        NativePanelActionButtonPresentation, NativePanelActionButtonsPresentation,
-        NativePanelCardStackPresentation, NativePanelCompactBarPresentation,
-        NativePanelGlowPresentation, NativePanelMascotPresentation,
-        NativePanelPresentationMetrics, NativePanelPresentationModel,
-        NativePanelResolvedPresentation, NativePanelShellPresentation,
-        NativePanelSnapshotRenderPlan,
+        resolve_native_panel_snapshot_render_plan_for_scene, NativePanelActionButtonPresentation,
+        NativePanelActionButtonsPresentation, NativePanelCardStackPresentation,
+        NativePanelCompactBarPresentation, NativePanelGlowPresentation,
+        NativePanelMascotPresentation, NativePanelPresentationMetrics,
+        NativePanelPresentationModel, NativePanelResolvedPresentation,
+        NativePanelShellPresentation, NativePanelSnapshotRenderPlan,
     };
     pub(crate) use super::super::render_commands::{
-        NativePanelActionButtonCommand, NativePanelCardStackCommand,
-        NativePanelCompactBarCommand,
-    };
-    pub(crate) use super::super::visual_plan::{
-        native_panel_visual_card_input_from_scene_card, NativePanelVisualActionButtonInput,
-        NativePanelVisualCardBadgeInput, NativePanelVisualCardBodyLineInput,
-        NativePanelVisualCardBodyRole, NativePanelVisualCardInput,
-        NativePanelVisualCardRowInput, NativePanelVisualCardStyle,
-        NativePanelVisualDisplayMode, NativePanelVisualPlanInput,
+        NativePanelActionButtonCommand, NativePanelCardStackCommand, NativePanelCompactBarCommand,
     };
     pub(crate) use super::super::visual_primitives::NativePanelVisualColor;
+    pub(crate) use reef_ui::native_panel_ui::visual::{
+        native_panel_visual_card_input_from_scene_card,
+        native_panel_visual_card_input_from_scene_card_with_height,
+        resolve_native_panel_compact_bar_visual_plan, resolve_native_panel_visual_plan,
+        NativePanelVisualActionButtonInput, NativePanelVisualCardBadgeInput,
+        NativePanelVisualCardBodyLineInput, NativePanelVisualCardBodyRole,
+        NativePanelVisualCardInput, NativePanelVisualCardRowInput, NativePanelVisualCardStyle,
+        NativePanelVisualDisplayMode, NativePanelVisualPlanInput,
+    };
 }
 
 // 动画计划、渲染命令和场景缓存。
@@ -197,8 +195,7 @@ pub(crate) mod renderer {
     pub(crate) use super::super::close_preservation::{
         apply_native_panel_preserved_close_presentation_slots,
         native_panel_runtime_render_state_from_preserved_scene,
-        native_panel_status_close_preservation_active,
-        native_panel_status_close_scene_has_cards,
+        native_panel_status_close_preservation_active, native_panel_status_close_scene_has_cards,
         resolve_native_panel_preserved_status_close_scene,
         resolve_native_panel_preserved_status_close_scene_for_snapshot,
     };
@@ -241,21 +238,22 @@ pub(crate) mod renderer {
 pub(crate) mod runtime {
     #[cfg(feature = "tauri-host")]
     pub(crate) use super::super::host_runtime_facade::dispatch_native_panel_runtime_payload_with_handles;
-    #[cfg(feature = "tauri-host")]
-    pub(crate) use super::super::runtime_platform_backend::{
-        current_native_panel_runtime_backend, reposition_native_panel_to_selected_display_then_refresh,
-        NativePanelPlatformRuntimeBackendFacade, NativePanelPlatformRuntimeFacadeApi,
-        NativePanelRuntimeBackend,
-    };
     pub(crate) use super::super::runtime_backend::{
         sync_runtime_scene_bundle_from_input_descriptor, NativePanelRuntimeSceneSyncResult,
+    };
+    #[cfg(feature = "tauri-host")]
+    pub(crate) use super::super::runtime_platform_backend::{
+        current_native_panel_runtime_backend,
+        reposition_native_panel_to_selected_display_then_refresh,
+        NativePanelPlatformRuntimeBackendFacade, NativePanelPlatformRuntimeFacadeApi,
+        NativePanelRuntimeBackend,
     };
     #[cfg(feature = "tauri-host")]
     pub(crate) use super::super::runtime_render_payload::dispatch_native_panel_runtime_render_payload_if_available;
     pub(crate) use super::super::runtime_render_payload::{
         native_panel_runtime_render_payload_state_from_animation_plan,
-        resolve_native_panel_runtime_render_payload_for_state, NativePanelRuntimeRenderPayloadState,
-        NativePanelRuntimeRenderPayloadStateBridge,
+        resolve_native_panel_runtime_render_payload_for_state,
+        NativePanelRuntimeRenderPayloadState, NativePanelRuntimeRenderPayloadStateBridge,
     };
     pub(crate) use super::super::runtime_scene_sync::{
         rerender_runtime_scene_sync_result_to_host_for_runtime_with_input_descriptor,
@@ -310,9 +308,6 @@ pub(crate) mod transition {
 
 // 视觉计划和底层 primitive 工具。
 pub(crate) mod visual {
-    pub(crate) use super::super::visual_plan::{
-        resolve_native_panel_compact_bar_visual_plan, resolve_native_panel_visual_plan,
-    };
     pub(crate) use super::super::visual_primitives::{
         native_panel_visual_compact_shoulder_primitive,
         native_panel_visual_completion_glow_primitive, native_panel_visual_mascot_body_primitive,
@@ -327,6 +322,9 @@ pub(crate) mod visual {
         NativePanelVisualPlan, NativePanelVisualPrimitive, NativePanelVisualShoulderSide,
         NativePanelVisualTextAlignment, NativePanelVisualTextRole, NativePanelVisualTextWeight,
     };
+    pub(crate) use reef_ui::native_panel_ui::visual::{
+        resolve_native_panel_compact_bar_visual_plan, resolve_native_panel_visual_plan,
+    };
 }
 
 #[cfg(test)]
@@ -337,4 +335,3 @@ pub(crate) mod testing {
         test_runtime_snapshot_with_counts, test_session_snapshot,
     };
 }
-

@@ -119,10 +119,10 @@ mod tests {
             NativePanelRuntimeCommandHandler, NativePanelRuntimeInputDescriptor,
             NativePanelTimelineDescriptor,
         },
+        facade::presentation::{NativePanelVisualDisplayMode, NativePanelVisualPlanInput},
         runtime_scene_cache::NativePanelRuntimeSceneCache,
         traits::{NativePanelHost, NativePanelSceneHost},
         transition_controller::NativePanelTransitionRequest,
-        visual_plan::{NativePanelVisualDisplayMode, NativePanelVisualPlanInput},
     };
     use crate::native_panel_scene::{
         PanelRuntimeRenderState, PanelScene, PanelSceneBuildInput, SceneMascotPose,

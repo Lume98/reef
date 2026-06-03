@@ -11,7 +11,7 @@ use reef_ui::native_panel_ui::visual::{
 };
 
 use crate::native_panel_core::{PanelPoint, PanelRect};
-use crate::native_panel_renderer::visual_plan::resolve_native_panel_visual_plan;
+use crate::native_panel_renderer::facade::visual::resolve_native_panel_visual_plan;
 use crate::native_panel_scene::SceneMascotPose;
 
 use super::{
@@ -146,6 +146,8 @@ const WINDOWS_NATIVE_PANEL_HIT_TEST_BLOCKER_ALPHA: u8 = 1;
 pub(super) fn resolve_windows_native_panel_paint_plan(
     job: &WindowsNativePanelShellPaintJob,
 ) -> WindowsNativePanelPaintPlan {
+    #[cfg(test)]
+    disable_mascot_sprite_in_tests();
     resolve_native_panel_visual_plan(job)
 }
 
@@ -832,6 +834,14 @@ fn native_text_alignment_from_reef(
         reef_render::primitive::TextAlignment::Right => NativePanelVisualTextAlignment::Right,
     }
 }
+
+#[cfg(test)]
+fn disable_mascot_sprite_in_tests() {
+    std::env::set_var("ECHOISLAND_MASCOT_SPRITE", "0");
+}
+
+#[cfg(not(test))]
+fn disable_mascot_sprite_in_tests() {}
 
 #[cfg(all(windows, not(test)))]
 fn rect_from_panel_rect(rect: PanelRect) -> windows_sys::Win32::Foundation::RECT {

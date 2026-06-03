@@ -1,6 +1,6 @@
+pub mod base;
 pub mod card;
 pub mod compact_bar;
-pub mod base;
 pub mod island;
 pub mod island_widget;
 pub mod mascot;
@@ -22,7 +22,9 @@ pub use compact_bar::{
 };
 pub use island::{ExpandedCardStack, ExpandedShell};
 pub use island_widget::{
-    DisplayMode, IslandRevealSpec, IslandWidget, IslandWidgetLayout, IslandWidgetSpec,
+    build_island_widget, build_island_widget_spec, DisplayMode, IslandPendingApprovalInput,
+    IslandPendingQuestionInput, IslandRevealSpec, IslandSessionInput, IslandWidget,
+    IslandWidgetContentInput, IslandWidgetLayout, IslandWidgetSpec,
 };
 pub use mascot::{
     CompletionBadge, CompletionBadgeLabel, CompletionBadgeOutline, MascotBody, MascotDot,

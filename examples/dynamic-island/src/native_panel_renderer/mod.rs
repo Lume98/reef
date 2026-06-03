@@ -25,7 +25,6 @@ mod host_runtime_state;
 mod platform_adapter;
 mod renderer_backend;
 mod runtime_platform_backend;
-pub(crate) mod visual_plan;
 
 // 运行时同步：快照、输入、悬停、点击、设置面板和平台命令的协调。
 mod runtime_backend;
@@ -52,8 +51,8 @@ pub(crate) mod snapshot_testing;
 mod snapshot_tests;
 mod window_message_pump;
 
+pub(crate) mod facade;
 #[cfg(test)]
 mod runtime_tests;
 #[cfg(test)]
 mod test_fixtures;
-pub(crate) mod facade;

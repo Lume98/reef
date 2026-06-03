@@ -1,7 +1,7 @@
 use crate::{
     card::Card,
     compact_bar::{ChromeVisibility, CompactBar, CompactShoulder, CompletionGlow},
-    island::{ExpandedShell},
+    island::ExpandedShell,
     mascot::MascotWidget,
 };
 

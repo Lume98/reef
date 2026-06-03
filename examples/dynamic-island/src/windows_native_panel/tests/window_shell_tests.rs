@@ -1,5 +1,9 @@
 use super::*;
 
+fn disable_mascot_sprite_in_tests() {
+    std::env::set_var("ECHOISLAND_MASCOT_SPRITE", "0");
+}
+
 #[test]
 fn windows_runtime_window_message_pointer_leave_collapses_and_refreshes() {
     let now = std::time::Instant::now();
@@ -132,6 +136,7 @@ fn windows_runtime_clicks_visual_settings_button_center() {
         .presented_presentation_model
         .as_ref()
         .expect("presented presentation");
+    disable_mascot_sprite_in_tests();
     let visual_input = native_panel_visual_plan_input_from_presentation(
         window_state,
         NativePanelVisualDisplayMode::Expanded,

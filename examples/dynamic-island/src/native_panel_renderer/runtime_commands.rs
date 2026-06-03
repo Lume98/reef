@@ -35,12 +35,12 @@ use super::descriptors::{
 #[cfg(feature = "tauri-host")]
 use super::host_runtime_facade::NativePanelRuntimeDispatchMode;
 #[cfg(feature = "tauri-host")]
+use super::runtime_click::dispatch_native_panel_click_command_with_handler;
+use super::runtime_interaction::NativePanelSettingsSurfaceSnapshotUpdate;
+#[cfg(feature = "tauri-host")]
 use super::runtime_platform_backend::{
     current_native_panel_runtime_backend, NativePanelPlatformRuntimeBackend,
 };
-#[cfg(feature = "tauri-host")]
-use super::runtime_click::dispatch_native_panel_click_command_with_handler;
-use super::runtime_interaction::NativePanelSettingsSurfaceSnapshotUpdate;
 use super::transition_controller::NativePanelTransitionRequest;
 
 const DEBUG_MODE_TRIGGER_CLICK_THRESHOLD: u8 = 10;

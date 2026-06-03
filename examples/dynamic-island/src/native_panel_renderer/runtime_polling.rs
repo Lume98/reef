@@ -6,6 +6,7 @@ use crate::native_panel_core::{point_in_rect, PanelPoint, PanelRect};
 use super::descriptors::{
     NativePanelInteractionPlan, NativePanelPlatformEvent, NativePanelPointerPointState,
 };
+use super::facade::presentation::{NativePanelVisualDisplayMode, NativePanelVisualPlanInput};
 use super::runtime_click::resolve_native_panel_click_command_for_pointer_state;
 use super::runtime_hover::sync_native_panel_hover_interaction_for_state;
 use super::runtime_interaction::{
@@ -17,7 +18,6 @@ use super::runtime_interaction::{
     NativePanelPrimaryPointerStateBridge,
 };
 use super::transition_controller::native_panel_transition_request_for_surface_change;
-use super::visual_plan::{NativePanelVisualDisplayMode, NativePanelVisualPlanInput};
 
 pub(crate) fn resolve_native_panel_hover_fallback_frames(
     input: &NativePanelVisualPlanInput,
