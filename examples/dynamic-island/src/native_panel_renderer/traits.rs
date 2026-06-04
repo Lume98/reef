@@ -580,6 +580,7 @@ mod tests {
                 crate::native_panel_core::PanelSettingsState::default(),
                 "0.0.0",
                 &crate::updater_service::AppUpdateStatus::idle(),
+                crate::native_panel_scene::PanelInteractionProfile::Standalone,
             ),
             cards: vec![],
             glow: None,

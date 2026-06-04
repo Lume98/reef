@@ -24,12 +24,20 @@ pub struct PanelDisplayOptionState {
     pub supports_wide_island: bool,
 }
 
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+pub enum PanelInteractionProfile {
+    #[default]
+    FullHost,
+    Standalone,
+}
+
 #[derive(Clone, Debug, PartialEq)]
 pub struct PanelSceneBuildInput {
     pub display_options: Vec<PanelDisplayOptionState>,
     pub settings: PanelSettingsState,
     pub app_version: String,
     pub update_status: crate::updater_service::AppUpdateStatus,
+    pub interaction_profile: PanelInteractionProfile,
 }
 
 #[derive(Clone, Debug)]
@@ -46,6 +54,7 @@ impl Default for PanelSceneBuildInput {
             settings: PanelSettingsState::default(),
             app_version: env!("CARGO_PKG_VERSION").to_string(),
             update_status: crate::updater_service::AppUpdateStatus::idle(),
+            interaction_profile: PanelInteractionProfile::FullHost,
         }
     }
 }
@@ -66,6 +75,7 @@ pub fn build_panel_scene(
         input.settings,
         &input.app_version,
         &input.update_status,
+        input.interaction_profile,
     );
     let glow = build_completion_glow(state);
     let mascot_pose = build_mascot_pose(state, snapshot, input.settings.mascot_enabled);
@@ -89,33 +99,39 @@ pub fn build_panel_scene(
                 match &item.payload {
                     StatusQueuePayload::Approval(_) => {
                         cards.push(SceneCard::StatusApproval { item: item.clone() });
-                        hit_targets.push(SceneHitTarget {
-                            action: PanelHitAction::FocusSession,
-                            value: item.session_id.clone(),
-                            semantic_target: Some(PanelSemanticTarget::Session(
-                                item.session_id.clone(),
-                            )),
-                        });
+                        if input.interaction_profile != PanelInteractionProfile::Standalone {
+                            hit_targets.push(SceneHitTarget {
+                                action: PanelHitAction::FocusSession,
+                                value: item.session_id.clone(),
+                                semantic_target: Some(PanelSemanticTarget::Session(
+                                    item.session_id.clone(),
+                                )),
+                            });
+                        }
                     }
                     StatusQueuePayload::Question(_) => {
                         cards.push(SceneCard::StatusQuestion { item: item.clone() });
-                        hit_targets.push(SceneHitTarget {
-                            action: PanelHitAction::FocusSession,
-                            value: item.session_id.clone(),
-                            semantic_target: Some(PanelSemanticTarget::Session(
-                                item.session_id.clone(),
-                            )),
-                        });
+                        if input.interaction_profile != PanelInteractionProfile::Standalone {
+                            hit_targets.push(SceneHitTarget {
+                                action: PanelHitAction::FocusSession,
+                                value: item.session_id.clone(),
+                                semantic_target: Some(PanelSemanticTarget::Session(
+                                    item.session_id.clone(),
+                                )),
+                            });
+                        }
                     }
                     StatusQueuePayload::Completion(_) => {
                         cards.push(SceneCard::StatusCompletion { item: item.clone() });
-                        hit_targets.push(SceneHitTarget {
-                            action: PanelHitAction::FocusSession,
-                            value: item.session_id.clone(),
-                            semantic_target: Some(PanelSemanticTarget::Session(
-                                item.session_id.clone(),
-                            )),
-                        });
+                        if input.interaction_profile != PanelInteractionProfile::Standalone {
+                            hit_targets.push(SceneHitTarget {
+                                action: PanelHitAction::FocusSession,
+                                value: item.session_id.clone(),
+                                semantic_target: Some(PanelSemanticTarget::Session(
+                                    item.session_id.clone(),
+                                )),
+                            });
+                        }
                     }
                 }
             }
@@ -131,13 +147,15 @@ pub fn build_panel_scene(
                     pending: pending.clone(),
                     count: snapshot.pending_permission_count.max(1),
                 });
-                hit_targets.push(SceneHitTarget {
-                    action: PanelHitAction::FocusSession,
-                    value: pending.session_id.clone(),
-                    semantic_target: Some(PanelSemanticTarget::Session(
-                        pending.session_id.clone(),
-                    )),
-                });
+                if input.interaction_profile != PanelInteractionProfile::Standalone {
+                    hit_targets.push(SceneHitTarget {
+                        action: PanelHitAction::FocusSession,
+                        value: pending.session_id.clone(),
+                        semantic_target: Some(PanelSemanticTarget::Session(
+                            pending.session_id.clone(),
+                        )),
+                    });
+                }
             }
 
             for pending in pending_questions.iter().take(1) {
@@ -145,26 +163,30 @@ pub fn build_panel_scene(
                     pending: pending.clone(),
                     count: snapshot.pending_question_count.max(1),
                 });
-                hit_targets.push(SceneHitTarget {
-                    action: PanelHitAction::FocusSession,
-                    value: pending.session_id.clone(),
-                    semantic_target: Some(PanelSemanticTarget::Session(
-                        pending.session_id.clone(),
-                    )),
-                });
+                if input.interaction_profile != PanelInteractionProfile::Standalone {
+                    hit_targets.push(SceneHitTarget {
+                        action: PanelHitAction::FocusSession,
+                        value: pending.session_id.clone(),
+                        semantic_target: Some(PanelSemanticTarget::Session(
+                            pending.session_id.clone(),
+                        )),
+                    });
+                }
             }
 
             for session in prompt_assist_sessions {
                 cards.push(SceneCard::PromptAssist {
                     session: session.clone(),
                 });
-                hit_targets.push(SceneHitTarget {
-                    action: PanelHitAction::FocusSession,
-                    value: session.session_id.clone(),
-                    semantic_target: Some(PanelSemanticTarget::Session(
-                        session.session_id.clone(),
-                    )),
-                });
+                if input.interaction_profile != PanelInteractionProfile::Standalone {
+                    hit_targets.push(SceneHitTarget {
+                        action: PanelHitAction::FocusSession,
+                        value: session.session_id.clone(),
+                        semantic_target: Some(PanelSemanticTarget::Session(
+                            session.session_id.clone(),
+                        )),
+                    });
+                }
             }
 
             for session in sessions {
@@ -180,13 +202,15 @@ pub fn build_panel_scene(
                         .clone()
                         .or(session.tool_description.clone()),
                 });
-                hit_targets.push(SceneHitTarget {
-                    action: PanelHitAction::FocusSession,
-                    value: session.session_id.clone(),
-                    semantic_target: Some(PanelSemanticTarget::Session(
-                        session.session_id.clone(),
-                    )),
-                });
+                if input.interaction_profile != PanelInteractionProfile::Standalone {
+                    hit_targets.push(SceneHitTarget {
+                        action: PanelHitAction::FocusSession,
+                        value: session.session_id.clone(),
+                        semantic_target: Some(PanelSemanticTarget::Session(
+                            session.session_id.clone(),
+                        )),
+                    });
+                }
             }
 
             if cards.is_empty() {

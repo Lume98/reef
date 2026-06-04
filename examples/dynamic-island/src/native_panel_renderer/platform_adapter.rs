@@ -1,33 +1,3 @@
-#[cfg(feature = "tauri-host")]
-use tauri::AppHandle;
-
-#[cfg(feature = "tauri-host")]
-pub(crate) trait NativePanelPlatformThreadAdapter<R: tauri::Runtime> {
-    fn dispatch_on_platform_thread(
-        &self,
-        work: impl FnOnce() + Send + 'static,
-    ) -> Result<(), String>;
-}
-
-#[cfg(feature = "tauri-host")]
-impl<R: tauri::Runtime> NativePanelPlatformThreadAdapter<R> for AppHandle<R> {
-    fn dispatch_on_platform_thread(
-        &self,
-        work: impl FnOnce() + Send + 'static,
-    ) -> Result<(), String> {
-        self.run_on_main_thread(work)
-            .map_err(|error| error.to_string())
-    }
-}
-
-#[cfg(feature = "tauri-host")]
-pub(crate) fn dispatch_native_panel_on_platform_thread<R: tauri::Runtime>(
-    app: &impl NativePanelPlatformThreadAdapter<R>,
-    work: impl FnOnce() + Send + 'static,
-) -> Result<(), String> {
-    app.dispatch_on_platform_thread(work)
-}
-
 pub(crate) trait NativePanelPlatformWindowHandleAdapter {
     type RawHandle: Copy + PartialEq + Eq;
 

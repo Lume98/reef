@@ -2,19 +2,24 @@ use reef_ui::native_panel_ui::descriptor::{
     NativePanelRuntimeInputContext, NativePanelRuntimeInputDescriptor,
 };
 
-use crate::native_panel_core::PanelSettingsState;
+use crate::{
+    native_panel_core::PanelSettingsState,
+    native_panel_scene::PanelInteractionProfile,
+};
 
 pub fn panel_scene_build_input_from_parts(
     display_options: Vec<reef_ui::native_panel_scene::PanelDisplayOptionState>,
     settings: PanelSettingsState,
     app_version: String,
     update_status: crate::updater_service::AppUpdateStatus,
+    interaction_profile: PanelInteractionProfile,
 ) -> reef_ui::native_panel_scene::PanelSceneBuildInput {
     reef_ui::native_panel_scene::PanelSceneBuildInput {
         display_options: sanitize_panel_display_options(display_options),
         settings,
         app_version,
         update_status,
+        interaction_profile,
     }
 }
 
@@ -24,6 +29,7 @@ pub fn native_panel_runtime_input_descriptor_from_parts(
     screen_frame: Option<crate::native_panel_core::PanelRect>,
     app_version: String,
     update_status: crate::updater_service::AppUpdateStatus,
+    interaction_profile: PanelInteractionProfile,
 ) -> NativePanelRuntimeInputDescriptor {
     NativePanelRuntimeInputDescriptor {
         scene_input: panel_scene_build_input_from_parts(
@@ -31,6 +37,7 @@ pub fn native_panel_runtime_input_descriptor_from_parts(
             settings,
             app_version,
             update_status,
+            interaction_profile,
         ),
         screen_frame,
     }
@@ -41,6 +48,7 @@ pub fn native_panel_runtime_input_descriptor_from_context(
     settings: PanelSettingsState,
     app_version: String,
     update_status: crate::updater_service::AppUpdateStatus,
+    interaction_profile: PanelInteractionProfile,
 ) -> NativePanelRuntimeInputDescriptor {
     native_panel_runtime_input_descriptor_from_parts(
         context.display_options,
@@ -48,6 +56,7 @@ pub fn native_panel_runtime_input_descriptor_from_context(
         context.screen_frame,
         app_version,
         update_status,
+        interaction_profile,
     )
 }
 
@@ -69,6 +78,7 @@ mod tests {
     };
     use crate::{
         native_panel_core::{PanelIslandWidthPreset, PanelLanguage, PanelRect, PanelSettingsState},
+        native_panel_scene::PanelInteractionProfile,
         updater_service::AppUpdateStatus,
     };
     use reef_ui::native_panel_scene::panel_display_option_state;
@@ -94,6 +104,7 @@ mod tests {
             },
             "1.2.3".to_string(),
             AppUpdateStatus::idle(),
+            PanelInteractionProfile::FullHost,
         );
 
         assert_eq!(input.display_options.len(), 1);
@@ -110,6 +121,7 @@ mod tests {
             PanelSettingsState::default(),
             "1.2.3".to_string(),
             AppUpdateStatus::idle(),
+            PanelInteractionProfile::FullHost,
         );
 
         assert_eq!(input.display_options.len(), 1);
@@ -141,6 +153,7 @@ mod tests {
             PanelSettingsState::default(),
             "1.2.3".to_string(),
             AppUpdateStatus::idle(),
+            PanelInteractionProfile::FullHost,
         );
 
         assert_eq!(
@@ -174,6 +187,7 @@ mod tests {
             }),
             "1.2.3".to_string(),
             AppUpdateStatus::idle(),
+            PanelInteractionProfile::FullHost,
         );
 
         assert_eq!(descriptor.selected_display_index(), 0);

@@ -18,27 +18,6 @@ pub use crate::display_settings::{
 };
 pub use crate::updater_service::{current_update_status, AppUpdatePhase, AppUpdateStatus};
 
-#[cfg(feature = "tauri-host")]
-pub use crate::display_settings::{
-    display_option_from_monitor, display_options_from_monitors, list_available_displays,
-    panel_geometry_for_monitor, panel_rect_from_monitor,
-};
-
-#[cfg(feature = "tauri-host")]
-pub use crate::mode_lifecycle::{
-    emergency_reset_dynamic_island, enter_dynamic_island_mode, exit_dynamic_island_mode,
-    is_dynamic_island_mode, snap_dynamic_island_mode,
-};
-
-#[cfg(feature = "tauri-host")]
-pub use crate::monitor_manager::{MonitorInfo, MonitorManager};
-
-#[cfg(feature = "tauri-host")]
-pub use crate::state_machine::{DynamicIslandState, DynamicIslandStateMachine, WindowSnapshot};
-
-#[cfg(feature = "tauri-host")]
-pub use crate::window_operations::WindowOperationBatch;
-
 pub(crate) use display_selection::{
     resolve_next_display_selection_update_from_display_options,
     resolve_panel_selected_display_index, resolve_selected_display_index_from_display_options,

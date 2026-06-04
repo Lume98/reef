@@ -7,22 +7,10 @@ pub(crate) mod command {
         NativePanelPointerInputOutcome, NativePanelRuntimeCommandCapability,
         NativePanelRuntimeCommandHandler,
     };
-    #[cfg(feature = "tauri-host")]
     pub(crate) use super::super::host_runtime_facade::NativePanelRuntimeDispatchMode;
     pub(crate) use super::super::runtime_click::{
         dispatch_native_panel_click_command_with_handler,
         dispatch_queued_native_panel_platform_events_with_handler,
-    };
-    #[cfg(feature = "tauri-host")]
-    pub(crate) use super::super::runtime_commands::{
-        dispatch_drained_native_panel_platform_events_with_host,
-        dispatch_native_panel_click_command_with_host,
-        dispatch_native_panel_platform_events_with_host,
-        execute_native_panel_cycle_display_command,
-        run_native_panel_pointer_input_with_queued_command_dispatch,
-        run_native_panel_runtime_with_queued_command_dispatch,
-        spawn_native_panel_platform_event_dispatch_loop,
-        spawn_native_panel_platform_loops_with_event_dispatch,
     };
     pub(crate) use super::super::runtime_commands::{
         execute_native_panel_cycle_island_width_command,
@@ -244,20 +232,9 @@ pub(crate) mod renderer {
 
 // 运行时后端和渲染负载派发。
 pub(crate) mod runtime {
-    #[cfg(feature = "tauri-host")]
-    pub(crate) use super::super::host_runtime_facade::dispatch_native_panel_runtime_payload_with_handles;
     pub(crate) use super::super::runtime_backend::{
         sync_runtime_scene_bundle_from_input_descriptor, NativePanelRuntimeSceneSyncResult,
     };
-    #[cfg(feature = "tauri-host")]
-    pub(crate) use super::super::runtime_platform_backend::{
-        current_native_panel_runtime_backend,
-        reposition_native_panel_to_selected_display_then_refresh,
-        NativePanelPlatformRuntimeBackendFacade, NativePanelPlatformRuntimeFacadeApi,
-        NativePanelRuntimeBackend,
-    };
-    #[cfg(feature = "tauri-host")]
-    pub(crate) use super::super::runtime_render_payload::dispatch_native_panel_runtime_render_payload_if_available;
     pub(crate) use super::super::runtime_render_payload::{
         native_panel_runtime_render_payload_state_from_animation_plan,
         resolve_native_panel_runtime_render_payload_for_state,
@@ -277,10 +254,6 @@ pub(crate) mod runtime {
 
 // 平台线程、窗口消息泵和宿主 shell 生命周期。
 pub(crate) mod shell {
-    #[cfg(feature = "tauri-host")]
-    pub(crate) use super::super::platform_adapter::{
-        dispatch_native_panel_on_platform_thread, NativePanelPlatformThreadAdapter,
-    };
     pub(crate) use super::super::platform_adapter::{
         native_panel_has_raw_window_handle, sync_native_panel_raw_window_handle,
         NativePanelPlatformWindowHandleAdapter,

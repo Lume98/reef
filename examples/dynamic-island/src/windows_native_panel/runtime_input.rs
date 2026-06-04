@@ -1,12 +1,8 @@
-#[cfg(feature = "tauri-host")]
-use tauri::AppHandle;
-
-#[cfg(feature = "tauri-host")]
-use crate::display_settings::{display_options_from_monitors, panel_rect_from_monitor};
 use crate::{
     app_settings::{current_app_settings, AppSettings},
     display_settings::display_option_from_panel_geometry,
     native_panel_core::{PanelDisplayGeometry, PanelRect},
+    native_panel_scene::PanelInteractionProfile,
     native_panel_scene_input::native_panel_runtime_input_descriptor_from_display_options_with_screen_frame,
 };
 use reef_native_panel_windows::screen_geometry::{
@@ -27,6 +23,7 @@ pub(super) fn windows_platform_loop_runtime_input_descriptor(
         screen_frame,
         env!("CARGO_PKG_VERSION").to_string(),
         crate::updater_service::current_update_status(),
+        PanelInteractionProfile::Standalone,
     )
 }
 
@@ -42,26 +39,6 @@ fn panel_settings_state_from_app_settings(
         debug_mode_enabled: settings.debug_mode_enabled,
         language: settings.language,
     }
-}
-
-#[cfg(feature = "tauri-host")]
-pub(super) fn windows_runtime_input_descriptor<R: tauri::Runtime>(
-    app: &AppHandle<R>,
-) -> NativePanelRuntimeInputDescriptor {
-    let settings = current_app_settings();
-    let monitors = app.available_monitors().unwrap_or_default();
-    let displays = display_options_from_monitors(&monitors);
-    native_panel_runtime_input_descriptor_from_display_options_with_screen_frame(
-        &displays,
-        &settings,
-        Some(0),
-        |selected_display_index| {
-            monitors
-                .get(selected_display_index)
-                .or_else(|| monitors.first())
-                .map(panel_rect_from_monitor)
-        },
-    )
 }
 
 pub(super) fn windows_runtime_input_descriptor_without_app() -> NativePanelRuntimeInputDescriptor {

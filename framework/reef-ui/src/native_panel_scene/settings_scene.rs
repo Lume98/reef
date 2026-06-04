@@ -5,7 +5,7 @@ use crate::{
         island_width_preset_label, panel_language_label, settings_row_action, PanelHitAction,
         PanelLanguage, PanelSettingsState,
     },
-    native_panel_scene::SettingsSurfaceProjection,
+    native_panel_scene::{PanelInteractionProfile, SettingsSurfaceProjection},
     updater_service::{AppUpdatePhase, AppUpdateStatus},
 };
 
@@ -44,6 +44,7 @@ pub fn build_settings_surface_scene(
     settings: PanelSettingsState,
     app_version: &str,
     update_status: &AppUpdateStatus,
+    interaction_profile: PanelInteractionProfile,
 ) -> SettingsSurfaceScene {
     let SettingsSurfaceProjection {
         selected_display_label,
@@ -52,97 +53,100 @@ pub fn build_settings_surface_scene(
         has_display_options,
     } = projection;
     let texts = settings_texts(settings.language);
+    let mut rows = vec![
+        SettingsSurfaceRowScene {
+            id: "island_display".to_string(),
+            label: texts.island_display.to_string(),
+            control_kind: SettingsSurfaceControlKind::Action,
+            value_text: selected_display_label,
+            checked: None,
+            enabled: has_display_options,
+            action_key: settings_action_key(0),
+            update_phase: None,
+            can_install: false,
+            can_open_release_page: false,
+        },
+        SettingsSurfaceRowScene {
+            id: "island_width".to_string(),
+            label: texts.island_width.to_string(),
+            control_kind: SettingsSurfaceControlKind::Action,
+            value_text: island_width_preset_label(effective_width_preset).to_string(),
+            checked: None,
+            enabled: true,
+            action_key: settings_action_key(1),
+            update_phase: None,
+            can_install: false,
+            can_open_release_page: false,
+        },
+        SettingsSurfaceRowScene {
+            id: "language".to_string(),
+            label: texts.language.to_string(),
+            control_kind: SettingsSurfaceControlKind::Action,
+            value_text: panel_language_label(settings.language).to_string(),
+            checked: None,
+            enabled: true,
+            action_key: settings_action_key(2),
+            update_phase: None,
+            can_install: false,
+            can_open_release_page: false,
+        },
+        SettingsSurfaceRowScene {
+            id: "completion_sound".to_string(),
+            label: texts.mute_sound.to_string(),
+            control_kind: SettingsSurfaceControlKind::Toggle,
+            value_text: if !settings.completion_sound_enabled {
+                texts.on.to_string()
+            } else {
+                texts.off.to_string()
+            },
+            checked: Some(!settings.completion_sound_enabled),
+            enabled: true,
+            action_key: settings_action_key(3),
+            update_phase: None,
+            can_install: false,
+            can_open_release_page: false,
+        },
+        SettingsSurfaceRowScene {
+            id: "mascot".to_string(),
+            label: texts.mascot.to_string(),
+            control_kind: SettingsSurfaceControlKind::Toggle,
+            value_text: if settings.mascot_enabled {
+                texts.on.to_string()
+            } else {
+                texts.off.to_string()
+            },
+            checked: Some(settings.mascot_enabled),
+            enabled: true,
+            action_key: settings_action_key(4),
+            update_phase: None,
+            can_install: false,
+            can_open_release_page: false,
+        },
+    ];
+    if interaction_profile != PanelInteractionProfile::Standalone {
+        rows.push(SettingsSurfaceRowScene {
+            id: "update".to_string(),
+            label: update_status.label.clone(),
+            control_kind: SettingsSurfaceControlKind::Action,
+            value_text: settings_update_value_text(update_status, &texts),
+            checked: None,
+            enabled: !matches!(
+                update_status.phase,
+                AppUpdatePhase::Checking
+                    | AppUpdatePhase::Downloading
+                    | AppUpdatePhase::Installing
+                    | AppUpdatePhase::Installed
+            ),
+            action_key: settings_action_key(5),
+            update_phase: Some(update_phase_key(update_status.phase).to_string()),
+            can_install: update_status.can_install,
+            can_open_release_page: update_status.can_open_release_page,
+        });
+    }
     SettingsSurfaceScene {
         title: texts.title.to_string(),
         version_text: format!("Reef UI v{app_version}"),
-        rows: vec![
-            SettingsSurfaceRowScene {
-                id: "island_display".to_string(),
-                label: texts.island_display.to_string(),
-                control_kind: SettingsSurfaceControlKind::Action,
-                value_text: selected_display_label,
-                checked: None,
-                enabled: has_display_options,
-                action_key: settings_action_key(0),
-                update_phase: None,
-                can_install: false,
-                can_open_release_page: false,
-            },
-            SettingsSurfaceRowScene {
-                id: "island_width".to_string(),
-                label: texts.island_width.to_string(),
-                control_kind: SettingsSurfaceControlKind::Action,
-                value_text: island_width_preset_label(effective_width_preset).to_string(),
-                checked: None,
-                enabled: true,
-                action_key: settings_action_key(1),
-                update_phase: None,
-                can_install: false,
-                can_open_release_page: false,
-            },
-            SettingsSurfaceRowScene {
-                id: "language".to_string(),
-                label: texts.language.to_string(),
-                control_kind: SettingsSurfaceControlKind::Action,
-                value_text: panel_language_label(settings.language).to_string(),
-                checked: None,
-                enabled: true,
-                action_key: settings_action_key(2),
-                update_phase: None,
-                can_install: false,
-                can_open_release_page: false,
-            },
-            SettingsSurfaceRowScene {
-                id: "completion_sound".to_string(),
-                label: texts.mute_sound.to_string(),
-                control_kind: SettingsSurfaceControlKind::Toggle,
-                value_text: if !settings.completion_sound_enabled {
-                    texts.on.to_string()
-                } else {
-                    texts.off.to_string()
-                },
-                checked: Some(!settings.completion_sound_enabled),
-                enabled: true,
-                action_key: settings_action_key(3),
-                update_phase: None,
-                can_install: false,
-                can_open_release_page: false,
-            },
-            SettingsSurfaceRowScene {
-                id: "mascot".to_string(),
-                label: texts.mascot.to_string(),
-                control_kind: SettingsSurfaceControlKind::Toggle,
-                value_text: if settings.mascot_enabled {
-                    texts.on.to_string()
-                } else {
-                    texts.off.to_string()
-                },
-                checked: Some(settings.mascot_enabled),
-                enabled: true,
-                action_key: settings_action_key(4),
-                update_phase: None,
-                can_install: false,
-                can_open_release_page: false,
-            },
-            SettingsSurfaceRowScene {
-                id: "update".to_string(),
-                label: update_status.label.clone(),
-                control_kind: SettingsSurfaceControlKind::Action,
-                value_text: settings_update_value_text(update_status, &texts),
-                checked: None,
-                enabled: !matches!(
-                    update_status.phase,
-                    AppUpdatePhase::Checking
-                        | AppUpdatePhase::Downloading
-                        | AppUpdatePhase::Installing
-                        | AppUpdatePhase::Installed
-                ),
-                action_key: settings_action_key(5),
-                update_phase: Some(update_phase_key(update_status.phase).to_string()),
-                can_install: update_status.can_install,
-                can_open_release_page: update_status.can_open_release_page,
-            },
-        ],
+        rows,
     }
 }
 

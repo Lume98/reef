@@ -1,17 +1,10 @@
-#[cfg(feature = "tauri-host")]
-use tauri::AppHandle;
-
 use crate::native_panel_renderer::facade::command::NativePanelPlatformEvent;
-#[cfg(feature = "tauri-host")]
-use crate::native_panel_renderer::facade::descriptor::NativePanelRuntimeInputDescriptor;
 
 use std::sync::{Arc, Mutex, OnceLock};
 
 use tokio::sync::Notify;
 use tracing::warn;
 
-#[cfg(feature = "tauri-host")]
-use super::runtime_input::windows_runtime_input_descriptor;
 use super::{
     platform_loop::{
         ensure_windows_native_platform_loop_thread, platform_loop_thread_started,
@@ -66,21 +59,6 @@ pub(super) fn with_windows_native_panel_runtime<T>(
         pump_windows_native_panel_runtime_once()?;
     }
     Ok(value)
-}
-
-#[cfg(feature = "tauri-host")]
-pub(super) fn with_windows_native_panel_runtime_input<R, T>(
-    app: &AppHandle<R>,
-    f: impl FnOnce(
-        &mut WindowsNativePanelRuntime,
-        &NativePanelRuntimeInputDescriptor,
-    ) -> Result<T, String>,
-) -> Result<T, String>
-where
-    R: tauri::Runtime,
-{
-    let input = windows_runtime_input_descriptor(app);
-    with_windows_native_panel_runtime(|runtime| f(runtime, &input))
 }
 
 pub(super) fn drain_windows_native_panel_platform_events(

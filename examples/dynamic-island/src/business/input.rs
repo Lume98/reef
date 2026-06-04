@@ -1,7 +1,10 @@
 use crate::{
     display_settings::DisplayOption,
     native_panel_core::{PanelRect, PanelSettingsState},
-    native_panel_scene::{panel_display_option_state_with_width_support, PanelDisplayOptionState},
+    native_panel_scene::{
+        panel_display_option_state_with_width_support, PanelDisplayOptionState,
+        PanelInteractionProfile,
+    },
 };
 use reef_ui::native_panel_ui::descriptor::{
     NativePanelRuntimeInputContext, NativePanelRuntimeInputDescriptor,
@@ -54,6 +57,7 @@ pub(crate) fn panel_scene_build_input_from_app_settings(
         panel_settings_state_from_app_settings(selected_display_index, settings),
         env!("CARGO_PKG_VERSION").to_string(),
         crate::updater_service::current_update_status(),
+        PanelInteractionProfile::Standalone,
     )
 }
 
@@ -69,6 +73,7 @@ pub(crate) fn native_panel_runtime_input_descriptor_from_app_settings(
         screen_frame,
         env!("CARGO_PKG_VERSION").to_string(),
         crate::updater_service::current_update_status(),
+        PanelInteractionProfile::Standalone,
     )
 }
 
@@ -82,6 +87,7 @@ pub(crate) fn native_panel_runtime_input_descriptor_from_context(
         panel_settings_state_from_app_settings(selected_display_index, settings),
         env!("CARGO_PKG_VERSION").to_string(),
         crate::updater_service::current_update_status(),
+        PanelInteractionProfile::Standalone,
     )
 }
 

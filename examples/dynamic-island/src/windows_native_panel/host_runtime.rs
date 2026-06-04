@@ -1,10 +1,5 @@
 use std::time::Instant;
 
-#[cfg(feature = "tauri-host")]
-use tauri::AppHandle;
-
-#[cfg(feature = "tauri-host")]
-use super::runtime_input::windows_runtime_input_descriptor;
 use super::{
     draw_presenter::WindowsNativePanelDrawPresenter,
     host_window::WindowsNativePanelHostWindow,
@@ -257,15 +252,6 @@ impl WindowsNativePanelRuntime {
         input: &NativePanelRuntimeInputDescriptor,
     ) -> Result<bool, String> {
         rerender_runtime_scene_sync_result_to_host_for_runtime_with_input_descriptor(self, input)
-    }
-
-    #[cfg(feature = "tauri-host")]
-    pub(super) fn rerender_from_last_snapshot<R: tauri::Runtime>(
-        &mut self,
-        app: &AppHandle<R>,
-    ) -> Result<bool, String> {
-        let input = windows_runtime_input_descriptor(app);
-        self.rerender_from_last_snapshot_with_input(&input)
     }
 
     pub(super) fn toggle_settings_surface_with_input(

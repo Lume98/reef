@@ -28,7 +28,7 @@ island/
 
 ```powershell
 cd D:\github\island
-cargo run -p dynamic_island --bin island-ui --features tauri-host
+cargo run -p dynamic_island --bin island-ui
 ```
 
 ## 构建

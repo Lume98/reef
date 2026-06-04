@@ -1,15 +1,7 @@
 use std::sync::atomic::AtomicBool;
 
 use echoisland_runtime::RuntimeSnapshot;
-#[cfg(feature = "tauri-host")]
-use tauri::AppHandle;
 
-#[cfg(feature = "tauri-host")]
-use crate::native_panel_renderer::facade::command::{
-    dispatch_drained_native_panel_platform_events_with_host,
-    spawn_native_panel_platform_event_dispatch_loop,
-    spawn_native_panel_platform_loops_with_event_dispatch, NativePanelRuntimeDispatchMode,
-};
 use crate::{
     native_panel_renderer::facade::command::{
         execute_native_panel_cycle_island_width_command,
@@ -26,21 +18,10 @@ use super::runtime_entry::{
     drain_windows_native_panel_platform_events, spawn_platform_loops_internal,
     with_windows_native_panel_runtime,
 };
-#[cfg(feature = "tauri-host")]
-use super::runtime_entry::{
-    windows_native_panel_event_dispatch_notifier, with_windows_native_panel_runtime_input,
-};
 use super::runtime_input::windows_runtime_input_descriptor_without_app;
 
-static WINDOWS_NATIVE_PANEL_EVENT_DISPATCH_LOOP_STARTED: AtomicBool = AtomicBool::new(false);
 static WINDOWS_NATIVE_PANEL_STANDALONE_EVENT_DISPATCH_LOOP_STARTED: AtomicBool =
     AtomicBool::new(false);
-
-#[cfg(feature = "tauri-host")]
-pub(crate) fn current_windows_native_panel_runtime_backend(
-) -> super::runtime_backend::WindowsNativePanelRuntimeBackendFacade {
-    super::runtime_backend::current_windows_native_panel_runtime_backend()
-}
 
 pub(crate) fn native_ui_enabled() -> bool {
     windows_native_ui_enabled_by_default()
@@ -50,56 +31,10 @@ pub(crate) fn create_native_panel() -> Result<(), String> {
     with_windows_native_panel_runtime(|runtime| runtime.create_panel())
 }
 
-#[cfg(feature = "tauri-host")]
-pub(crate) fn spawn_platform_loops<R: tauri::Runtime + 'static>(app: AppHandle<R>) {
-    spawn_native_panel_platform_loops_with_event_dispatch(
-        app,
-        spawn_platform_loops_internal,
-        spawn_windows_native_panel_event_dispatch_loop,
-    );
-}
-
 pub(crate) fn spawn_platform_loops_without_app() {
     ensure_windows_process_dpi_awareness();
     spawn_platform_loops_internal();
     spawn_windows_native_panel_standalone_event_dispatch_loop();
-}
-
-#[cfg(feature = "tauri-host")]
-pub(crate) fn dispatch_queued_native_panel_platform_events<R: tauri::Runtime + 'static>(
-    app: AppHandle<R>,
-) -> Result<(), String> {
-    dispatch_drained_native_panel_platform_events_with_host(
-        app,
-        drain_windows_native_panel_platform_events,
-        toggle_native_panel_settings_surface,
-        NativePanelRuntimeDispatchMode::Immediate,
-    )
-}
-
-#[cfg(feature = "tauri-host")]
-fn spawn_windows_native_panel_event_dispatch_loop<R: tauri::Runtime + 'static>(app: AppHandle<R>) {
-    spawn_native_panel_platform_event_dispatch_loop(
-        &WINDOWS_NATIVE_PANEL_EVENT_DISPATCH_LOOP_STARTED,
-        app,
-        windows_native_panel_event_dispatch_notifier(),
-        dispatch_queued_native_panel_platform_events,
-        "failed to dispatch Windows native panel event",
-    );
-}
-
-#[cfg(feature = "tauri-host")]
-pub(crate) fn update_native_panel_snapshot<R: tauri::Runtime>(
-    app: &AppHandle<R>,
-    snapshot: &RuntimeSnapshot,
-) -> Result<(), String> {
-    let sync = with_windows_native_panel_runtime_input(app, |runtime, input| {
-        runtime.sync_snapshot_bundle(snapshot, input)
-    })?;
-    if sync.is_some_and(|sync| sync.reminder.play_sound) {
-        play_message_card_sound();
-    }
-    Ok(())
 }
 
 pub(crate) fn update_native_panel_snapshot_without_app(
@@ -115,31 +50,6 @@ pub(crate) fn update_native_panel_snapshot_without_app(
     Ok(())
 }
 
-#[cfg(feature = "tauri-host")]
-pub(crate) fn hide_native_panel<R: tauri::Runtime>(_: &AppHandle<R>) -> Result<(), String> {
-    with_windows_native_panel_runtime(|runtime| runtime.hide_panel())
-}
-
-#[cfg(feature = "tauri-host")]
-pub(super) fn toggle_native_panel_settings_surface<R: tauri::Runtime>(
-    app: &AppHandle<R>,
-) -> Result<(), String> {
-    with_windows_native_panel_runtime_input(app, |runtime, input| {
-        runtime
-            .toggle_settings_surface_with_input(input)
-            .map(|_| ())
-    })
-}
-
-#[cfg(feature = "tauri-host")]
-pub(crate) fn refresh_native_panel_from_last_snapshot<R: tauri::Runtime>(
-    app: &AppHandle<R>,
-) -> Result<(), String> {
-    with_windows_native_panel_runtime(|runtime| {
-        runtime.rerender_from_last_snapshot(app).map(|_| ())
-    })
-}
-
 pub(crate) fn refresh_native_panel_from_last_snapshot_without_app() -> Result<(), String> {
     let input = windows_runtime_input_descriptor_without_app();
     with_windows_native_panel_runtime(|runtime| {
@@ -149,29 +59,10 @@ pub(crate) fn refresh_native_panel_from_last_snapshot_without_app() -> Result<()
     })
 }
 
-#[cfg(feature = "tauri-host")]
-pub(crate) fn reposition_native_panel_to_selected_display<R: tauri::Runtime>(
-    app: &AppHandle<R>,
-) -> Result<(), String> {
-    with_windows_native_panel_runtime_input(app, |runtime, input| {
-        runtime.reposition_to_selected_display_with_input(input)
-    })
-}
-
 pub(crate) fn reposition_native_panel_to_selected_display_without_app() -> Result<(), String> {
     let input = windows_runtime_input_descriptor_without_app();
     with_windows_native_panel_runtime(|runtime| {
         runtime.reposition_to_selected_display_with_input(&input)
-    })
-}
-
-#[cfg(feature = "tauri-host")]
-pub(crate) fn set_shared_expanded_body_height<R: tauri::Runtime>(
-    _: &AppHandle<R>,
-    body_height: f64,
-) -> Result<(), String> {
-    with_windows_native_panel_runtime(|runtime| {
-        runtime.set_shared_expanded_body_height(body_height)
     })
 }
 

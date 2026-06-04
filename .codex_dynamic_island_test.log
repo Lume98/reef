@@ -1,0 +1,1436 @@
+warning: unused imports: `compact_digit_y` and `extend_visible_content_primitives`
+   --> framework\reef-ui\src\native_panel_ui\visual_plan\mod.rs:144:24
+    |
+144 | pub(crate) use utils::{compact_digit_y, extend_visible_content_primitives};
+    |                        ^^^^^^^^^^^^^^^  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: struct `NativePanelLayoutSpacing` is never constructed
+  --> framework\reef-ui\src\native_panel_ui\component_models.rs:99:12
+   |
+99 | pub struct NativePanelLayoutSpacing {
+   |            ^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: function `build_native_panel_component_tree` is never used
+   --> framework\reef-ui\src\native_panel_ui\component_models.rs:117:8
+    |
+117 | pub fn build_native_panel_component_tree(
+    |        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: function `build_native_panel_component_tree_from_presentation` is never used
+   --> framework\reef-ui\src\native_panel_ui\component_models.rs:128:8
+    |
+128 | pub fn build_native_panel_component_tree_from_presentation(
+    |        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: function `build_native_panel_component_tree_from_presentation_and_cards` is never used
+   --> framework\reef-ui\src\native_panel_ui\component_models.rs:135:8
+    |
+135 | pub fn build_native_panel_component_tree_from_presentation_and_cards(
+    |        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: function `build_native_panel_presentation_model_from_visual_plan_input` is never used
+   --> framework\reef-ui\src\native_panel_ui\component_models.rs:215:4
+    |
+215 | fn build_native_panel_presentation_model_from_visual_plan_input(
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: function `push_card_components` is never used
+   --> framework\reef-ui\src\native_panel_ui\component_models.rs:265:4
+    |
+265 | fn push_card_components(
+    |    ^^^^^^^^^^^^^^^^^^^^
+
+warning: function `push_setting_row_components` is never used
+   --> framework\reef-ui\src\native_panel_ui\component_models.rs:300:4
+    |
+300 | fn push_setting_row_components(
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: function `build_native_panel_component_tree_from_visual_plan` is never used
+   --> framework\reef-ui\src\native_panel_ui\component_models.rs:338:8
+    |
+338 | pub fn build_native_panel_component_tree_from_visual_plan(
+    |        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `reef-ui` (lib) generated 9 warnings (run `cargo fix --lib -p reef-ui` to apply 1 suggestion)
+warning: unexpected `cfg` condition value: `tauri-host`
+ --> examples\dynamic-island\src\native_panel_renderer\host_runtime_dispatch.rs:1:7
+  |
+1 | #[cfg(feature = "tauri-host")]
+  |       ^^^^^^^^^^^^^^^^^^^^^^ help: remove the condition
+  |
+  = note: no expected values for `feature`
+  = help: consider adding `tauri-host` as a feature in `Cargo.toml`
+  = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+  = note: `#[warn(unexpected_cfgs)]` on by default
+
+warning: unexpected `cfg` condition value: `tauri-host`
+  --> examples\dynamic-island\src\native_panel_renderer\host_runtime_dispatch.rs:10:7
+   |
+10 | #[cfg(feature = "tauri-host")]
+   |       ^^^^^^^^^^^^^^^^^^^^^^ help: remove the condition
+   |
+   = note: no expected values for `feature`
+   = help: consider adding `tauri-host` as a feature in `Cargo.toml`
+   = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition value: `tauri-host`
+  --> examples\dynamic-island\src\native_panel_renderer\host_runtime_dispatch.rs:39:7
+   |
+39 | #[cfg(feature = "tauri-host")]
+   |       ^^^^^^^^^^^^^^^^^^^^^^ help: remove the condition
+   |
+   = note: no expected values for `feature`
+   = help: consider adding `tauri-host` as a feature in `Cargo.toml`
+   = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition value: `tauri-host`
+ --> examples\dynamic-island\src\native_panel_renderer\platform_adapter.rs:1:7
+  |
+1 | #[cfg(feature = "tauri-host")]
+  |       ^^^^^^^^^^^^^^^^^^^^^^ help: remove the condition
+  |
+  = note: no expected values for `feature`
+  = help: consider adding `tauri-host` as a feature in `Cargo.toml`
+  = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition value: `tauri-host`
+ --> examples\dynamic-island\src\native_panel_renderer\platform_adapter.rs:4:7
+  |
+4 | #[cfg(feature = "tauri-host")]
+  |       ^^^^^^^^^^^^^^^^^^^^^^ help: remove the condition
+  |
+  = note: no expected values for `feature`
+  = help: consider adding `tauri-host` as a feature in `Cargo.toml`
+  = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition value: `tauri-host`
+  --> examples\dynamic-island\src\native_panel_renderer\platform_adapter.rs:12:7
+   |
+12 | #[cfg(feature = "tauri-host")]
+   |       ^^^^^^^^^^^^^^^^^^^^^^ help: remove the condition
+   |
+   = note: no expected values for `feature`
+   = help: consider adding `tauri-host` as a feature in `Cargo.toml`
+   = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition value: `tauri-host`
+  --> examples\dynamic-island\src\native_panel_renderer\platform_adapter.rs:23:7
+   |
+23 | #[cfg(feature = "tauri-host")]
+   |       ^^^^^^^^^^^^^^^^^^^^^^ help: remove the condition
+   |
+   = note: no expected values for `feature`
+   = help: consider adding `tauri-host` as a feature in `Cargo.toml`
+   = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition value: `tauri-host`
+ --> examples\dynamic-island\src\native_panel_renderer\runtime_platform_backend.rs:4:7
+  |
+4 | #[cfg(feature = "tauri-host")]
+  |       ^^^^^^^^^^^^^^^^^^^^^^ help: remove the condition
+  |
+  = note: no expected values for `feature`
+  = help: consider adding `tauri-host` as a feature in `Cargo.toml`
+  = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition value: `tauri-host`
+  --> examples\dynamic-island\src\native_panel_renderer\runtime_platform_backend.rs:17:7
+   |
+17 | #[cfg(feature = "tauri-host")]
+   |       ^^^^^^^^^^^^^^^^^^^^^^ help: remove the condition
+   |
+   = note: no expected values for `feature`
+   = help: consider adding `tauri-host` as a feature in `Cargo.toml`
+   = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition value: `tauri-host`
+  --> examples\dynamic-island\src\native_panel_renderer\runtime_platform_backend.rs:61:7
+   |
+61 | #[cfg(feature = "tauri-host")]
+   |       ^^^^^^^^^^^^^^^^^^^^^^ help: remove the condition
+   |
+   = note: no expected values for `feature`
+   = help: consider adding `tauri-host` as a feature in `Cargo.toml`
+   = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition value: `tauri-host`
+  --> examples\dynamic-island\src\native_panel_renderer\runtime_platform_backend.rs:99:7
+   |
+99 | #[cfg(feature = "tauri-host")]
+   |       ^^^^^^^^^^^^^^^^^^^^^^ help: remove the condition
+   |
+   = note: no expected values for `feature`
+   = help: consider adding `tauri-host` as a feature in `Cargo.toml`
+   = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition value: `tauri-host`
+   --> examples\dynamic-island\src\native_panel_renderer\runtime_platform_backend.rs:105:7
+    |
+105 | #[cfg(feature = "tauri-host")]
+    |       ^^^^^^^^^^^^^^^^^^^^^^ help: remove the condition
+    |
+    = note: no expected values for `feature`
+    = help: consider adding `tauri-host` as a feature in `Cargo.toml`
+    = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition value: `tauri-host`
+   --> examples\dynamic-island\src\native_panel_renderer\runtime_platform_backend.rs:114:7
+    |
+114 | #[cfg(feature = "tauri-host")]
+    |       ^^^^^^^^^^^^^^^^^^^^^^ help: remove the condition
+    |
+    = note: no expected values for `feature`
+    = help: consider adding `tauri-host` as a feature in `Cargo.toml`
+    = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition value: `tauri-host`
+   --> examples\dynamic-island\src\native_panel_renderer\runtime_platform_backend.rs:179:7
+    |
+179 | #[cfg(feature = "tauri-host")]
+    |       ^^^^^^^^^^^^^^^^^^^^^^ help: remove the condition
+    |
+    = note: no expected values for `feature`
+    = help: consider adding `tauri-host` as a feature in `Cargo.toml`
+    = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition value: `tauri-host`
+   --> examples\dynamic-island\src\native_panel_renderer\runtime_platform_backend.rs:242:7
+    |
+242 | #[cfg(feature = "tauri-host")]
+    |       ^^^^^^^^^^^^^^^^^^^^^^ help: remove the condition
+    |
+    = note: no expected values for `feature`
+    = help: consider adding `tauri-host` as a feature in `Cargo.toml`
+    = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition value: `tauri-host`
+   --> examples\dynamic-island\src\native_panel_renderer\runtime_platform_backend.rs:245:11
+    |
+245 | #[cfg(all(feature = "tauri-host", target_os = "macos"))]
+    |           ^^^^^^^^^^^^^^^^^^^^^^ help: remove the condition
+    |
+    = note: no expected values for `feature`
+    = help: consider adding `tauri-host` as a feature in `Cargo.toml`
+    = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition value: `tauri-host`
+   --> examples\dynamic-island\src\native_panel_renderer\runtime_platform_backend.rs:250:11
+    |
+250 | #[cfg(all(feature = "tauri-host", target_os = "windows"))]
+    |           ^^^^^^^^^^^^^^^^^^^^^^ help: remove the condition
+    |
+    = note: no expected values for `feature`
+    = help: consider adding `tauri-host` as a feature in `Cargo.toml`
+    = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition value: `tauri-host`
+   --> examples\dynamic-island\src\native_panel_renderer\runtime_platform_backend.rs:256:5
+    |
+256 |     feature = "tauri-host",
+    |     ^^^^^^^^^^^^^^^^^^^^^^ help: remove the condition
+    |
+    = note: no expected values for `feature`
+    = help: consider adding `tauri-host` as a feature in `Cargo.toml`
+    = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition value: `tauri-host`
+   --> examples\dynamic-island\src\native_panel_renderer\runtime_platform_backend.rs:264:11
+    |
+264 | #[cfg(all(feature = "tauri-host", target_os = "macos"))]
+    |           ^^^^^^^^^^^^^^^^^^^^^^ help: remove the condition
+    |
+    = note: no expected values for `feature`
+    = help: consider adding `tauri-host` as a feature in `Cargo.toml`
+    = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition value: `tauri-host`
+   --> examples\dynamic-island\src\native_panel_renderer\runtime_platform_backend.rs:270:11
+    |
+270 | #[cfg(all(feature = "tauri-host", target_os = "windows"))]
+    |           ^^^^^^^^^^^^^^^^^^^^^^ help: remove the condition
+    |
+    = note: no expected values for `feature`
+    = help: consider adding `tauri-host` as a feature in `Cargo.toml`
+    = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition value: `tauri-host`
+   --> examples\dynamic-island\src\native_panel_renderer\runtime_platform_backend.rs:277:5
+    |
+277 |     feature = "tauri-host",
+    |     ^^^^^^^^^^^^^^^^^^^^^^ help: remove the condition
+    |
+    = note: no expected values for `feature`
+    = help: consider adding `tauri-host` as a feature in `Cargo.toml`
+    = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition value: `tauri-host`
+   --> examples\dynamic-island\src\native_panel_renderer\runtime_platform_backend.rs:344:5
+    |
+344 |     feature = "tauri-host",
+    |     ^^^^^^^^^^^^^^^^^^^^^^ help: remove the condition
+    |
+    = note: no expected values for `feature`
+    = help: consider adding `tauri-host` as a feature in `Cargo.toml`
+    = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition value: `tauri-host`
+ --> examples\dynamic-island\src\native_panel_renderer\runtime_commands.rs:2:7
+  |
+2 | #[cfg(feature = "tauri-host")]
+  |       ^^^^^^^^^^^^^^^^^^^^^^ help: remove the condition
+  |
+  = note: no expected values for `feature`
+  = help: consider adding `tauri-host` as a feature in `Cargo.toml`
+  = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition value: `tauri-host`
+ --> examples\dynamic-island\src\native_panel_renderer\runtime_commands.rs:8:7
+  |
+8 | #[cfg(feature = "tauri-host")]
+  |       ^^^^^^^^^^^^^^^^^^^^^^ help: remove the condition
+  |
+  = note: no expected values for `feature`
+  = help: consider adding `tauri-host` as a feature in `Cargo.toml`
+  = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition value: `tauri-host`
+  --> examples\dynamic-island\src\native_panel_renderer\runtime_commands.rs:21:7
+   |
+21 | #[cfg(feature = "tauri-host")]
+   |       ^^^^^^^^^^^^^^^^^^^^^^ help: remove the condition
+   |
+   = note: no expected values for `feature`
+   = help: consider adding `tauri-host` as a feature in `Cargo.toml`
+   = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition value: `tauri-host`
+  --> examples\dynamic-island\src\native_panel_renderer\runtime_commands.rs:29:7
+   |
+29 | #[cfg(feature = "tauri-host")]
+   |       ^^^^^^^^^^^^^^^^^^^^^^ help: remove the condition
+   |
+   = note: no expected values for `feature`
+   = help: consider adding `tauri-host` as a feature in `Cargo.toml`
+   = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition value: `tauri-host`
+  --> examples\dynamic-island\src\native_panel_renderer\runtime_commands.rs:35:7
+   |
+35 | #[cfg(feature = "tauri-host")]
+   |       ^^^^^^^^^^^^^^^^^^^^^^ help: remove the condition
+   |
+   = note: no expected values for `feature`
+   = help: consider adding `tauri-host` as a feature in `Cargo.toml`
+   = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition value: `tauri-host`
+  --> examples\dynamic-island\src\native_panel_renderer\runtime_commands.rs:37:7
+   |
+37 | #[cfg(feature = "tauri-host")]
+   |       ^^^^^^^^^^^^^^^^^^^^^^ help: remove the condition
+   |
+   = note: no expected values for `feature`
+   = help: consider adding `tauri-host` as a feature in `Cargo.toml`
+   = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition value: `tauri-host`
+  --> examples\dynamic-island\src\native_panel_renderer\runtime_commands.rs:40:7
+   |
+40 | #[cfg(feature = "tauri-host")]
+   |       ^^^^^^^^^^^^^^^^^^^^^^ help: remove the condition
+   |
+   = note: no expected values for `feature`
+   = help: consider adding `tauri-host` as a feature in `Cargo.toml`
+   = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition value: `tauri-host`
+  --> examples\dynamic-island\src\native_panel_renderer\runtime_commands.rs:49:7
+   |
+49 | #[cfg(feature = "tauri-host")]
+   |       ^^^^^^^^^^^^^^^^^^^^^^ help: remove the condition
+   |
+   = note: no expected values for `feature`
+   = help: consider adding `tauri-host` as a feature in `Cargo.toml`
+   = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition value: `tauri-host`
+  --> examples\dynamic-island\src\native_panel_renderer\runtime_commands.rs:57:7
+   |
+57 | #[cfg(feature = "tauri-host")]
+   |       ^^^^^^^^^^^^^^^^^^^^^^ help: remove the condition
+   |
+   = note: no expected values for `feature`
+   = help: consider adding `tauri-host` as a feature in `Cargo.toml`
+   = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition value: `tauri-host`
+  --> examples\dynamic-island\src\native_panel_renderer\runtime_commands.rs:62:7
+   |
+62 | #[cfg(feature = "tauri-host")]
+   |       ^^^^^^^^^^^^^^^^^^^^^^ help: remove the condition
+   |
+   = note: no expected values for `feature`
+   = help: consider adding `tauri-host` as a feature in `Cargo.toml`
+   = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition value: `tauri-host`
+   --> examples\dynamic-island\src\native_panel_renderer\runtime_commands.rs:151:7
+    |
+151 | #[cfg(feature = "tauri-host")]
+    |       ^^^^^^^^^^^^^^^^^^^^^^ help: remove the condition
+    |
+    = note: no expected values for `feature`
+    = help: consider adding `tauri-host` as a feature in `Cargo.toml`
+    = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition value: `tauri-host`
+   --> examples\dynamic-island\src\native_panel_renderer\runtime_commands.rs:159:7
+    |
+159 | #[cfg(feature = "tauri-host")]
+    |       ^^^^^^^^^^^^^^^^^^^^^^ help: remove the condition
+    |
+    = note: no expected values for `feature`
+    = help: consider adding `tauri-host` as a feature in `Cargo.toml`
+    = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition value: `tauri-host`
+   --> examples\dynamic-island\src\native_panel_renderer\runtime_commands.rs:182:7
+    |
+182 | #[cfg(feature = "tauri-host")]
+    |       ^^^^^^^^^^^^^^^^^^^^^^ help: remove the condition
+    |
+    = note: no expected values for `feature`
+    = help: consider adding `tauri-host` as a feature in `Cargo.toml`
+    = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition value: `tauri-host`
+   --> examples\dynamic-island\src\native_panel_renderer\runtime_commands.rs:197:7
+    |
+197 | #[cfg(feature = "tauri-host")]
+    |       ^^^^^^^^^^^^^^^^^^^^^^ help: remove the condition
+    |
+    = note: no expected values for `feature`
+    = help: consider adding `tauri-host` as a feature in `Cargo.toml`
+    = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition value: `tauri-host`
+   --> examples\dynamic-island\src\native_panel_renderer\runtime_commands.rs:212:7
+    |
+212 | #[cfg(feature = "tauri-host")]
+    |       ^^^^^^^^^^^^^^^^^^^^^^ help: remove the condition
+    |
+    = note: no expected values for `feature`
+    = help: consider adding `tauri-host` as a feature in `Cargo.toml`
+    = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition value: `tauri-host`
+   --> examples\dynamic-island\src\native_panel_renderer\runtime_commands.rs:233:7
+    |
+233 | #[cfg(feature = "tauri-host")]
+    |       ^^^^^^^^^^^^^^^^^^^^^^ help: remove the condition
+    |
+    = note: no expected values for `feature`
+    = help: consider adding `tauri-host` as a feature in `Cargo.toml`
+    = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition value: `tauri-host`
+   --> examples\dynamic-island\src\native_panel_renderer\runtime_commands.rs:257:7
+    |
+257 | #[cfg(feature = "tauri-host")]
+    |       ^^^^^^^^^^^^^^^^^^^^^^ help: remove the condition
+    |
+    = note: no expected values for `feature`
+    = help: consider adding `tauri-host` as a feature in `Cargo.toml`
+    = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition value: `tauri-host`
+   --> examples\dynamic-island\src\native_panel_renderer\runtime_commands.rs:279:7
+    |
+279 | #[cfg(feature = "tauri-host")]
+    |       ^^^^^^^^^^^^^^^^^^^^^^ help: remove the condition
+    |
+    = note: no expected values for `feature`
+    = help: consider adding `tauri-host` as a feature in `Cargo.toml`
+    = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition value: `tauri-host`
+   --> examples\dynamic-island\src\native_panel_renderer\runtime_commands.rs:305:7
+    |
+305 | #[cfg(feature = "tauri-host")]
+    |       ^^^^^^^^^^^^^^^^^^^^^^ help: remove the condition
+    |
+    = note: no expected values for `feature`
+    = help: consider adding `tauri-host` as a feature in `Cargo.toml`
+    = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition value: `tauri-host`
+   --> examples\dynamic-island\src\native_panel_renderer\runtime_commands.rs:317:7
+    |
+317 | #[cfg(feature = "tauri-host")]
+    |       ^^^^^^^^^^^^^^^^^^^^^^ help: remove the condition
+    |
+    = note: no expected values for `feature`
+    = help: consider adding `tauri-host` as a feature in `Cargo.toml`
+    = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition value: `tauri-host`
+   --> examples\dynamic-island\src\native_panel_renderer\runtime_commands.rs:326:7
+    |
+326 | #[cfg(feature = "tauri-host")]
+    |       ^^^^^^^^^^^^^^^^^^^^^^ help: remove the condition
+    |
+    = note: no expected values for `feature`
+    = help: consider adding `tauri-host` as a feature in `Cargo.toml`
+    = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition value: `tauri-host`
+   --> examples\dynamic-island\src\native_panel_renderer\runtime_commands.rs:339:7
+    |
+339 | #[cfg(feature = "tauri-host")]
+    |       ^^^^^^^^^^^^^^^^^^^^^^ help: remove the condition
+    |
+    = note: no expected values for `feature`
+    = help: consider adding `tauri-host` as a feature in `Cargo.toml`
+    = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition value: `tauri-host`
+   --> examples\dynamic-island\src\native_panel_renderer\runtime_commands.rs:346:7
+    |
+346 | #[cfg(feature = "tauri-host")]
+    |       ^^^^^^^^^^^^^^^^^^^^^^ help: remove the condition
+    |
+    = note: no expected values for `feature`
+    = help: consider adding `tauri-host` as a feature in `Cargo.toml`
+    = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition value: `tauri-host`
+   --> examples\dynamic-island\src\native_panel_renderer\runtime_commands.rs:358:7
+    |
+358 | #[cfg(feature = "tauri-host")]
+    |       ^^^^^^^^^^^^^^^^^^^^^^ help: remove the condition
+    |
+    = note: no expected values for `feature`
+    = help: consider adding `tauri-host` as a feature in `Cargo.toml`
+    = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition value: `tauri-host`
+   --> examples\dynamic-island\src\native_panel_renderer\runtime_commands.rs:365:7
+    |
+365 | #[cfg(feature = "tauri-host")]
+    |       ^^^^^^^^^^^^^^^^^^^^^^ help: remove the condition
+    |
+    = note: no expected values for `feature`
+    = help: consider adding `tauri-host` as a feature in `Cargo.toml`
+    = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition value: `tauri-host`
+   --> examples\dynamic-island\src\native_panel_renderer\runtime_commands.rs:378:7
+    |
+378 | #[cfg(feature = "tauri-host")]
+    |       ^^^^^^^^^^^^^^^^^^^^^^ help: remove the condition
+    |
+    = note: no expected values for `feature`
+    = help: consider adding `tauri-host` as a feature in `Cargo.toml`
+    = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition value: `tauri-host`
+   --> examples\dynamic-island\src\native_panel_renderer\runtime_commands.rs:519:7
+    |
+519 | #[cfg(feature = "tauri-host")]
+    |       ^^^^^^^^^^^^^^^^^^^^^^ help: remove the condition
+    |
+    = note: no expected values for `feature`
+    = help: consider adding `tauri-host` as a feature in `Cargo.toml`
+    = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition value: `tauri-host`
+   --> examples\dynamic-island\src\native_panel_renderer\runtime_commands.rs:572:7
+    |
+572 | #[cfg(feature = "tauri-host")]
+    |       ^^^^^^^^^^^^^^^^^^^^^^ help: remove the condition
+    |
+    = note: no expected values for `feature`
+    = help: consider adding `tauri-host` as a feature in `Cargo.toml`
+    = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition value: `tauri-host`
+ --> examples\dynamic-island\src\native_panel_renderer\runtime_render_payload.rs:2:7
+  |
+2 | #[cfg(feature = "tauri-host")]
+  |       ^^^^^^^^^^^^^^^^^^^^^^ help: remove the condition
+  |
+  = note: no expected values for `feature`
+  = help: consider adding `tauri-host` as a feature in `Cargo.toml`
+  = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition value: `tauri-host`
+  --> examples\dynamic-island\src\native_panel_renderer\runtime_render_payload.rs:48:7
+   |
+48 | #[cfg(feature = "tauri-host")]
+   |       ^^^^^^^^^^^^^^^^^^^^^^ help: remove the condition
+   |
+   = note: no expected values for `feature`
+   = help: consider adding `tauri-host` as a feature in `Cargo.toml`
+   = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition value: `tauri-host`
+  --> examples\dynamic-island\src\native_panel_renderer\facade.rs:10:11
+   |
+10 |     #[cfg(feature = "tauri-host")]
+   |           ^^^^^^^^^^^^^^^^^^^^^^ help: remove the condition
+   |
+   = note: no expected values for `feature`
+   = help: consider adding `tauri-host` as a feature in `Cargo.toml`
+   = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition value: `tauri-host`
+  --> examples\dynamic-island\src\native_panel_renderer\facade.rs:16:11
+   |
+16 |     #[cfg(feature = "tauri-host")]
+   |           ^^^^^^^^^^^^^^^^^^^^^^ help: remove the condition
+   |
+   = note: no expected values for `feature`
+   = help: consider adding `tauri-host` as a feature in `Cargo.toml`
+   = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition value: `tauri-host`
+   --> examples\dynamic-island\src\native_panel_renderer\facade.rs:247:11
+    |
+247 |     #[cfg(feature = "tauri-host")]
+    |           ^^^^^^^^^^^^^^^^^^^^^^ help: remove the condition
+    |
+    = note: no expected values for `feature`
+    = help: consider adding `tauri-host` as a feature in `Cargo.toml`
+    = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition value: `tauri-host`
+   --> examples\dynamic-island\src\native_panel_renderer\facade.rs:252:11
+    |
+252 |     #[cfg(feature = "tauri-host")]
+    |           ^^^^^^^^^^^^^^^^^^^^^^ help: remove the condition
+    |
+    = note: no expected values for `feature`
+    = help: consider adding `tauri-host` as a feature in `Cargo.toml`
+    = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition value: `tauri-host`
+   --> examples\dynamic-island\src\native_panel_renderer\facade.rs:259:11
+    |
+259 |     #[cfg(feature = "tauri-host")]
+    |           ^^^^^^^^^^^^^^^^^^^^^^ help: remove the condition
+    |
+    = note: no expected values for `feature`
+    = help: consider adding `tauri-host` as a feature in `Cargo.toml`
+    = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition value: `tauri-host`
+   --> examples\dynamic-island\src\native_panel_renderer\facade.rs:280:11
+    |
+280 |     #[cfg(feature = "tauri-host")]
+    |           ^^^^^^^^^^^^^^^^^^^^^^ help: remove the condition
+    |
+    = note: no expected values for `feature`
+    = help: consider adding `tauri-host` as a feature in `Cargo.toml`
+    = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition value: `tauri-host`
+  --> examples\dynamic-island\src\windows_native_panel\mod.rs:34:7
+   |
+34 | #[cfg(feature = "tauri-host")]
+   |       ^^^^^^^^^^^^^^^^^^^^^^ help: remove the condition
+   |
+   = note: no expected values for `feature`
+   = help: consider adding `tauri-host` as a feature in `Cargo.toml`
+   = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition value: `tauri-host`
+  --> examples\dynamic-island\src\windows_native_panel\mod.rs:43:7
+   |
+43 | #[cfg(feature = "tauri-host")]
+   |       ^^^^^^^^^^^^^^^^^^^^^^ help: remove the condition
+   |
+   = note: no expected values for `feature`
+   = help: consider adding `tauri-host` as a feature in `Cargo.toml`
+   = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition value: `tauri-host`
+  --> examples\dynamic-island\src\windows_native_panel\mod.rs:52:7
+   |
+52 | #[cfg(feature = "tauri-host")]
+   |       ^^^^^^^^^^^^^^^^^^^^^^ help: remove the condition
+   |
+   = note: no expected values for `feature`
+   = help: consider adding `tauri-host` as a feature in `Cargo.toml`
+   = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+
+warning: unused import: `reef_core::color::Color as ReefColor`
+  --> examples\dynamic-island\src\windows_native_panel\d2d_painter\mod.rs:10:5
+   |
+10 | use reef_core::color::Color as ReefColor;
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: unused import: `PathSegment`
+  --> examples\dynamic-island\src\windows_native_panel\d2d_painter\mod.rs:12:5
+   |
+12 |     PathSegment, VisualPlan as ReefVisualPlan, VisualPrimitive as ReefVisualPrimitive,
+   |     ^^^^^^^^^^^
+
+warning: unexpected `cfg` condition value: `tauri-host`
+ --> examples\dynamic-island\src\windows_native_panel\facade.rs:4:7
+  |
+4 | #[cfg(feature = "tauri-host")]
+  |       ^^^^^^^^^^^^^^^^^^^^^^ help: remove the condition
+  |
+  = note: no expected values for `feature`
+  = help: consider adding `tauri-host` as a feature in `Cargo.toml`
+  = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition value: `tauri-host`
+ --> examples\dynamic-island\src\windows_native_panel\facade.rs:7:7
+  |
+7 | #[cfg(feature = "tauri-host")]
+  |       ^^^^^^^^^^^^^^^^^^^^^^ help: remove the condition
+  |
+  = note: no expected values for `feature`
+  = help: consider adding `tauri-host` as a feature in `Cargo.toml`
+  = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition value: `tauri-host`
+  --> examples\dynamic-island\src\windows_native_panel\facade.rs:29:7
+   |
+29 | #[cfg(feature = "tauri-host")]
+   |       ^^^^^^^^^^^^^^^^^^^^^^ help: remove the condition
+   |
+   = note: no expected values for `feature`
+   = help: consider adding `tauri-host` as a feature in `Cargo.toml`
+   = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition value: `tauri-host`
+  --> examples\dynamic-island\src\windows_native_panel\facade.rs:39:7
+   |
+39 | #[cfg(feature = "tauri-host")]
+   |       ^^^^^^^^^^^^^^^^^^^^^^ help: remove the condition
+   |
+   = note: no expected values for `feature`
+   = help: consider adding `tauri-host` as a feature in `Cargo.toml`
+   = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition value: `tauri-host`
+  --> examples\dynamic-island\src\windows_native_panel\facade.rs:53:7
+   |
+53 | #[cfg(feature = "tauri-host")]
+   |       ^^^^^^^^^^^^^^^^^^^^^^ help: remove the condition
+   |
+   = note: no expected values for `feature`
+   = help: consider adding `tauri-host` as a feature in `Cargo.toml`
+   = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition value: `tauri-host`
+  --> examples\dynamic-island\src\windows_native_panel\facade.rs:68:7
+   |
+68 | #[cfg(feature = "tauri-host")]
+   |       ^^^^^^^^^^^^^^^^^^^^^^ help: remove the condition
+   |
+   = note: no expected values for `feature`
+   = help: consider adding `tauri-host` as a feature in `Cargo.toml`
+   = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition value: `tauri-host`
+  --> examples\dynamic-island\src\windows_native_panel\facade.rs:80:7
+   |
+80 | #[cfg(feature = "tauri-host")]
+   |       ^^^^^^^^^^^^^^^^^^^^^^ help: remove the condition
+   |
+   = note: no expected values for `feature`
+   = help: consider adding `tauri-host` as a feature in `Cargo.toml`
+   = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition value: `tauri-host`
+  --> examples\dynamic-island\src\windows_native_panel\facade.rs:91:7
+   |
+91 | #[cfg(feature = "tauri-host")]
+   |       ^^^^^^^^^^^^^^^^^^^^^^ help: remove the condition
+   |
+   = note: no expected values for `feature`
+   = help: consider adding `tauri-host` as a feature in `Cargo.toml`
+   = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition value: `tauri-host`
+   --> examples\dynamic-island\src\windows_native_panel\facade.rs:118:7
+    |
+118 | #[cfg(feature = "tauri-host")]
+    |       ^^^^^^^^^^^^^^^^^^^^^^ help: remove the condition
+    |
+    = note: no expected values for `feature`
+    = help: consider adding `tauri-host` as a feature in `Cargo.toml`
+    = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition value: `tauri-host`
+   --> examples\dynamic-island\src\windows_native_panel\facade.rs:123:7
+    |
+123 | #[cfg(feature = "tauri-host")]
+    |       ^^^^^^^^^^^^^^^^^^^^^^ help: remove the condition
+    |
+    = note: no expected values for `feature`
+    = help: consider adding `tauri-host` as a feature in `Cargo.toml`
+    = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition value: `tauri-host`
+   --> examples\dynamic-island\src\windows_native_panel\facade.rs:134:7
+    |
+134 | #[cfg(feature = "tauri-host")]
+    |       ^^^^^^^^^^^^^^^^^^^^^^ help: remove the condition
+    |
+    = note: no expected values for `feature`
+    = help: consider adding `tauri-host` as a feature in `Cargo.toml`
+    = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition value: `tauri-host`
+   --> examples\dynamic-island\src\windows_native_panel\facade.rs:152:7
+    |
+152 | #[cfg(feature = "tauri-host")]
+    |       ^^^^^^^^^^^^^^^^^^^^^^ help: remove the condition
+    |
+    = note: no expected values for `feature`
+    = help: consider adding `tauri-host` as a feature in `Cargo.toml`
+    = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition value: `tauri-host`
+   --> examples\dynamic-island\src\windows_native_panel\facade.rs:168:7
+    |
+168 | #[cfg(feature = "tauri-host")]
+    |       ^^^^^^^^^^^^^^^^^^^^^^ help: remove the condition
+    |
+    = note: no expected values for `feature`
+    = help: consider adding `tauri-host` as a feature in `Cargo.toml`
+    = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition value: `tauri-host`
+ --> examples\dynamic-island\src\windows_native_panel\host_runtime.rs:3:7
+  |
+3 | #[cfg(feature = "tauri-host")]
+  |       ^^^^^^^^^^^^^^^^^^^^^^ help: remove the condition
+  |
+  = note: no expected values for `feature`
+  = help: consider adding `tauri-host` as a feature in `Cargo.toml`
+  = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition value: `tauri-host`
+ --> examples\dynamic-island\src\windows_native_panel\host_runtime.rs:6:7
+  |
+6 | #[cfg(feature = "tauri-host")]
+  |       ^^^^^^^^^^^^^^^^^^^^^^ help: remove the condition
+  |
+  = note: no expected values for `feature`
+  = help: consider adding `tauri-host` as a feature in `Cargo.toml`
+  = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition value: `tauri-host`
+   --> examples\dynamic-island\src\windows_native_panel\host_runtime.rs:262:11
+    |
+262 |     #[cfg(feature = "tauri-host")]
+    |           ^^^^^^^^^^^^^^^^^^^^^^ help: remove the condition
+    |
+    = note: no expected values for `feature`
+    = help: consider adding `tauri-host` as a feature in `Cargo.toml`
+    = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition value: `tauri-host`
+ --> examples\dynamic-island\src\windows_native_panel\runtime_entry.rs:1:7
+  |
+1 | #[cfg(feature = "tauri-host")]
+  |       ^^^^^^^^^^^^^^^^^^^^^^ help: remove the condition
+  |
+  = note: no expected values for `feature`
+  = help: consider adding `tauri-host` as a feature in `Cargo.toml`
+  = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition value: `tauri-host`
+ --> examples\dynamic-island\src\windows_native_panel\runtime_entry.rs:5:7
+  |
+5 | #[cfg(feature = "tauri-host")]
+  |       ^^^^^^^^^^^^^^^^^^^^^^ help: remove the condition
+  |
+  = note: no expected values for `feature`
+  = help: consider adding `tauri-host` as a feature in `Cargo.toml`
+  = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition value: `tauri-host`
+  --> examples\dynamic-island\src\windows_native_panel\runtime_entry.rs:13:7
+   |
+13 | #[cfg(feature = "tauri-host")]
+   |       ^^^^^^^^^^^^^^^^^^^^^^ help: remove the condition
+   |
+   = note: no expected values for `feature`
+   = help: consider adding `tauri-host` as a feature in `Cargo.toml`
+   = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition value: `tauri-host`
+  --> examples\dynamic-island\src\windows_native_panel\runtime_entry.rs:71:7
+   |
+71 | #[cfg(feature = "tauri-host")]
+   |       ^^^^^^^^^^^^^^^^^^^^^^ help: remove the condition
+   |
+   = note: no expected values for `feature`
+   = help: consider adding `tauri-host` as a feature in `Cargo.toml`
+   = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+
+warning: unused variable: `widget_plan`
+   --> examples\dynamic-island\src\windows_native_panel\d2d_painter\mod.rs:435:9
+    |
+435 |         widget_plan: Option<&ReefVisualPlan>,
+    |         ^^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_widget_plan`
+    |
+    = note: `#[warn(unused_variables)]` (part of `#[warn(unused)]`) on by default
+
+warning: unused variable: `widget_plan`
+   --> examples\dynamic-island\src\windows_native_panel\paint_backend.rs:509:5
+    |
+509 |     widget_plan: Option<&ReefVisualPlan>,
+    |     ^^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_widget_plan`
+
+warning: struct `PanelSceneState` is never constructed
+  --> examples\dynamic-island\src\panel_scene_service.rs:21:19
+   |
+21 | pub(crate) struct PanelSceneState {
+   |                   ^^^^^^^^^^^^^^^
+   |
+   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: methods `build_surface_scenes` and `build_status_surface_scene` are never used
+  --> examples\dynamic-island\src\panel_scene_service.rs:26:19
+   |
+25 | impl PanelSceneState {
+   | -------------------- methods in this implementation
+26 |     pub(crate) fn build_surface_scenes(
+   |                   ^^^^^^^^^^^^^^^^^^^^
+...
+57 |     pub(crate) fn build_status_surface_scene(
+   |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: function `directwrite_text_requests_from_visual_plan` is never used
+  --> examples\dynamic-island\src\windows_native_panel\d2d_painter\mod.rs:60:15
+   |
+60 | pub(super) fn directwrite_text_requests_from_visual_plan(
+   |               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: function `directwrite_text_request_from_visual_primitive` is never used
+   --> examples\dynamic-island\src\windows_native_panel\d2d_painter\mod.rs:105:4
+    |
+105 | fn directwrite_text_request_from_visual_primitive(
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: function `native_text_weight_from_reef` is never used
+   --> examples\dynamic-island\src\windows_native_panel\d2d_painter\mod.rs:127:4
+    |
+127 | fn native_text_weight_from_reef(
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: function `native_text_alignment_from_reef` is never used
+   --> examples\dynamic-island\src\windows_native_panel\d2d_painter\mod.rs:143:4
+    |
+143 | fn native_text_alignment_from_reef(
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: method `point` is never used
+   --> examples\dynamic-island\src\windows_native_panel\d2d_painter\mod.rs:226:19
+    |
+210 | impl WindowsDirect2DCoordinateSpace {
+    | ----------------------------------- method in this implementation
+...
+226 |     pub(super) fn point(self, point: PanelPoint) -> PanelPoint {
+    |                   ^^^^^
+
+warning: field `resource_cache` is never read
+   --> examples\dynamic-island\src\windows_native_panel\d2d_painter\mod.rs:393:5
+    |
+389 | pub(super) struct Direct2DWindowsNativePanelPainter {
+    |                   --------------------------------- field in this struct
+...
+393 |     resource_cache: WindowsDirect2DResourceCacheState,
+    |     ^^^^^^^^^^^^^^
+    |
+    = note: `Direct2DWindowsNativePanelPainter` has a derived impl for the trait `Debug`, but this is intentionally ignored during dead code analysis
+
+warning: methods `set_raw_window_handle` and `resource_rebuild_count` are never used
+   --> examples\dynamic-island\src\windows_native_panel\d2d_painter\mod.rs:418:19
+    |
+402 | impl Direct2DWindowsNativePanelPainter {
+    | -------------------------------------- methods in this implementation
+...
+418 |     pub(super) fn set_raw_window_handle(&mut self, raw_window_handle: Option<isize>) {
+    |                   ^^^^^^^^^^^^^^^^^^^^^
+...
+426 |     pub(super) fn resource_rebuild_count(&self) -> usize {
+    |                   ^^^^^^^^^^^^^^^^^^^^^^
+
+warning: static `WINDOWS_NATIVE_PANEL_EVENT_DISPATCH_LOOP_STARTED` is never used
+  --> examples\dynamic-island\src\windows_native_panel\facade.rs:35:8
+   |
+35 | static WINDOWS_NATIVE_PANEL_EVENT_DISPATCH_LOOP_STARTED: AtomicBool = AtomicBool::new(false);
+   |        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: multiple methods are never used
+   --> examples\dynamic-island\src\windows_native_panel\host_runtime.rs:169:19
+    |
+107 | impl WindowsNativePanelRuntime {
+    | ------------------------------ methods in this implementation
+...
+169 |     pub(super) fn apply_runtime_scene_sync_result(
+    |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+...
+178 |     pub(super) fn apply_settings_surface_toggle_result(
+    |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+...
+185 |     pub(super) fn apply_hover_sync_result(
+    |                   ^^^^^^^^^^^^^^^^^^^^^^^
+...
+227 |     pub(super) fn sync_hover_inside(
+    |                   ^^^^^^^^^^^^^^^^^
+...
+249 |     fn lightweight_refresh_plan(
+    |        ^^^^^^^^^^^^^^^^^^^^^^^^
+...
+415 |     fn apply_animation_frame(
+    |        ^^^^^^^^^^^^^^^^^^^^^
+...
+422 |     fn resolve_animation_target(
+    |        ^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: methods `status_close_transition_active` and `should_preserve_pending_status_close_frame` are never used
+   --> examples\dynamic-island\src\windows_native_panel\host_runtime_close_state.rs:176:19
+    |
+ 22 | impl WindowsNativePanelRuntime {
+    | ------------------------------ methods in this implementation
+...
+176 |     pub(super) fn status_close_transition_active(&self) -> bool {
+    |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+...
+180 |     pub(super) fn should_preserve_pending_status_close_frame(&self) -> bool {
+    |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: method `sync_hover_for_pointer_input` is never used
+  --> examples\dynamic-island\src\windows_native_panel\host_runtime_hover.rs:19:19
+   |
+10 | impl WindowsNativePanelRuntime {
+   | ------------------------------ method in this implementation
+...
+19 |     pub(super) fn sync_hover_for_pointer_input(
+   |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: method `sync_hover_for_pointer_input_impl` is never used
+  --> examples\dynamic-island\src\windows_native_panel\host_runtime_hover_state.rs:44:19
+   |
+29 | impl WindowsNativePanelRuntime {
+   | ------------------------------ method in this implementation
+...
+44 |     pub(super) fn sync_hover_for_pointer_input_impl(
+   |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: methods `reposition_to_display`, `set_shared_body_height`, and `apply_timeline_descriptor` are never used
+  --> examples\dynamic-island\src\windows_native_panel\host_window.rs:64:19
+   |
+51 | impl WindowsNativePanelHostWindow {
+   | --------------------------------- methods in this implementation
+...
+64 |     pub(super) fn reposition_to_display(
+   |                   ^^^^^^^^^^^^^^^^^^^^^
+...
+72 |     pub(super) fn set_shared_body_height(&mut self, body_height: f64) {
+   |                   ^^^^^^^^^^^^^^^^^^^^^^
+...
+76 |     pub(super) fn apply_timeline_descriptor(&mut self, descriptor: NativePanelTimelineDescriptor) {
+   |                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: constant `WINDOWS_NATIVE_PANEL_TRANSPARENT_COLOR_KEY` is never used
+  --> examples\dynamic-island\src\windows_native_panel\paint_backend.rs:28:18
+   |
+28 | pub(super) const WINDOWS_NATIVE_PANEL_TRANSPARENT_COLOR_KEY: u32 = 0x00FF00FF;
+   |                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: variant `GdiFallback` is never constructed
+  --> examples\dynamic-island\src\windows_native_panel\paint_backend.rs:54:5
+   |
+52 | pub(super) enum WindowsNativePanelPainterBackend {
+   |                 -------------------------------- variant in this enum
+53 |     Direct2D,
+54 |     GdiFallback,
+   |     ^^^^^^^^^^^
+   |
+   = note: `WindowsNativePanelPainterBackend` has derived impls for the traits `Debug` and `Clone`, but these are intentionally ignored during dead code analysis
+
+warning: variants `FillBezierPath` and `FillStrokedRoundRect` are never constructed
+   --> examples\dynamic-island\src\windows_native_panel\paint_backend.rs:111:5
+    |
+ 58 | pub(super) enum WindowsNativePanelPaintOperation {
+    |                 -------------------------------- variants in this enum
+...
+111 |     FillBezierPath {
+    |     ^^^^^^^^^^^^^^
+...
+116 |     FillStrokedRoundRect {
+    |     ^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: `WindowsNativePanelPaintOperation` has derived impls for the traits `Debug` and `Clone`, but these are intentionally ignored during dead code analysis
+
+warning: function `resolve_windows_native_panel_widget_paint_operations` is never used
+   --> examples\dynamic-island\src\windows_native_panel\paint_backend.rs:183:15
+    |
+183 | pub(super) fn resolve_windows_native_panel_widget_paint_operations(
+    |               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: function `windows_native_panel_paint_operations_from_visual_primitive` is never used
+   --> examples\dynamic-island\src\windows_native_panel\paint_backend.rs:399:4
+    |
+399 | fn windows_native_panel_paint_operations_from_visual_primitive(
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: function `reef_color_to_native_color` is never used
+   --> examples\dynamic-island\src\windows_native_panel\paint_backend.rs:798:4
+    |
+798 | fn reef_color_to_native_color(color: ReefColor) -> WindowsNativePanelPaintColor {
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: function `panel_rect_from_rect` is never used
+   --> examples\dynamic-island\src\windows_native_panel\paint_backend.rs:802:4
+    |
+802 | fn panel_rect_from_rect(rect: reef_core::geometry::Rect) -> PanelRect {
+    |    ^^^^^^^^^^^^^^^^^^^^
+
+warning: function `panel_point_from_point` is never used
+   --> examples\dynamic-island\src\windows_native_panel\paint_backend.rs:811:4
+    |
+811 | fn panel_point_from_point(point: reef_core::geometry::Point) -> PanelPoint {
+    |    ^^^^^^^^^^^^^^^^^^^^^^
+
+warning: function `native_text_weight_from_reef` is never used
+   --> examples\dynamic-island\src\windows_native_panel\paint_backend.rs:818:4
+    |
+818 | fn native_text_weight_from_reef(
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: function `native_text_alignment_from_reef` is never used
+   --> examples\dynamic-island\src\windows_native_panel\paint_backend.rs:828:4
+    |
+828 | fn native_text_alignment_from_reef(
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: method `renderer_ref` is never used
+   --> examples\dynamic-island\src\windows_native_panel\renderer.rs:520:19
+    |
+519 | impl WindowsNativePanelHost {
+    | --------------------------- method in this implementation
+520 |     pub(super) fn renderer_ref(&self) -> &WindowsNativePanelRenderer {
+    |                   ^^^^^^^^^^^^
+
+warning: `dynamic_island` (lib test) generated 111 warnings (run `cargo fix --lib -p dynamic_island --tests` to apply 4 suggestions)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.27s
+     Running unittests src\lib.rs (target\debug\deps\dynamic_island-ae1812e7c515bbbe.exe)
+
+running 281 tests
+test business::tests::display_options_preserve_name_and_resolution_format ... ok
+test business::tests::runtime_input_context_selects_display_from_shared_display_options ... ok
+test business::tests::next_display_selection_update_cycles_and_skips_empty_display_lists ... ok
+test business::tests::runtime_input_descriptor_can_be_built_from_shared_context ... ok
+test island_widget_bridge::tests::bridge_builds_widget_from_dynamic_island ... ok
+test business::tests::runtime_input_descriptor_from_display_options_resolves_screen_frame ... ok
+test business::tests::scene_build_input_from_display_options_resolves_selected_display ... ok
+test business::tests::selected_display_index_from_display_options_uses_key_and_fallback ... ok
+test business::tests::selected_display_index_prefers_key_then_index_then_fallback ... ok
+test business::tests::runtime_input_context_with_screen_frame_uses_selected_display_index ... ok
+test island_widget_bridge::tests::bridge_does_not_resolve_gesture_effect_from_click_gesture ... ok
+test island_widget_bridge::tests::bridge_does_not_resolve_platform_event_from_click_gesture ... ok
+test island_widget_bridge::tests::bridge_maps_hit_target_to_dynamic_island_target ... ok
+test business::tests::runtime_input_descriptor_wraps_scene_input_and_screen_frame ... ok
+test business::tests::scene_build_input_clamps_display_count_and_projects_settings ... ok
+test island_widget_bridge::tests::bridge_resolves_runtime_action_from_gesture ... ok
+test island_widget_bridge::tests::bridge_resolves_runtime_effect_for_dismiss ... ok
+test island_widget_bridge::tests::bridge_builds_declarative_dynamic_island ... ok
+test island_widget_bridge::tests::bridge_resolves_transition_request_from_swipe_gesture ... ok
+test native_panel_renderer::env_flags::tests::native_panel_feature_env_flag_parser_matches_enabled_values ... ok
+test native_panel_renderer::env_flags::tests::native_panel_env_flag_parser_preserves_default_and_disable_values ... ok
+test native_panel_renderer::host_runtime_facade::tests::computed_host_window_reposition_consumes_shared_display_payload ... ok
+test native_panel_renderer::close_preservation::tests::preserved_scene_runtime_state_uses_shell_scene_fields ... ok
+test native_panel_renderer::host_runtime_facade::tests::display_reposition_payload_can_be_built_from_runtime_input_descriptor ... ok
+test native_panel_renderer::close_preservation::tests::preserved_status_close_scene_requires_status_cards_and_active_close ... ok
+test native_panel_renderer::host_runtime_facade::tests::host_controller_helpers_route_create_hide_reposition_and_height ... ok
+test native_panel_renderer::close_preservation::tests::preserved_status_close_scene_treats_all_active_popup_cards_the_same ... ok
+test native_panel_renderer::host_runtime_facade::tests::runtime_host_command_executor_routes_all_host_commands ... ok
+test native_panel_renderer::host_runtime_facade::tests::runtime_host_reposition_command_can_be_built_from_input_descriptor ... ok
+test native_panel_renderer::host_runtime_facade::tests::runtime_host_state_can_sync_display_reposition_payload ... ok
+test native_panel_renderer::platform_adapter::tests::window_handle_helpers_sync_and_detect_presence ... ok
+test native_panel_renderer::renderer_backend::tests::presentation_cards_visible_prefers_primary_then_fallback ... ok
+test native_panel_renderer::renderer_backend::tests::cached_presentation_helpers_rebuild_from_scene_cache ... ok
+test native_panel_renderer::renderer_backend::tests::resolve_and_cache_renderer_presentation_uses_cached_scene_runtime ... ok
+test native_panel_renderer::runtime_commands::tests::settings_surface_command_dispatches_synced_update ... ok
+test native_panel_renderer::runtime_backend::tests::mutate_panel_state_and_rerender_returns_false_without_change ... ok
+test native_panel_renderer::runtime_commands::tests::settings_surface_command_propagates_dispatch_error ... ok
+test native_panel_renderer::runtime_backend::tests::runtime_scene_bundle_sync_returns_core_sync_and_bundle ... ok
+test native_panel_renderer::runtime_commands::tests::settings_surface_command_propagates_sync_error ... ok
+test native_panel_renderer::runtime_backend::tests::runtime_scene_controller_syncs_applies_and_updates_cache ... ok
+test native_panel_renderer::runtime_commands::tests::settings_surface_command_skips_dispatch_without_update ... ok
+test native_panel_renderer::runtime_backend::tests::runtime_scene_bundle_sync_preserves_completion_side_effects ... ok
+test native_panel_renderer::runtime_backend::tests::rerender_scene_sync_result_updates_cache_key_for_surface_change ... ok
+test native_panel_renderer::runtime_render_payload::tests::runtime_render_payload_helper_projects_snapshot_and_runtime_state ... ok
+test native_panel_renderer::runtime_render_payload::tests::runtime_render_payload_state_can_be_built_from_shared_animation_plan ... ok
+test native_panel_renderer::runtime_backend::tests::runtime_scene_sync_result_can_update_shared_cache_without_host_apply ... ok
+test native_panel_renderer::runtime_backend::tests::rerender_scene_sync_result_for_panel_state_uses_shared_rebuild_path ... ok
+test native_panel_renderer::runtime_scene_cache::tests::cache_key_distinguishes_default_and_settings_surface ... ok
+test native_panel_renderer::runtime_scene_cache::tests::cache_key_distinguishes_settings_and_default_surface ... ok
+test native_panel_renderer::runtime_scene_cache::tests::cache_key_distinguishes_status_and_settings_surface ... ok
+test native_panel_renderer::runtime_scene_cache::tests::cached_scene_and_runtime_prefer_render_command_bundle ... ok
+test native_panel_renderer::runtime_scene_cache::tests::caching_runtime_scene_clears_stale_render_command_bundle ... ok
+test native_panel_renderer::runtime_scene_cache::tests::current_state_bridge_bundle_helper_uses_current_snapshot ... ok
+test native_panel_renderer::runtime_scene_cache::tests::keyed_render_command_bundle_lookup_requires_matching_state ... ok
+test native_panel_renderer::runtime_scene_cache::tests::runtime_scene_bundle_apply_syncs_host_and_updates_cache ... ok
+test native_panel_renderer::runtime_scene_cache::tests::current_state_bridge_presentation_helper_uses_current_snapshot ... ok
+test native_panel_renderer::runtime_scene_cache::tests::mutable_state_bridge_cache_helper_syncs_pointer_regions ... ok
+test native_panel_renderer::runtime_scene_cache::tests::keyed_scene_lookup_requires_matching_state ... ok
+test native_panel_renderer::runtime_scene_cache::tests::runtime_scene_cache_rerender_rebuilds_from_cached_snapshot ... ok
+test native_panel_renderer::runtime_scene_cache::tests::mutable_state_bridge_resolve_and_cache_presentation_syncs_bundle_and_regions ... ok
+test native_panel_renderer::runtime_scene_cache::tests::runtime_scene_cache_rerender_skips_without_cached_snapshot ... ok
+test native_panel_renderer::runtime_scene_cache::tests::runtime_scene_cache_transition_rerender_skips_without_change ... ok
+test native_panel_renderer::runtime_scene_cache::tests::runtime_scene_cache_transition_rerender_rebuilds_only_when_changed ... ok
+test native_panel_renderer::runtime_scene_cache::tests::state_bridge_helpers_rebuild_from_current_snapshot_when_cache_misses ... ok
+test native_panel_renderer::runtime_tests::tests::pointer_region_bridge_exposes_shared_click_and_hover_behavior ... ok
+test native_panel_renderer::runtime_scene_cache::tests::state_bridge_helpers_reuse_cached_scene_bundle_and_presentation ... ok
+test native_panel_renderer::runtime_tests::tests::settings_surface_snapshot_update_carries_snapshot_when_state_changes ... ok
+test native_panel_renderer::runtime_tests::tests::settings_surface_toggle_queues_surface_switch_while_expanding ... ok
+test native_panel_renderer::runtime_tests::tests::settings_surface_toggle_returns_surface_switch_when_expanded ... ok
+test native_panel_renderer::runtime_tests::tests::settings_surface_toggle_skips_animation_when_collapsed ... ok
+test native_panel_renderer::runtime_tests::tests::shared_click_dispatch_at_point_uses_pointer_host_state ... ok
+test native_panel_renderer::runtime_tests::tests::shared_click_dispatch_maps_command_into_runtime_handler ... ok
+test native_panel_renderer::runtime_tests::tests::shared_click_resolution_records_focus_target_and_suppresses_duplicate_clicks ... ok
+test native_panel_renderer::runtime_tests::tests::shared_click_state_slots_record_focus_clicks ... ok
+test native_panel_renderer::runtime_tests::tests::shared_host_behavior_plan_skips_redundant_passthrough_commands ... ok
+test native_panel_renderer::runtime_tests::tests::shared_host_polling_interaction_updates_mouse_passthrough_state ... ok
+test native_panel_renderer::runtime_tests::tests::shared_hover_fallback_frames_follow_visual_input ... ok
+test native_panel_renderer::runtime_tests::tests::shared_hover_close_rerender_error_restores_previous_panel_state ... ok
+test native_panel_renderer::runtime_tests::tests::shared_hover_rerender_for_pointer_input_propagates_none_when_host_has_no_inside_state ... ok
+test native_panel_renderer::runtime_tests::tests::shared_hover_rerender_without_snapshot_does_not_clear_badge_or_expand ... ok
+test native_panel_renderer::runtime_tests::tests::shared_hover_rerender_at_point_returns_request_and_refreshes_scene ... ok
+test native_panel_renderer::runtime_tests::tests::shared_hover_sync_at_point_uses_host_hover_resolution ... ok
+test native_panel_renderer::runtime_tests::tests::shared_hover_sync_for_pointer_input_uses_host_input_resolution ... ok
+test native_panel_renderer::runtime_tests::tests::shared_hover_sync_returns_transition_and_request_together ... ok
+test native_panel_renderer::runtime_tests::tests::shared_hover_sync_without_transition_preserves_pending_open_request ... ok
+test native_panel_renderer::runtime_tests::tests::shared_pointer_input_handler_routes_click_path ... ok
+test native_panel_renderer::runtime_tests::tests::shared_pointer_input_handler_routes_hover_path ... ok
+test native_panel_renderer::runtime_tests::tests::shared_polling_input_from_host_facts_resolves_pointer_and_hover_state ... ok
+test native_panel_renderer::runtime_tests::tests::shared_polling_interaction_does_not_commit_hover_transition_without_snapshot ... ok
+test native_panel_renderer::runtime_tests::tests::shared_polling_interaction_emits_hover_transition_bundle_when_snapshot_exists ... ok
+test native_panel_renderer::runtime_tests::tests::shared_polling_interaction_uses_fallback_hit_testing_and_updates_pointer_button_state ... ok
+test native_panel_renderer::runtime_tests::tests::shared_queued_platform_event_bridge_queues_region_and_point_events ... ok
+test native_panel_renderer::runtime_tests::tests::shared_queued_platform_event_dispatch_drains_and_runs_handler ... ok
+test native_panel_renderer::runtime_tests::tests::shared_stable_compact_hover_frame_covers_message_bubble_overhang ... ok
+test native_panel_renderer::shell_command::tests::shell_command_backend_helper_applies_commands_and_tracks_handle ... ok
+test native_panel_renderer::shell_pump::tests::shell_runtime_pump_consumes_presenter_applies_commands_and_syncs_handle ... ok
+test native_panel_renderer::shell_state::tests::shell_state_destroy_clears_window_state ... ok
+test native_panel_renderer::shell_pump::tests::shell_runtime_pump_skips_presenter_when_destroy_is_pending ... ok
+test native_panel_renderer::shell_state::tests::shell_state_lifecycle_emits_commands_once ... ok
+test native_panel_renderer::shell_state::tests::shell_state_passthrough_and_platform_loop_are_deduped ... ok
+test native_panel_renderer::snapshot_testing::tests::test_snapshot_diff ... ok
+test native_panel_renderer::snapshot_testing::tests::test_snapshot_serialization ... ok
+test native_panel_renderer::traits::tests::host_dispatch_platform_events_drains_pending_queue ... ok
+test native_panel_renderer::traits::tests::sync_scene_descriptor_updates_window_then_renders ... ok
+test native_panel_renderer::traits::tests::sync_scene_window_descriptor_updates_screen_frame ... ok
+test native_panel_renderer::window_message_pump::tests::platform_window_message_pump_processes_paint_and_queues_events ... ok
+test windows_native_panel::d2d_painter::tests::compact_pill_path_keeps_top_edge_flat_and_rounds_bottom_corners ... ok
+test windows_native_panel::d2d_painter::tests::compact_shoulder_path_matches_mac_style_corner_curve ... ok
+test windows_native_panel::d2d_painter::tests::direct2d_coordinate_space_flips_text_origin_with_text_height ... ok
+test windows_native_panel::d2d_painter::tests::direct2d_coordinate_space_flips_shared_mac_style_rects_to_windows_top_left ... ok
+test windows_native_panel::d2d_painter::tests::direct2d_painter_initializes_native_factories_for_alpha_rendering ... ok
+test windows_native_panel::d2d_painter::tests::direct2d_painter_skeleton_routes_compact_text_to_directwrite_requests ... ok
+test windows_native_panel::d2d_painter::tests::direct2d_painter_skeleton_consumes_shared_visual_plan ... ok
+test windows_native_panel::d2d_painter::tests::direct2d_resource_cache_rebuilds_when_dpi_changes_without_size_change ... ok
+test windows_native_panel::d2d_painter::tests::direct2d_painter_skeleton_routes_expanded_cards_to_directwrite_requests ... ok
+test windows_native_panel::d2d_painter::tests::direct2d_resource_cache_reuses_same_physical_rect_and_dpi_key ... ok
+test windows_native_panel::d2d_painter::tests::direct2d_text_box_height_matches_compact_label_metrics ... ok
+test windows_native_panel::d2d_painter::tests::plan_only_painter_preserves_text_primitives_for_tests ... ok
+test windows_native_panel::draw_presenter::tests::presenter_caches_frame_and_invalidates_once ... ok
+test windows_native_panel::host_window::tests::host_window_maps_shared_pointer_regions_to_windows_client_space ... ok
+test windows_native_panel::host_window::tests::host_window_maps_top_aligned_windows_frame_against_shared_screen_coordinates ... ok
+test windows_native_panel::host_window::tests::host_window_presents_pointer_regions_and_draw_invalidates_once ... ok
+test windows_native_panel::host_window::tests::windows_host_frame_contains_compact_layout_canvas ... ok
+test windows_native_panel::paint_backend::tests::compact_paint_does_not_add_alpha_window_gap_blockers ... ok
+test windows_native_panel::paint_backend::tests::hidden_paint_plan_has_no_backend_operations ... ok
+test windows_native_panel::paint_backend::tests::expanded_paint_adds_nearly_transparent_hit_test_blockers_for_alpha_window_gaps ... ok
+test windows_native_panel::paint_backend::tests::mascot_child_paint_operations_preserve_primitive_alpha ... ok
+test windows_native_panel::paint_backend::tests::mascot_paint_operation_consumes_shared_body_style ... ok
+test windows_native_panel::paint_backend::tests::mascot_paint_operation_uses_mac_body_fill_color ... ok
+test windows_native_panel::paint_backend::tests::mascot_paint_operation_uses_mac_body_shape ... ok
+test windows_native_panel::paint_backend::tests::paint_operations_cover_visual_primitives_without_rebuilding_scene_semantics ... ok
+test windows_native_panel::paint_backend::tests::paint_plan_is_empty_when_hidden ... ok
+test windows_native_panel::paint_backend::tests::paint_plan_contains_visible_panel_primitives ... ok
+test windows_native_panel::paint_backend::tests::production_painter_prefers_direct2d_per_pixel_alpha_backend ... ok
+test windows_native_panel::paint_backend::tests::text_paint_operation_preserves_card_text_role_for_platform_text_metrics ... ok
+test windows_native_panel::host_window::tests::refresh_frame_uses_shared_host_window_descriptor_helper ... ok
+test windows_native_panel::runtime_input::tests::runtime_input_descriptor_clamps_empty_display_list ... ok
+test windows_native_panel::runtime_input::tests::runtime_input_descriptor_projects_settings_and_display_context ... ok
+test windows_native_panel::runtime_input::tests::standalone_screen_frame_uses_logical_size_from_dpi_scale ... ok
+test windows_native_panel::tests::platform_loop_tests::windows_native_window_state_positioning_keeps_panel_topmost_without_activation ... ok
+test windows_native_panel::tests::platform_loop_tests::windows_platform_hit_region_cache_uses_shared_pointer_regions ... ok
+test windows_native_panel::tests::platform_loop_tests::windows_platform_loop_clamps_offscreen_physical_rect_to_virtual_bounds ... ok
+test windows_native_panel::tests::platform_loop_tests::windows_platform_loop_clamps_oversized_physical_rect_to_virtual_bounds ... ok
+test windows_native_panel::tests::platform_loop_tests::windows_platform_loop_records_physical_window_rect_from_sync_command ... ok
+test windows_native_panel::tests::platform_loop_tests::windows_platform_loop_surface_resource_revision_tracks_dpi_scale_changes ... ok
+test windows_native_panel::tests::platform_loop_tests::windows_platform_loop_surface_resource_revision_tracks_physical_rect_changes ... ok
+test windows_native_panel::tests::platform_loop_tests::windows_platform_loop_tracks_negative_origin_physical_rect_after_dpi_change ... ok
+test windows_native_panel::tests::platform_loop_tests::windows_runtime_pump_platform_loop_auto_consumes_presenter_frame ... ok
+test windows_native_panel::tests::platform_loop_tests::windows_runtime_display_reposition_updates_platform_physical_rect ... ok
+test windows_native_panel::tests::platform_loop_tests::windows_runtime_pump_platform_loop_consumes_passthrough_command ... ok
+test windows_native_panel::tests::platform_loop_tests::windows_runtime_pump_platform_loop_syncs_hit_regions_after_presenter_frame ... ok
+test windows_native_panel::tests::renderer_tests::windows_host_dispatches_queued_platform_events_through_handler ... ok
+test windows_native_panel::tests::renderer_tests::windows_host_shell_can_consume_presenter_frame ... ok
+test windows_native_panel::tests::renderer_tests::windows_host_presents_renderer_state_into_window ... ok
+test windows_native_panel::tests::renderer_tests::windows_host_shell_paints_pending_presenter_frame ... ok
+test windows_native_panel::tests::renderer_tests::windows_renderer_caches_scene_and_resolves_shared_render_inputs ... ok
+test windows_native_panel::tests::renderer_tests::windows_renderer_caches_complete_render_commands ... ok
+test windows_native_panel::tests::renderer_tests::windows_runtime_host_polling_interaction_resolves_hit_target_click ... ok
+test windows_native_panel::tests::renderer_tests::windows_runtime_host_polling_interaction_updates_passthrough_state ... ok
+test windows_native_panel::tests::renderer_tests::windows_renderer_resolves_pointer_regions_from_shared_scene_and_layout ... ok
+test windows_native_panel::tests::renderer_tests::windows_runtime_host_polling_interaction_marks_completion_viewed_on_hover_expand ... ok
+test windows_native_panel::tests::renderer_tests::windows_runtime_pointer_leave_syncs_mouse_passthrough_state ... ok
+test windows_native_panel::tests::renderer_tests::windows_runtime_pointer_move_syncs_mouse_passthrough_state ... ok
+test windows_native_panel::tests::renderer_tests::windows_runtime_records_pointer_input_on_window_event_path ... ok
+test windows_native_panel::tests::runtime_tests::windows_host_lifecycle_tracks_create_show_hide ... ok
+test windows_native_panel::tests::renderer_tests::windows_runtime_scene_state_bridge_syncs_current_bundle_and_pointer_regions ... ok
+test windows_native_panel::tests::renderer_tests::windows_runtime_user_hide_blocks_snapshot_refresh_until_show ... ok
+test windows_native_panel::tests::runtime_tests::windows_host_queues_platform_event_by_point_from_cached_regions ... ok
+test windows_native_panel::tests::runtime_tests::windows_host_presenter_prefers_latest_scene_over_stale_presentation_slot ... ok
+test windows_native_panel::tests::runtime_tests::windows_host_queues_platform_events_from_pointer_regions ... ok
+test windows_native_panel::tests::runtime_tests::windows_host_shell_commands_track_lifecycle_and_reposition ... ok
+test windows_native_panel::tests::renderer_tests::windows_runtime_hover_expanded_panel_switches_to_new_completion_status_message ... ok
+test windows_native_panel::tests::runtime_tests::windows_renderer_caches_pointer_regions_from_host_trait ... ok
+test windows_native_panel::tests::runtime_tests::windows_renderer_caches_shared_animation_descriptor ... ok
+test windows_native_panel::tests::runtime_tests::windows_runtime_and_host_satisfy_shared_native_traits ... ok
+test windows_native_panel::tests::runtime_tests::windows_runtime_can_drain_queued_platform_events_without_dispatching_under_lock ... ok
+test windows_native_panel::tests::runtime_tests::windows_runtime_dispatches_click_command_at_point_through_handler ... ok
+test windows_native_panel::tests::runtime_tests::windows_runtime_dispatches_edge_action_click_during_open_transition ... ok
+test windows_native_panel::tests::runtime_tests::windows_runtime_auto_pops_question_status_card ... ok
+test windows_native_panel::tests::runtime_tests::windows_runtime_dispatches_queued_platform_events_through_handler ... ok
+test windows_native_panel::tests::runtime_tests::windows_runtime_expanded_target_height_prefers_current_native_content_over_stale_shared_height ... ok
+test windows_native_panel::tests::runtime_tests::windows_runtime_first_snapshot_renders_without_seeded_animation_descriptor ... ok
+test windows_native_panel::tests::runtime_tests::windows_runtime_focus_click_dispatch_is_debounced ... ok
+test windows_native_panel::tests::runtime_tests::windows_runtime_expanded_target_height_uses_compact_width_when_scene_has_no_layout_bundle ... ok
+test windows_native_panel::tests::runtime_tests::windows_runtime_emits_generic_completion_reminder_for_active_to_idle_without_message ... ok
+test windows_native_panel::tests::runtime_tests::windows_runtime_expanded_target_height_prefers_latest_scene_over_stale_presentation_slot ... ok
+test windows_native_panel::tests::runtime_tests::windows_runtime_hover_collapse_refreshes_cached_scene_from_last_snapshot ... ok
+test windows_native_panel::tests::runtime_tests::windows_runtime_hover_transition_without_snapshot_keeps_collapsed_state ... ok
+test windows_native_panel::tests::runtime_tests::windows_runtime_hover_expand_refreshes_cached_scene_from_last_snapshot ... ok
+test windows_native_panel::tests::runtime_tests::windows_runtime_pointer_event_dispatch_falls_back_to_declarative_root_click ... FAILED
+test windows_native_panel::tests::runtime_tests::windows_runtime_pointer_event_dispatch_is_noop_when_point_has_no_target ... ok
+test windows_native_panel::tests::runtime_tests::windows_runtime_polling_hover_without_snapshot_keeps_collapsed_state ... ok
+test windows_native_panel::tests::runtime_tests::windows_runtime_keeps_mixed_approval_and_question_status_cards ... ok
+test windows_native_panel::tests::runtime_tests::windows_native_default_enable_preflight_uses_shared_runtime_pipeline ... ok
+test windows_native_panel::tests::runtime_tests::windows_runtime_reposition_to_selected_display_uses_input_descriptor ... ok
+test windows_native_panel::tests::runtime_tests::windows_runtime_set_shared_body_height_updates_host_descriptor ... ok
+test windows_native_panel::tests::runtime_tests::windows_runtime_reopens_completion_when_message_arrives_after_expired_generic_card ... ok
+test windows_native_panel::tests::runtime_tests::windows_runtime_snapshot_sync_exposes_shared_message_sound_reminder ... ok
+test windows_native_panel::tests::runtime_tests::windows_runtime_rerender_hides_mascot_when_setting_is_disabled ... ok
+test windows_native_panel::tests::runtime_tests::windows_runtime_pump_refreshes_status_queue_from_last_raw_snapshot ... ok
+test windows_native_panel::tests::runtime_tests::windows_runtime_syncs_hover_collapse_outside_cached_regions ... ok
+test windows_native_panel::tests::runtime_tests::windows_runtime_syncs_hover_expand_from_cached_regions ... ok
+test windows_native_panel::tests::runtime_tests::windows_runtime_toggle_settings_surface_cycles_back_to_default ... ok
+test windows_native_panel::tests::runtime_tests::windows_runtime_toggle_settings_surface_marks_completion_badge_as_viewed ... ok
+test windows_native_panel::tests::runtime_tests::windows_scaffold_consumes_shared_scene_bundle ... ok
+test windows_native_panel::tests::runtime_tests::windows_runtime_toggle_settings_surface_updates_cached_scene ... ok
+test windows_native_panel::tests::status_close_tests::windows_animation_scheduler_finishes_close_transition_without_redraw_loop ... ok
+test windows_native_panel::tests::status_close_tests::windows_animation_scheduler_idle_state_does_not_redraw_continuously ... ok
+test windows_native_panel::tests::runtime_tests::windows_runtime_toggle_settings_surface_from_status_updates_cached_scene ... ok
+test windows_native_panel::tests::status_close_tests::windows_animation_scheduler_runs_surface_switch_only_while_active ... ok
+test windows_native_panel::tests::runtime_tests::windows_runtime_sync_snapshot_can_return_from_settings_to_status_on_new_item ... ok
+test windows_native_panel::tests::runtime_tests::windows_runtime_status_queue_refresh_does_not_cancel_pending_open_transition ... ok
+test windows_native_panel::tests::status_close_tests::windows_default_close_delayed_wake_keeps_cards_and_actions_during_catch_up ... ok
+test windows_native_panel::tests::status_close_tests::windows_default_hover_close_transition_keeps_edge_actions_for_retract_animation ... ok
+test windows_native_panel::tests::status_close_tests::windows_animation_scheduler_starts_open_transition_and_queues_redraw ... ok
+test windows_native_panel::tests::status_close_tests::windows_renderer_treats_close_card_progress_as_exit_progress ... ok
+test windows_native_panel::tests::status_close_tests::windows_animation_scheduler_preserves_status_cards_when_auto_status_close_skips_default_rebuild ... ok
+test windows_native_panel::tests::status_close_tests::windows_runtime_defers_mascot_animation_refresh_during_panel_transition ... ok
+test windows_native_panel::tests::status_close_tests::windows_runtime_refreshes_active_count_marquee_paint_job_without_scene_sync ... ok
+test windows_native_panel::tests::status_close_tests::windows_preserved_status_stack_repairs_stale_default_shell_surface ... ok
+test windows_native_panel::tests::status_close_tests::windows_runtime_refreshes_mascot_animation_paint_job_without_scene_sync ... ok
+test windows_native_panel::tests::status_close_tests::windows_runtime_starts_mascot_animation_with_immediate_paint_job ... ok
+test windows_native_panel::tests::status_close_tests::windows_completion_status_close_keeps_compact_mascot_until_cards_exit ... ok
+test windows_native_panel::tests::status_close_tests::windows_runtime_replaces_stale_action_button_paint_before_status_close ... ok
+test windows_native_panel::tests::window_shell_tests::windows_host_recomputes_cached_frame_when_display_changes ... ok
+test windows_native_panel::tests::window_shell_tests::windows_native_ui_is_enabled_by_default_on_windows ... ok
+test windows_native_panel::tests::window_shell_tests::windows_runtime_clicks_visual_settings_button_center ... ok
+test windows_native_panel::tests::status_close_tests::windows_status_queue_refresh_during_close_keeps_preserved_status_cards ... ok
+test windows_native_panel::tests::window_shell_tests::windows_runtime_keeps_pending_hover_open_after_badge_clearing_mousemove ... ok
+test windows_native_panel::tests::window_shell_tests::windows_runtime_pump_platform_loop_backfills_shell_raw_window_handle ... ok
+test windows_native_panel::tests::window_shell_tests::windows_runtime_pump_platform_loop_clears_shell_raw_window_handle_on_destroy ... ok
+test windows_native_panel::tests::window_shell_tests::windows_runtime_pump_platform_loop_processes_leave_before_unstarted_hover_open ... ok
+test windows_native_panel::tests::window_shell_tests::windows_runtime_pump_platform_loop_tracks_lifecycle_and_redraw_commands ... ok
+test windows_native_panel::tests::status_close_tests::windows_status_close_preservation_keeps_shell_surface_in_sync ... ok
+test windows_native_panel::tests::window_shell_tests::windows_runtime_pump_platform_loop_tracks_window_state_command ... ok
+test windows_native_panel::tests::window_shell_tests::windows_runtime_pump_window_messages_consumes_paint_job ... ok
+test windows_native_panel::tests::window_shell_tests::windows_runtime_pump_window_messages_debounces_focus_clicks ... ok
+test windows_native_panel::tests::window_shell_tests::windows_runtime_pump_window_messages_leave_collapses_and_refreshes ... ok
+test windows_native_panel::tests::window_shell_tests::windows_runtime_pump_window_messages_queues_click_event ... ok
+test windows_native_panel::tests::window_shell_tests::windows_runtime_pump_window_messages_routes_move_message_into_pointer_path ... ok
+test windows_native_panel::tests::window_shell_tests::windows_runtime_window_message_click_dispatches_hit_target_event ... ok
+test windows_native_panel::tests::window_shell_tests::windows_runtime_window_message_helper_decodes_and_dispatches_click ... ok
+test windows_native_panel::tests::window_shell_tests::windows_runtime_window_message_expands_hover_after_presenting_shared_absolute_regions ... ok
+test windows_native_panel::tests::window_shell_tests::windows_runtime_window_message_helper_decodes_and_expands_hover ... ok
+test windows_native_panel::tests::window_shell_tests::windows_runtime_window_message_pointer_leave_collapses_and_refreshes ... ok
+test windows_native_panel::tests::window_shell_tests::windows_runtime_window_message_swipe_requests_close_transition ... ok
+test windows_native_panel::tests::window_shell_tests::windows_spawn_platform_loops_marks_shell_state ... ok
+test windows_native_panel::tests::window_shell_tests::windows_window_frame_uses_canvas_width_to_contain_local_layout ... ok
+test windows_native_panel::window_shell::tests::shell_builds_display_snapshot_from_presenter_frame ... ok
+test windows_native_panel::window_shell::tests::shell_consumes_presenter_redraw_frame ... ok
+test windows_native_panel::window_shell::tests::shell_decodes_pointer_click_message_from_signed_lparam ... ok
+test windows_native_panel::window_shell::tests::shell_decodes_pointer_leave_message ... ok
+test windows_native_panel::window_shell::tests::shell_decodes_pointer_move_message_from_lparam ... ok
+test windows_native_panel::window_shell::tests::shell_emits_lifecycle_and_redraw_commands ... ok
+test windows_native_panel::window_shell::tests::shell_emits_mouse_passthrough_command_only_when_state_changes ... ok
+test windows_native_panel::window_shell::tests::shell_hover_frames_use_windows_client_coordinates_and_stable_bubble_hover ... ok
+test windows_native_panel::window_shell::tests::shell_ignores_pointer_down_for_shared_pointer_decoder ... ok
+test windows_native_panel::window_shell::tests::shell_keeps_sleepy_when_idle_compact_presenter_refreshes ... ok
+test windows_native_panel::window_shell::tests::shell_lifecycle_tracks_create_show_hide_destroy ... ok
+test windows_native_panel::window_shell::tests::shell_plays_wake_angry_after_sleepy_when_mascot_becomes_active ... ok
+test windows_native_panel::window_shell::tests::shell_pointer_and_hover_facts_follow_cached_frame ... ok
+test windows_native_panel::window_shell::tests::shell_preserves_mascot_elapsed_time_when_expanding_same_pose ... ok
+test windows_native_panel::window_shell::tests::shell_proxies_raw_window_handle_adapter ... ok
+test windows_native_panel::window_shell::tests::shell_records_last_pointer_input ... ok
+test windows_native_panel::tests::status_close_tests::windows_status_queue_new_request_during_close_reopens_status_after_close ... ok
+test windows_native_panel::window_shell::tests::shell_refreshes_idle_mascot_into_sleepy_after_shared_delay ... ok
+test windows_native_panel::window_shell::tests::shell_tracks_window_state_and_platform_loop ... ok
+test windows_native_panel::window_shell::tests::shell_window_handle_helpers_roundtrip_handle_presence ... ok
+test windows_native_panel::tests::status_close_tests::windows_repeated_hover_cycles_keep_transition_stages_stable ... ok
+test windows_native_panel::tests::window_shell_tests::windows_spawn_platform_loops_background_thread_drains_public_api_work ... ok
+test native_panel_renderer::snapshot_tests::snapshot_tests::test_expanding_10 ... ok
+test native_panel_renderer::snapshot_tests::snapshot_tests::test_card_stacked_2 ... ok
+test native_panel_renderer::snapshot_tests::snapshot_tests::test_compact_mode_initial ... ok
+test native_panel_renderer::snapshot_tests::snapshot_tests::test_card_single ... ok
+test native_panel_renderer::snapshot_tests::snapshot_tests::test_expanding_25 ... ok
+test native_panel_renderer::snapshot_tests::snapshot_tests::test_empty_state ... ok
+test native_panel_renderer::snapshot_tests::snapshot_tests::test_expanded_mode_full ... ok
+test native_panel_renderer::snapshot_tests::snapshot_tests::test_expanding_50 ... ok
+test native_panel_renderer::snapshot_tests::snapshot_tests::test_expanding_75 ... ok
+test native_panel_renderer::snapshot_tests::snapshot_tests::test_card_stacked_3 ... ok
+test native_panel_renderer::snapshot_tests::snapshot_tests::test_expanding_90 ... ok
+
+failures:
+
+---- windows_native_panel::tests::runtime_tests::windows_runtime_pointer_event_dispatch_falls_back_to_declarative_root_click stdout ----
+
+thread 'windows_native_panel::tests::runtime_tests::windows_runtime_pointer_event_dispatch_falls_back_to_declarative_root_click' (12072) panicked at examples\dynamic-island\src\windows_native_panel\tests\runtime_tests.rs:1456:5:
+assertion `left == right` failed
+  left: None
+ right: Some(FocusSession("session-1"))
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    windows_native_panel::tests::runtime_tests::windows_runtime_pointer_event_dispatch_falls_back_to_declarative_root_click
+
+test result: FAILED. 280 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.06s
+
+error: test failed, to rerun pass `-p dynamic_island --lib`

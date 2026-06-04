@@ -1431,7 +1431,7 @@ fn windows_runtime_pointer_event_dispatch_is_noop_when_point_has_no_target() {
 }
 
 #[test]
-fn windows_runtime_pointer_event_dispatch_falls_back_to_declarative_root_click() {
+fn windows_runtime_pointer_event_dispatch_has_no_declarative_root_click_in_standalone_mode() {
     let mut runtime = super::WindowsNativePanelRuntime::default();
     runtime.scene_cache.last_snapshot = Some(sessions_snapshot(1));
     runtime.host.renderer.last_pointer_regions = vec![NativePanelPointerRegion {
@@ -1453,18 +1453,8 @@ fn windows_runtime_pointer_event_dispatch_falls_back_to_declarative_root_click()
         )
         .expect("dispatch declarative root click");
 
-    assert_eq!(
-        event,
-        Some(NativePanelPlatformEvent::FocusSession(
-            "session-1".to_string()
-        ))
-    );
-    assert_eq!(
-        handler.handled,
-        vec![NativePanelPlatformEvent::FocusSession(
-            "session-1".to_string()
-        )]
-    );
+    assert_eq!(event, None);
+    assert!(handler.handled.is_empty());
     assert!(runtime.host.pending_events.is_empty());
 }
 

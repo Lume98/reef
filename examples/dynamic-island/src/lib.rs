@@ -1,29 +1,18 @@
-//! 灵动岛 Tauri 扩展入口。
+//! 灵动岛独立预览与原生窗口入口。
 //!
 //! 这个 crate 只负责当前项目的装配，不承担可复用框架职责。
-//! 业务层负责应用设置、显示器选择、状态机和场景输入，视图层负责预览、桥接、
+//! 业务层负责应用设置、显示器选择和场景输入，视图层负责预览、桥接、
 //! 原生窗口和渲染协调。
 
 pub use echoisland_runtime;
 
-// 应用级配置、显示器枚举和灵动岛模式生命周期。
+// 应用级配置、显示器枚举和场景输入。
 mod app_settings;
 mod config;
 mod display_settings;
-#[cfg(feature = "tauri-host")]
-mod error;
-mod host_platform;
-#[cfg(feature = "tauri-host")]
-mod mode_lifecycle;
-#[cfg(feature = "tauri-host")]
-mod monitor_manager;
 mod native_window;
 mod notification_sound;
-#[cfg(feature = "tauri-host")]
-mod state_machine;
 mod updater_service;
-#[cfg(feature = "tauri-host")]
-mod window_operations;
 
 pub mod business;
 
@@ -56,15 +45,6 @@ pub mod view;
 #[cfg(target_os = "windows")]
 mod windows_native_panel;
 
-#[cfg(feature = "tauri-host")]
-pub use error::*;
-#[cfg(feature = "tauri-host")]
-pub use mode_lifecycle::{
-    emergency_reset_dynamic_island, enter_dynamic_island_mode, exit_dynamic_island_mode,
-    is_dynamic_island_mode, snap_dynamic_island_mode,
-};
-#[cfg(feature = "tauri-host")]
-pub use monitor_manager::{MonitorInfo, MonitorManager};
 pub use native_panel_core::{
     panel_display_key, PanelDisplayGeometry, PanelIslandWidthPreset, PanelLanguage, PanelRect,
 };
@@ -72,18 +52,3 @@ pub use preview_host::{
     dynamic_island_ui_preview_snapshot, run_dynamic_island_ui_preview_standalone,
     DynamicIslandUiPreviewHost, StandaloneDynamicIslandUiPreviewHost,
 };
-#[cfg(feature = "tauri-host")]
-pub use preview_host::{show_dynamic_island_ui_preview, TauriDynamicIslandUiPreviewHost};
-#[cfg(feature = "tauri-host")]
-pub use state_machine::{DynamicIslandState, DynamicIslandStateMachine, WindowSnapshot};
-#[cfg(feature = "tauri-host")]
-pub use window_operations::WindowOperationBatch;
-
-/// 初始化灵动岛扩展
-#[cfg(feature = "tauri-host")]
-pub fn init<R: tauri::Runtime>(
-    _app: &tauri::AppHandle<R>,
-) -> Result<(), Box<dyn std::error::Error>> {
-    log::info!("初始化灵动岛扩展");
-    Ok(())
-}

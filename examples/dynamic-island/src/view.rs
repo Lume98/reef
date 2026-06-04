@@ -17,15 +17,7 @@ pub use crate::island_widget_bridge::{
     DynamicIslandRuntimeEffect,
 };
 pub use crate::native_window::{hide, show_without_app, snap};
-#[cfg(feature = "tauri-host")]
 pub use crate::preview_host::{
     dynamic_island_ui_preview_snapshot, run_dynamic_island_ui_preview_standalone,
-    show_dynamic_island_ui_preview, DynamicIslandUiPreviewHost,
-    StandaloneDynamicIslandUiPreviewHost,
+    DynamicIslandUiPreviewHost, StandaloneDynamicIslandUiPreviewHost,
 };
-
-#[cfg(feature = "tauri-host")]
-pub use crate::native_window::show;
-
-#[cfg(feature = "tauri-host")]
-pub use crate::preview_host::TauriDynamicIslandUiPreviewHost;

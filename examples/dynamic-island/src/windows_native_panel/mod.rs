@@ -1,7 +1,7 @@
 //! Windows 原生面板实现。
 //!
 //! 该模块封装 Win32 窗口、平台消息循环、命中区域、Direct2D/DirectWrite 绘制和运行时宿主。
-//! 上层只通过 facade 暴露的生命周期函数进入，避免平台细节泄漏到 Tauri 扩展入口。
+//! 上层只通过 facade 暴露的生命周期函数进入，避免平台细节泄漏到调用入口。
 
 // Direct2D/DirectWrite 绘制基础设施。
 mod d2d_painter;
@@ -31,8 +31,6 @@ mod paint_backend;
 mod paint_bridge;
 mod platform_loop;
 mod renderer;
-#[cfg(feature = "tauri-host")]
-mod runtime_backend;
 mod runtime_entry;
 mod runtime_input;
 mod runtime_traits;
@@ -40,20 +38,9 @@ mod window_shell;
 
 pub(crate) use host_runtime::WindowsNativePanelRuntime;
 pub(crate) use renderer::WindowsNativePanelRenderer;
-#[cfg(feature = "tauri-host")]
-pub(crate) use runtime_backend::{
-    current_windows_native_panel_runtime_backend, WindowsNativePanelRuntimeBackendFacade,
-};
 
 pub(crate) use facade::{
-    create_native_panel, native_ui_enabled, spawn_platform_loops_without_app,
-    update_native_panel_snapshot_without_app,
-};
-#[cfg(feature = "tauri-host")]
-pub(crate) use facade::{
-    hide_native_panel, refresh_native_panel_from_last_snapshot,
-    reposition_native_panel_to_selected_display, set_shared_expanded_body_height,
-    spawn_platform_loops, update_native_panel_snapshot,
+    create_native_panel, spawn_platform_loops_without_app, update_native_panel_snapshot_without_app,
 };
 
 #[cfg(test)]

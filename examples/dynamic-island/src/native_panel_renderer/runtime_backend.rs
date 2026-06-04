@@ -237,7 +237,9 @@ mod tests {
             },
             traits::{NativePanelHost, NativePanelRenderer, NativePanelSceneHost},
         },
-        native_panel_scene::{PanelRuntimeRenderState, PanelScene, PanelSceneBuildInput},
+        native_panel_scene::{
+            PanelInteractionProfile, PanelRuntimeRenderState, PanelScene, PanelSceneBuildInput,
+        },
     };
     use chrono::Utc;
     use echoisland_runtime::{RuntimeSnapshot, SessionSnapshotView};
@@ -468,6 +470,7 @@ mod tests {
                 },
                 app_version: env!("CARGO_PKG_VERSION").to_string(),
                 update_status: crate::updater_service::AppUpdateStatus::idle(),
+                interaction_profile: PanelInteractionProfile::Standalone,
             },
             screen_frame,
         };

@@ -1025,11 +1025,11 @@ fn windows_window_frame_uses_canvas_width_to_contain_local_layout() {
 #[cfg(not(windows))]
 #[test]
 fn windows_native_ui_remains_disabled_on_non_windows() {
-    assert!(!super::native_ui_enabled());
+    assert!(!super::facade::native_ui_enabled());
 }
 
 #[cfg(windows)]
 #[test]
 fn windows_native_ui_is_enabled_by_default_on_windows() {
-    assert!(super::native_ui_enabled());
+    assert!(super::facade::native_ui_enabled());
 }

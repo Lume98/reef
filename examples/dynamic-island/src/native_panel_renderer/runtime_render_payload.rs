@@ -1,6 +1,4 @@
 use echoisland_runtime::RuntimeSnapshot;
-#[cfg(feature = "tauri-host")]
-use tauri::AppHandle;
 
 use super::animation_plan::NativePanelAnimationPlan;
 
@@ -43,23 +41,6 @@ pub(crate) fn native_panel_runtime_render_payload_state_from_animation_plan(
         transition_cards_progress: animation.card_stack.transition_progress,
         transition_cards_entering: animation.card_stack.entering,
     }
-}
-
-#[cfg(feature = "tauri-host")]
-pub(crate) fn dispatch_native_panel_runtime_render_payload_if_available<R, P>(
-    app: &AppHandle<R>,
-    payload: Option<P>,
-    dispatch: impl FnOnce(&AppHandle<R>, P) -> Result<(), String>,
-) -> Result<bool, String>
-where
-    R: tauri::Runtime,
-{
-    let Some(payload) = payload else {
-        return Ok(false);
-    };
-
-    dispatch(app, payload)?;
-    Ok(true)
 }
 
 #[cfg(test)]

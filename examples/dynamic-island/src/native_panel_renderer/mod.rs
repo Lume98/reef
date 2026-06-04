@@ -24,7 +24,6 @@ mod host_runtime_facade;
 mod host_runtime_state;
 mod platform_adapter;
 mod renderer_backend;
-mod runtime_platform_backend;
 
 // 运行时同步：快照、输入、悬停、点击、设置面板和平台命令的协调。
 mod runtime_backend;
