@@ -10,12 +10,16 @@ use super::{
     host_window::WindowsNativePanelHostWindow,
     message_dispatch::pump_window_messages as pump_dispatched_window_messages,
     platform_loop::WindowsNativePanelPlatformLoopState,
-    window_shell::WindowsNativePanelWindowShell,
+    window_shell::{
+        panel_point_from_window_lparam, WindowsNativePanelWindowShell, WINDOWS_WM_LBUTTONDOWN,
+        WINDOWS_WM_LBUTTONUP, WINDOWS_WM_MOUSELEAVE,
+    },
     WindowsNativePanelRenderer,
 };
 use crate::{
+    island_widget_bridge::{resolve_dynamic_island_gesture_effect, DynamicIslandRuntimeEffect},
     native_panel_core::{
-        HoverTransition, PanelAnimationDescriptor, PanelPoint, PanelState,
+        ExpandedSurface, HoverTransition, PanelAnimationDescriptor, PanelPoint, PanelState,
     },
     native_panel_renderer::facade::{
         command::{
@@ -23,6 +27,11 @@ use crate::{
             NativePanelRuntimeCommandHandler,
         },
         descriptor::NativePanelRuntimeInputDescriptor,
+        host::{
+            create_native_panel_via_host_controller, hide_native_panel_via_host_controller,
+            reposition_native_panel_host_from_input_descriptor_via_controller,
+            set_native_panel_host_shared_body_height_via_controller, NativePanelHost,
+        },
         interaction::{
             dispatch_native_panel_click_command_at_point_with_handler,
             handle_native_panel_pointer_input_with_handler,
@@ -44,14 +53,14 @@ use crate::{
             toggle_native_panel_settings_surface_and_rerender_for_runtime_with_input_descriptor,
             NativePanelRuntimeSceneSyncResult,
         },
-        host::{
-            create_native_panel_via_host_controller, hide_native_panel_via_host_controller,
-            reposition_native_panel_host_from_input_descriptor_via_controller,
-            set_native_panel_host_shared_body_height_via_controller, NativePanelHost,
-        },
         shell::pump_native_panel_host_shell_runtime,
         transition::NativePanelTransitionRequest,
     },
+};
+use reef_native_panel_core::{
+    is_dynamic_island_horizontal_swipe, resolve_dynamic_island_gesture,
+    resolve_dynamic_island_root_gesture_at_point, DynamicIslandInteractionContext,
+    DynamicIslandInteractionEffect, DynamicIslandSwipeSpec,
 };
 
 #[derive(Default)]
@@ -87,6 +96,7 @@ pub(crate) struct WindowsNativePanelRuntime {
     pub(super) active_count_marquee_started_at: Option<Instant>,
     pub(super) mascot_animation_started_at: Option<Instant>,
     pub(super) last_focus_click: Option<(String, Instant)>,
+    pub(super) pointer_drag_origin: Option<PanelPoint>,
 }
 
 impl WindowsNativePanelRuntime {
@@ -340,6 +350,10 @@ impl WindowsNativePanelRuntime {
             crate::native_panel_core::CARD_FOCUS_CLICK_DEBOUNCE_MS,
             handler,
         )
+        .and_then(|event| match event {
+            Some(event) => Ok(Some(event)),
+            None => self.dispatch_declarative_click_fallback_with_handler(point, handler),
+        })
     }
 
     pub(super) fn take_queued_platform_events(&mut self) -> Vec<NativePanelPlatformEvent> {
@@ -354,6 +368,16 @@ impl WindowsNativePanelRuntime {
         input: &NativePanelRuntimeInputDescriptor,
         handler: &mut impl NativePanelRuntimeCommandHandler<Error = String>,
     ) -> Result<Option<NativePanelPointerInputOutcome>, String> {
+        if message_id == WINDOWS_WM_LBUTTONDOWN {
+            self.pointer_drag_origin = Some(panel_point_from_window_lparam(lparam));
+            return Ok(None);
+        }
+        if message_id == WINDOWS_WM_MOUSELEAVE {
+            self.pointer_drag_origin = None;
+        }
+        if let Some(outcome) = self.handle_swipe_window_message_with_handler(message_id, lparam)? {
+            return Ok(Some(outcome));
+        }
         let message = self.host.shell.decode_window_message(message_id, lparam);
         handle_optional_native_panel_pointer_input_with_handler(self, message, now, input, handler)
     }
@@ -399,5 +423,111 @@ impl WindowsNativePanelRuntime {
 
     fn schedule_next_status_queue_refresh_wake(&self) {
         self.schedule_next_status_queue_refresh_wake_impl()
+    }
+
+    fn dispatch_declarative_click_fallback_with_handler<H>(
+        &mut self,
+        point: PanelPoint,
+        handler: &mut H,
+    ) -> Result<Option<NativePanelPlatformEvent>, H::Error>
+    where
+        H: NativePanelRuntimeCommandHandler,
+    {
+        let Some(snapshot) = self.scene_cache.last_snapshot.as_ref() else {
+            return Ok(None);
+        };
+        let effect = resolve_dynamic_island_root_gesture_at_point(
+            self.host.resolved_pointer_regions(),
+            point,
+            DynamicIslandInteractionContext {
+                snapshot,
+                panel_expanded: self.panel_state.expanded,
+                settings_active: self.panel_state.surface_mode == ExpandedSurface::Settings,
+            },
+            reef_widgets::DynamicIslandGesture::Click,
+            |context, gesture| {
+                resolve_dynamic_island_gesture_effect(
+                    context.snapshot,
+                    context.panel_expanded,
+                    context.settings_active,
+                    gesture,
+                )
+                .map(map_dynamic_island_runtime_effect)
+            },
+        );
+
+        match effect {
+            Some(DynamicIslandInteractionEffect::PlatformEvent(event)) => {
+                crate::native_panel_renderer::descriptors::dispatch_native_panel_platform_event(
+                    handler,
+                    event.clone(),
+                )?;
+                Ok(Some(event))
+            }
+            Some(DynamicIslandInteractionEffect::Transition(request)) => {
+                self.last_transition_request = Some(request);
+                Ok(None)
+            }
+            None => Ok(None),
+        }
+    }
+
+    fn handle_swipe_window_message_with_handler(
+        &mut self,
+        message_id: u32,
+        lparam: isize,
+    ) -> Result<Option<NativePanelPointerInputOutcome>, String> {
+        if message_id != WINDOWS_WM_LBUTTONUP {
+            return Ok(None);
+        }
+
+        let end = panel_point_from_window_lparam(lparam);
+        let Some(start) = self.pointer_drag_origin.take() else {
+            return Ok(None);
+        };
+        if !is_dynamic_island_horizontal_swipe(start, end, DynamicIslandSwipeSpec::default()) {
+            return Ok(None);
+        }
+
+        let Some(snapshot) = self.scene_cache.last_snapshot.as_ref() else {
+            return Ok(None);
+        };
+        if let Some(DynamicIslandInteractionEffect::Transition(request)) =
+            resolve_dynamic_island_gesture(
+                DynamicIslandInteractionContext {
+                    snapshot,
+                    panel_expanded: self.panel_state.expanded,
+                    settings_active: self.panel_state.surface_mode == ExpandedSurface::Settings,
+                },
+                reef_widgets::DynamicIslandGesture::Swipe,
+                |context, gesture| {
+                    resolve_dynamic_island_gesture_effect(
+                        context.snapshot,
+                        context.panel_expanded,
+                        context.settings_active,
+                        gesture,
+                    )
+                    .map(map_dynamic_island_runtime_effect)
+                },
+            )
+        {
+            self.last_transition_request = Some(request);
+            return Ok(Some(NativePanelPointerInputOutcome::Click(None)));
+        }
+
+        Ok(None)
+    }
+}
+
+fn map_dynamic_island_runtime_effect(
+    effect: DynamicIslandRuntimeEffect,
+) -> DynamicIslandInteractionEffect<NativePanelPlatformEvent, NativePanelTransitionRequest> {
+    match effect {
+        DynamicIslandRuntimeEffect::PlatformEvent(event) => {
+            DynamicIslandInteractionEffect::PlatformEvent(event)
+        }
+        DynamicIslandRuntimeEffect::Transition(request) => {
+            DynamicIslandInteractionEffect::Transition(request)
+        }
     }
 }

@@ -77,7 +77,13 @@ mod tests {
     #[test]
     fn panel_scene_build_input_preserves_display_options_and_settings() {
         let input = panel_scene_build_input_from_parts(
-            vec![panel_display_option_state(0, "display-1", "Built-in", 3024, 1964)],
+            vec![panel_display_option_state(
+                0,
+                "display-1",
+                "Built-in",
+                3024,
+                1964,
+            )],
             PanelSettingsState {
                 selected_display_index: 0,
                 island_width_preset: PanelIslandWidthPreset::Wide,
@@ -107,7 +113,10 @@ mod tests {
         );
 
         assert_eq!(input.display_options.len(), 1);
-        assert_eq!(input.display_options[0], reef_ui::native_panel_scene::fallback_panel_display_option());
+        assert_eq!(
+            input.display_options[0],
+            reef_ui::native_panel_scene::fallback_panel_display_option()
+        );
     }
 
     #[test]
@@ -149,7 +158,13 @@ mod tests {
     #[test]
     fn runtime_input_descriptor_from_parts_keeps_scene_input_in_sync() {
         let descriptor = native_panel_runtime_input_descriptor_from_parts(
-            vec![panel_display_option_state(0, "display-1", "Built-in", 3024, 1964)],
+            vec![panel_display_option_state(
+                0,
+                "display-1",
+                "Built-in",
+                3024,
+                1964,
+            )],
             PanelSettingsState::default(),
             Some(PanelRect {
                 x: 1.0,

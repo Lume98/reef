@@ -1,7 +1,7 @@
 use super::{
     windows_client_hover_fallback_frames, WindowsNativePanelShellCommand,
-    WindowsNativePanelWindowHandle, WindowsNativePanelWindowShell, WINDOWS_WM_LBUTTONUP,
-    WINDOWS_WM_MOUSELEAVE, WINDOWS_WM_MOUSEMOVE,
+    WindowsNativePanelWindowHandle, WindowsNativePanelWindowShell, WINDOWS_WM_LBUTTONDOWN,
+    WINDOWS_WM_LBUTTONUP, WINDOWS_WM_MOUSELEAVE, WINDOWS_WM_MOUSEMOVE,
 };
 use crate::native_panel_renderer::facade::shell::NativePanelPlatformWindowHandleAdapter;
 use crate::{
@@ -176,6 +176,14 @@ fn shell_decodes_pointer_click_message_from_signed_lparam() {
             y: -20.0,
         }))
     );
+}
+
+#[test]
+fn shell_ignores_pointer_down_for_shared_pointer_decoder() {
+    let shell = WindowsNativePanelWindowShell::default();
+    let message = shell.decode_window_message(WINDOWS_WM_LBUTTONDOWN, 0x001E_000Aisize);
+
+    assert_eq!(message, None);
 }
 
 #[test]

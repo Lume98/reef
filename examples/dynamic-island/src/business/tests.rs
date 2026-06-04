@@ -6,8 +6,9 @@ use super::{
     native_panel_runtime_input_descriptor_from_display_options_with_screen_frame,
     panel_display_options_from_display_options, panel_scene_build_input_from_app_settings,
     panel_scene_build_input_from_display_options,
-    resolve_next_display_selection_update_from_display_options, resolve_panel_selected_display_index,
-    resolve_selected_display_index_from_display_options, NativePanelDisplaySelectionUpdate,
+    resolve_next_display_selection_update_from_display_options,
+    resolve_panel_selected_display_index, resolve_selected_display_index_from_display_options,
+    NativePanelDisplaySelectionUpdate,
 };
 use crate::{
     display_settings::DisplayOption,
@@ -228,21 +229,20 @@ fn runtime_input_descriptor_from_display_options_resolves_screen_frame() {
         supports_wide_island: false,
     }];
 
-    let descriptor =
-        native_panel_runtime_input_descriptor_from_display_options_with_screen_frame(
-            &displays,
-            &settings(),
-            Some(0),
-            |selected_display_index| {
-                assert_eq!(selected_display_index, 0);
-                Some(PanelRect {
-                    x: 1.0,
-                    y: 2.0,
-                    width: 300.0,
-                    height: 200.0,
-                })
-            },
-        );
+    let descriptor = native_panel_runtime_input_descriptor_from_display_options_with_screen_frame(
+        &displays,
+        &settings(),
+        Some(0),
+        |selected_display_index| {
+            assert_eq!(selected_display_index, 0);
+            Some(PanelRect {
+                x: 1.0,
+                y: 2.0,
+                width: 300.0,
+                height: 200.0,
+            })
+        },
+    );
 
     assert_eq!(descriptor.selected_display_index(), 0);
     assert_eq!(
@@ -361,4 +361,3 @@ fn next_display_selection_update_cycles_and_skips_empty_display_lists() {
         None
     );
 }
-

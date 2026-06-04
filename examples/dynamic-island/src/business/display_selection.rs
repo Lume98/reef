@@ -1,4 +1,6 @@
-use crate::{display_settings::DisplayOption, native_panel_core::resolve_preferred_panel_display_index};
+use crate::{
+    display_settings::DisplayOption, native_panel_core::resolve_preferred_panel_display_index,
+};
 
 use super::AppSettings;
 
@@ -54,4 +56,3 @@ pub(crate) fn resolve_next_display_selection_update_from_display_options(
         selected_display_key: selected.key.clone(),
     })
 }
-

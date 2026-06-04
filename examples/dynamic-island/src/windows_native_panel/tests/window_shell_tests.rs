@@ -441,6 +441,41 @@ fn windows_runtime_window_message_helper_decodes_and_dispatches_click() {
 }
 
 #[test]
+fn windows_runtime_window_message_swipe_requests_close_transition() {
+    let mut runtime = super::WindowsNativePanelRuntime::default();
+    runtime.scene_cache.last_snapshot = Some(sessions_snapshot(1));
+    runtime.panel_state.expanded = true;
+    let mut handler = RecordingEventHandler::default();
+
+    let down = runtime
+        .handle_window_message_with_handler(
+            super::window_shell::WINDOWS_WM_LBUTTONDOWN,
+            ((20_i32 as u32 as u64) | ((20_i32 as u32 as u64) << 16)) as isize,
+            std::time::Instant::now(),
+            &runtime_input_descriptor(),
+            &mut handler,
+        )
+        .expect("record swipe start");
+    let up = runtime
+        .handle_window_message_with_handler(
+            super::window_shell::WINDOWS_WM_LBUTTONUP,
+            ((90_i32 as u32 as u64) | ((24_i32 as u32 as u64) << 16)) as isize,
+            std::time::Instant::now(),
+            &runtime_input_descriptor(),
+            &mut handler,
+        )
+        .expect("handle swipe release");
+
+    assert_eq!(down, None);
+    assert_eq!(up, Some(NativePanelPointerInputOutcome::Click(None)));
+    assert_eq!(
+        runtime.last_transition_request,
+        Some(NativePanelTransitionRequest::Close)
+    );
+    assert!(handler.handled.is_empty());
+}
+
+#[test]
 fn windows_runtime_pump_platform_loop_tracks_window_state_command() {
     let mut runtime = super::WindowsNativePanelRuntime::default();
 

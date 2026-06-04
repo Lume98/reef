@@ -6,8 +6,7 @@ use crate::{
         panel_state_needs_status_queue_refresh, take_pending_status_reopen_after_transition,
     },
     native_panel_renderer::facade::{
-        host::NativePanelHost,
-        renderer::NativePanelCloseTrigger,
+        host::NativePanelHost, renderer::NativePanelCloseTrigger,
         transition::NativePanelTransitionRequest,
     },
 };

@@ -34,6 +34,7 @@ use crate::{
 };
 
 pub(super) const WINDOWS_WM_MOUSEMOVE: u32 = 0x0200;
+pub(super) const WINDOWS_WM_LBUTTONDOWN: u32 = 0x0201;
 pub(super) const WINDOWS_WM_LBUTTONUP: u32 = 0x0202;
 pub(super) const WINDOWS_WM_MOUSELEAVE: u32 = 0x02A3;
 pub(crate) const WINDOWS_WM_PAINT: u32 = 0x000F;
@@ -385,7 +386,7 @@ impl WindowsNativePanelWindowShell {
     }
 }
 
-fn panel_point_from_window_lparam(lparam: isize) -> PanelPoint {
+pub(super) fn panel_point_from_window_lparam(lparam: isize) -> PanelPoint {
     let x = (lparam as u32 & 0xFFFF) as u16 as i16 as f64;
     let y = ((lparam as u32 >> 16) & 0xFFFF) as u16 as i16 as f64;
     PanelPoint { x, y }

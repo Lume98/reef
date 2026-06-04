@@ -2,8 +2,7 @@ use super::host_runtime::WindowsNativePanelRuntime;
 use crate::{
     native_panel_core::HoverTransition,
     native_panel_renderer::facade::{
-        command::NativePanelPointerInput,
-        descriptor::NativePanelRuntimeInputDescriptor,
+        command::NativePanelPointerInput, descriptor::NativePanelRuntimeInputDescriptor,
         interaction::NativePanelHostPollingInteractionResult,
     },
 };

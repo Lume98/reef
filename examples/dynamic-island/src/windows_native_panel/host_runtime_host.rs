@@ -5,7 +5,9 @@ use crate::native_panel_renderer::facade::{
 use super::{
     host_runtime::WindowsNativePanelHost,
     host_window::WindowsNativePanelDrawFrame,
-    paint_bridge::{consume_presenter_into_shell, consume_presenter_into_shell_result, take_pending_draw_frame},
+    paint_bridge::{
+        consume_presenter_into_shell, consume_presenter_into_shell_result, take_pending_draw_frame,
+    },
     window_shell::{WindowsNativePanelShellCommand, WindowsNativePanelShellPresentResult},
 };
 

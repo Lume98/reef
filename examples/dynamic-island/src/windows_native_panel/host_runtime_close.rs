@@ -1,9 +1,5 @@
 use super::host_runtime::WindowsNativePanelRuntime;
-use crate::{
-    native_panel_renderer::facade::{
-        descriptor::NativePanelRuntimeInputDescriptor,
-    },
-};
+use crate::native_panel_renderer::facade::descriptor::NativePanelRuntimeInputDescriptor;
 
 impl WindowsNativePanelRuntime {
     pub(super) fn sync_snapshot_bundle(

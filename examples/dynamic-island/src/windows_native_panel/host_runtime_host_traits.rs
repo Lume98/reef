@@ -13,8 +13,7 @@ use crate::native_panel_renderer::facade::{
 };
 
 use super::{
-    host_runtime::WindowsNativePanelHost,
-    paint_bridge::present_window_into_presenter,
+    host_runtime::WindowsNativePanelHost, paint_bridge::present_window_into_presenter,
     WindowsNativePanelRenderer,
 };
 

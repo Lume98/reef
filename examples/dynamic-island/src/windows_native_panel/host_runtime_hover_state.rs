@@ -82,7 +82,8 @@ impl WindowsNativePanelRuntime {
         now: Instant,
         input: &crate::native_panel_renderer::facade::descriptor::NativePanelRuntimeInputDescriptor,
     ) -> Result<Option<NativePanelHostPollingInteractionResult>, String> {
-        let Some(result) = self.sync_host_polling_interaction_impl(pointer, primary_mouse_down, now)
+        let Some(result) =
+            self.sync_host_polling_interaction_impl(pointer, primary_mouse_down, now)
         else {
             return Ok(None);
         };

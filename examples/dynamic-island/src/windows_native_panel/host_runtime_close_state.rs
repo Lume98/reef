@@ -2,8 +2,12 @@ use echoisland_runtime::RuntimeSnapshot;
 
 use super::host_runtime::WindowsNativePanelRuntime;
 use crate::{
-    native_panel_core::{panel_state_needs_status_queue_refresh, ExpandedSurface, PanelSnapshotSyncResult},
+    native_panel_core::{
+        panel_state_needs_status_queue_refresh, ExpandedSurface, PanelSnapshotSyncResult,
+    },
+    native_panel_renderer::facade::transition::NativePanelTransitionRequest,
     native_panel_renderer::facade::{
+        host::NativePanelHost,
         presentation::NativePanelPresentationModel,
         renderer::{
             resolve_native_panel_close_presentation_plan,
@@ -11,10 +15,8 @@ use crate::{
             NativePanelClosePresentationPlan, NativePanelCloseTrigger,
             NativePanelStatusClosePreservationInput, NativePanelStatusClosePreservationPlan,
         },
-        host::NativePanelHost,
         runtime::sync_runtime_scene_bundle_for_runtime_with_input,
     },
-    native_panel_renderer::facade::transition::NativePanelTransitionRequest,
 };
 
 impl WindowsNativePanelRuntime {

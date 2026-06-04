@@ -16,6 +16,7 @@ pub mod native_panel_ui {
     pub use reef_ui::native_panel_ui::*;
 }
 
+pub mod dynamic_island_interaction;
 pub mod host_platform;
 pub mod island_widget_bridge;
 pub mod native_window;
@@ -24,6 +25,11 @@ pub mod preview_host;
 pub mod runtime_input;
 pub mod updater_service;
 
+pub use dynamic_island_interaction::{
+    is_dynamic_island_horizontal_swipe, resolve_dynamic_island_gesture,
+    resolve_dynamic_island_root_gesture_at_point, DynamicIslandInteractionContext,
+    DynamicIslandInteractionEffect, DynamicIslandSwipeSpec,
+};
 pub use host_platform::NativePanelHostPlatform;
 pub use island_widget_bridge::{
     build_island_widget, build_island_widget_input, island_render_overrides,

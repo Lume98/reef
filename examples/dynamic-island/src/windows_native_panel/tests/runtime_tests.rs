@@ -1436,6 +1436,44 @@ fn windows_runtime_pointer_event_dispatch_is_noop_when_point_has_no_target() {
 }
 
 #[test]
+fn windows_runtime_pointer_event_dispatch_falls_back_to_declarative_root_click() {
+    let mut runtime = super::WindowsNativePanelRuntime::default();
+    runtime.scene_cache.last_snapshot = Some(sessions_snapshot(1));
+    runtime.host.renderer.last_pointer_regions = vec![NativePanelPointerRegion {
+        frame: PanelRect {
+            x: 0.0,
+            y: 0.0,
+            width: 120.0,
+            height: 60.0,
+        },
+        kind: NativePanelPointerRegionKind::CompactBar,
+    }];
+    let mut handler = RecordingEventHandler::default();
+
+    let event = runtime
+        .dispatch_click_command_at_point_with_handler(
+            PanelPoint { x: 10.0, y: 10.0 },
+            Instant::now(),
+            &mut handler,
+        )
+        .expect("dispatch declarative root click");
+
+    assert_eq!(
+        event,
+        Some(NativePanelPlatformEvent::FocusSession(
+            "session-1".to_string()
+        ))
+    );
+    assert_eq!(
+        handler.handled,
+        vec![NativePanelPlatformEvent::FocusSession(
+            "session-1".to_string()
+        )]
+    );
+    assert!(runtime.host.pending_events.is_empty());
+}
+
+#[test]
 fn windows_runtime_focus_click_dispatch_is_debounced() {
     let now = Instant::now();
     let mut runtime = super::WindowsNativePanelRuntime::default();

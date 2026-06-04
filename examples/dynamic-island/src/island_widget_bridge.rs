@@ -2,14 +2,13 @@
 //!
 //! 这里不再构造专用的 `IslandWidgetContentInput`，而是直接组合已有组件，并绑定业务动作。
 
-use echoisland_runtime::RuntimeSnapshot;
 use crate::native_panel_renderer::facade::{
     command::NativePanelPlatformEvent, transition::NativePanelTransitionRequest,
 };
+use echoisland_runtime::RuntimeSnapshot;
 use reef_widgets::{
-    Badge, BodyLine, Card, CardStyle, CompactBar, DynamicIsland, DynamicIslandGesture,
-    IslandWidget,
-    MascotPose, MascotWidget, SettingsRow, ChromeVisibility,
+    Badge, BodyLine, Card, CardStyle, ChromeVisibility, CompactBar, DynamicIsland,
+    DynamicIslandGesture, IslandWidget, MascotPose, MascotWidget, SettingsRow,
 };
 
 pub use reef_native_panel_core::island_render_overrides;
@@ -78,19 +77,55 @@ pub fn resolve_dynamic_island_effect(
     match action {
         DynamicIslandRuntimeAction::OpenPrimarySession => {
             resolve_primary_session_id(snapshot).map(|session_id| {
-                DynamicIslandRuntimeEffect::PlatformEvent(
-                    NativePanelPlatformEvent::FocusSession(session_id),
-                )
+                DynamicIslandRuntimeEffect::PlatformEvent(NativePanelPlatformEvent::FocusSession(
+                    session_id,
+                ))
             })
         }
-        DynamicIslandRuntimeAction::ToggleSettings => Some(
-            DynamicIslandRuntimeEffect::PlatformEvent(
+        DynamicIslandRuntimeAction::ToggleSettings => {
+            Some(DynamicIslandRuntimeEffect::PlatformEvent(
                 NativePanelPlatformEvent::ToggleSettingsSurface,
-            ),
-        ),
+            ))
+        }
         DynamicIslandRuntimeAction::Dismiss => Some(DynamicIslandRuntimeEffect::Transition(
             NativePanelTransitionRequest::Close,
         )),
+    }
+}
+
+pub fn resolve_dynamic_island_gesture_effect(
+    snapshot: &RuntimeSnapshot,
+    panel_expanded: bool,
+    settings_active: bool,
+    gesture: DynamicIslandGesture,
+) -> Option<DynamicIslandRuntimeEffect> {
+    let action = resolve_dynamic_island_action(snapshot, panel_expanded, settings_active, gesture)?;
+    resolve_dynamic_island_effect(snapshot, action)
+}
+
+pub fn resolve_dynamic_island_platform_event(
+    snapshot: &RuntimeSnapshot,
+    panel_expanded: bool,
+    settings_active: bool,
+    gesture: DynamicIslandGesture,
+) -> Option<NativePanelPlatformEvent> {
+    match resolve_dynamic_island_gesture_effect(snapshot, panel_expanded, settings_active, gesture)?
+    {
+        DynamicIslandRuntimeEffect::PlatformEvent(event) => Some(event),
+        DynamicIslandRuntimeEffect::Transition(_) => None,
+    }
+}
+
+pub fn resolve_dynamic_island_transition_request(
+    snapshot: &RuntimeSnapshot,
+    panel_expanded: bool,
+    settings_active: bool,
+    gesture: DynamicIslandGesture,
+) -> Option<NativePanelTransitionRequest> {
+    match resolve_dynamic_island_gesture_effect(snapshot, panel_expanded, settings_active, gesture)?
+    {
+        DynamicIslandRuntimeEffect::PlatformEvent(_) => None,
+        DynamicIslandRuntimeEffect::Transition(request) => Some(request),
     }
 }
 
@@ -191,7 +226,10 @@ fn build_runtime_cards(snapshot: &RuntimeSnapshot) -> Vec<Card> {
     for session in &snapshot.sessions {
         let mut card = Card::new(CardStyle::Default)
             .title(session.source.clone())
-            .badge(Badge::status(session.status.clone(), session.status.eq_ignore_ascii_case("running")))
+            .badge(Badge::status(
+                session.status.clone(),
+                session.status.eq_ignore_ascii_case("running"),
+            ))
             .badge(Badge::source(session.source.clone()));
 
         if let Some(message) = session
@@ -297,36 +335,40 @@ mod tests {
     #[test]
     fn bridge_resolves_runtime_effect_for_primary_session() {
         let mut snapshot = empty_snapshot();
-        snapshot.sessions.push(echoisland_runtime::SessionSnapshotView {
-            session_id: "session-1".to_string(),
-            source: "reef".to_string(),
-            project_name: None,
-            cwd: None,
-            model: None,
-            terminal_app: None,
-            terminal_bundle: None,
-            host_app: None,
-            window_title: None,
-            tty: None,
-            terminal_pid: None,
-            cli_pid: None,
-            iterm_session_id: None,
-            kitty_window_id: None,
-            tmux_env: None,
-            tmux_pane: None,
-            tmux_client_tty: None,
-            status: "running".to_string(),
-            current_tool: None,
-            tool_description: None,
-            last_user_prompt: None,
-            last_assistant_message: None,
-            tool_history_count: 0,
-            tool_history: vec![],
-            last_activity: chrono::Utc::now(),
-        });
+        snapshot
+            .sessions
+            .push(echoisland_runtime::SessionSnapshotView {
+                session_id: "session-1".to_string(),
+                source: "reef".to_string(),
+                project_name: None,
+                cwd: None,
+                model: None,
+                terminal_app: None,
+                terminal_bundle: None,
+                host_app: None,
+                window_title: None,
+                tty: None,
+                terminal_pid: None,
+                cli_pid: None,
+                iterm_session_id: None,
+                kitty_window_id: None,
+                tmux_env: None,
+                tmux_pane: None,
+                tmux_client_tty: None,
+                status: "running".to_string(),
+                current_tool: None,
+                tool_description: None,
+                last_user_prompt: None,
+                last_assistant_message: None,
+                tool_history_count: 0,
+                tool_history: vec![],
+                last_activity: chrono::Utc::now(),
+            });
 
-        let effect =
-            resolve_dynamic_island_effect(&snapshot, DynamicIslandRuntimeAction::OpenPrimarySession);
+        let effect = resolve_dynamic_island_effect(
+            &snapshot,
+            DynamicIslandRuntimeAction::OpenPrimarySession,
+        );
 
         assert_eq!(
             effect,
@@ -338,10 +380,8 @@ mod tests {
 
     #[test]
     fn bridge_resolves_runtime_effect_for_dismiss() {
-        let effect = resolve_dynamic_island_effect(
-            &empty_snapshot(),
-            DynamicIslandRuntimeAction::Dismiss,
-        );
+        let effect =
+            resolve_dynamic_island_effect(&empty_snapshot(), DynamicIslandRuntimeAction::Dismiss);
 
         assert_eq!(
             effect,
@@ -349,5 +389,113 @@ mod tests {
                 NativePanelTransitionRequest::Close
             ))
         );
+    }
+
+    #[test]
+    fn bridge_resolves_platform_event_from_click_gesture() {
+        let mut snapshot = empty_snapshot();
+        snapshot
+            .sessions
+            .push(echoisland_runtime::SessionSnapshotView {
+                session_id: "session-1".to_string(),
+                source: "reef".to_string(),
+                project_name: None,
+                cwd: None,
+                model: None,
+                terminal_app: None,
+                terminal_bundle: None,
+                host_app: None,
+                window_title: None,
+                tty: None,
+                terminal_pid: None,
+                cli_pid: None,
+                iterm_session_id: None,
+                kitty_window_id: None,
+                tmux_env: None,
+                tmux_pane: None,
+                tmux_client_tty: None,
+                status: "running".to_string(),
+                current_tool: None,
+                tool_description: None,
+                last_user_prompt: None,
+                last_assistant_message: None,
+                tool_history_count: 0,
+                tool_history: vec![],
+                last_activity: chrono::Utc::now(),
+            });
+
+        let event = resolve_dynamic_island_platform_event(
+            &snapshot,
+            false,
+            false,
+            DynamicIslandGesture::Click,
+        );
+
+        assert_eq!(
+            event,
+            Some(NativePanelPlatformEvent::FocusSession(
+                "session-1".to_string()
+            ))
+        );
+    }
+
+    #[test]
+    fn bridge_resolves_gesture_effect_from_click_gesture() {
+        let mut snapshot = empty_snapshot();
+        snapshot
+            .sessions
+            .push(echoisland_runtime::SessionSnapshotView {
+                session_id: "session-1".to_string(),
+                source: "reef".to_string(),
+                project_name: None,
+                cwd: None,
+                model: None,
+                terminal_app: None,
+                terminal_bundle: None,
+                host_app: None,
+                window_title: None,
+                tty: None,
+                terminal_pid: None,
+                cli_pid: None,
+                iterm_session_id: None,
+                kitty_window_id: None,
+                tmux_env: None,
+                tmux_pane: None,
+                tmux_client_tty: None,
+                status: "running".to_string(),
+                current_tool: None,
+                tool_description: None,
+                last_user_prompt: None,
+                last_assistant_message: None,
+                tool_history_count: 0,
+                tool_history: vec![],
+                last_activity: chrono::Utc::now(),
+            });
+
+        let effect = resolve_dynamic_island_gesture_effect(
+            &snapshot,
+            false,
+            false,
+            DynamicIslandGesture::Click,
+        );
+
+        assert_eq!(
+            effect,
+            Some(DynamicIslandRuntimeEffect::PlatformEvent(
+                NativePanelPlatformEvent::FocusSession("session-1".to_string())
+            ))
+        );
+    }
+
+    #[test]
+    fn bridge_resolves_transition_request_from_swipe_gesture() {
+        let request = resolve_dynamic_island_transition_request(
+            &empty_snapshot(),
+            true,
+            false,
+            DynamicIslandGesture::Swipe,
+        );
+
+        assert_eq!(request, Some(NativePanelTransitionRequest::Close));
     }
 }

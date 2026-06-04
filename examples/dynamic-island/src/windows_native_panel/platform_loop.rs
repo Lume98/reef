@@ -1,6 +1,4 @@
-use std::{
-    sync::{Mutex, OnceLock},
-};
+use std::sync::{Mutex, OnceLock};
 
 use crate::{
     native_panel_core::{clamp_panel_rect_to_bounds, PanelPoint, PanelRect},
@@ -227,6 +225,7 @@ extern "system" fn native_panel_window_proc(
             0
         },
         super::window_shell::WINDOWS_WM_MOUSEMOVE
+        | super::window_shell::WINDOWS_WM_LBUTTONDOWN
         | super::window_shell::WINDOWS_WM_LBUTTONUP
         | super::window_shell::WINDOWS_WM_MOUSELEAVE => {
             if msg == super::window_shell::WINDOWS_WM_MOUSEMOVE {
@@ -234,6 +233,7 @@ extern "system" fn native_panel_window_proc(
             }
             let lparam = match msg {
                 super::window_shell::WINDOWS_WM_MOUSEMOVE
+                | super::window_shell::WINDOWS_WM_LBUTTONDOWN
                 | super::window_shell::WINDOWS_WM_LBUTTONUP => {
                     logical_client_lparam_for_window(hwnd, lparam)
                 }

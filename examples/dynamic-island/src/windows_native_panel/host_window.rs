@@ -1,5 +1,5 @@
 use crate::{
-    native_panel_core::{PanelRect},
+    native_panel_core::PanelRect,
     native_panel_renderer::facade::{
         descriptor::{
             NativePanelComputedHostWindow, NativePanelHostWindowDescriptor,

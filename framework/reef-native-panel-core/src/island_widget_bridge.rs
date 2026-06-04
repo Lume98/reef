@@ -5,10 +5,9 @@
 use echoisland_runtime::RuntimeSnapshot;
 use reef_widgets::{
     build_island_widget as build_framework_island_widget, island_widget::DisplayMode,
-    island_widget::IslandRenderOverrides,
     island_widget::IslandPendingApprovalInput, island_widget::IslandPendingQuestionInput,
-    island_widget::IslandSessionInput, island_widget::IslandWidgetContentInput, IslandWidget,
-    ChromeVisibility,
+    island_widget::IslandRenderOverrides, island_widget::IslandSessionInput,
+    island_widget::IslandWidgetContentInput, ChromeVisibility, IslandWidget,
 };
 
 /// 将运行时快照转换为可复用的岛屿输入模型。
@@ -140,14 +139,8 @@ mod tests {
 
     #[test]
     fn bridge_builds_render_overrides() {
-        let overrides = island_render_overrides(
-            320.0,
-            48.0,
-            180.0,
-            ChromeVisibility::expanded(),
-            0.5,
-            true,
-        );
+        let overrides =
+            island_render_overrides(320.0, 48.0, 180.0, ChromeVisibility::expanded(), 0.5, true);
 
         assert_eq!(overrides.width, 320.0);
         assert_eq!(overrides.compact_height, 48.0);

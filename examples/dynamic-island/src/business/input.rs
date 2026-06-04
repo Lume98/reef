@@ -151,4 +151,3 @@ pub(crate) fn native_panel_runtime_input_context_from_display_options_with_scree
     context.screen_frame = screen_frame_for_selected_index(context.selected_display_index);
     context
 }
-
