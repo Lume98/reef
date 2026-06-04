@@ -31,10 +31,10 @@ use crate::{
     native_panel_scene::{PanelRuntimeRenderState, PanelScene},
 };
 use reef_render::primitive::VisualPlan;
-use reef_widgets::island_widget::render_island_widget;
+use reef_view::create_root;
 use reef_widgets::ChromeVisibility;
 
-use crate::island_widget_bridge::build_island_widget;
+use crate::island_widget_bridge::{build_island_widget, island_render_overrides};
 
 use super::{host_runtime::WindowsNativePanelHost, WINDOWS_FALLBACK_PANEL_SCREEN_FRAME};
 
@@ -449,15 +449,7 @@ impl WindowsNativePanelRenderer {
         let panel_expanded = presentation.shell.visible;
         let settings_active = presentation.shell.surface == ExpandedSurface::Settings;
         let mut widget = build_island_widget(snapshot, panel_expanded, settings_active);
-        widget.width = layout.panel_frame.width.max(1.0);
-        widget.compact_height = crate::native_panel_core::DEFAULT_COMPACT_PILL_HEIGHT;
-        widget.expanded_height = layout
-            .panel_frame
-            .height
-            .max(crate::native_panel_core::COLLAPSED_PANEL_HEIGHT);
-        widget.reveal_progress = animation_plan.card_stack.visibility_progress;
-        widget.entering = animation_plan.card_stack.entering;
-        widget.compact_bar.chrome = if panel_expanded {
+        let chrome = if panel_expanded {
             ChromeVisibility::interpolate(
                 &ChromeVisibility::compact(),
                 &ChromeVisibility::expanded(),
@@ -466,11 +458,26 @@ impl WindowsNativePanelRenderer {
         } else {
             ChromeVisibility::compact()
         };
-        widget.compact_bar.chrome.shoulder_progress =
-            animation_plan.card_stack.separator_visibility;
+        let mut overrides = island_render_overrides(
+            layout.panel_frame.width.max(1.0),
+            crate::native_panel_core::DEFAULT_COMPACT_PILL_HEIGHT,
+            layout
+                .panel_frame
+                .height
+                .max(crate::native_panel_core::COLLAPSED_PANEL_HEIGHT),
+            chrome,
+            animation_plan.card_stack.visibility_progress,
+            animation_plan.card_stack.entering,
+        );
+        overrides.chrome.shoulder_progress = animation_plan.card_stack.separator_visibility;
+        widget.apply_render_overrides(overrides);
         widget.compact_bar.show_actions = panel_expanded || settings_active;
 
-        self.last_widget_plan = Some(render_island_widget(&widget));
+        let mut widget_root = create_root(reef_core::geometry::Size {
+            width: layout.panel_frame.width.max(1.0),
+            height: layout.panel_frame.height.max(1.0),
+        });
+        self.last_widget_plan = Some(widget_root.render(widget));
     }
 
     fn refresh_cached_window_state(

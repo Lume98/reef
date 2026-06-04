@@ -84,6 +84,37 @@ impl IslandWidgetSpec {
     }
 }
 
+/// Render-time overrides applied after content composition.
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct IslandRenderOverrides {
+    pub width: f64,
+    pub compact_height: f64,
+    pub expanded_height: f64,
+    pub chrome: crate::compact_bar::ChromeVisibility,
+    pub reveal_progress: f64,
+    pub entering: bool,
+}
+
+impl IslandRenderOverrides {
+    pub fn new(
+        width: f64,
+        compact_height: f64,
+        expanded_height: f64,
+        chrome: crate::compact_bar::ChromeVisibility,
+        reveal_progress: f64,
+        entering: bool,
+    ) -> Self {
+        Self {
+            width,
+            compact_height,
+            expanded_height,
+            chrome,
+            reveal_progress,
+            entering,
+        }
+    }
+}
+
 impl Default for IslandWidgetSpec {
     fn default() -> Self {
         Self {

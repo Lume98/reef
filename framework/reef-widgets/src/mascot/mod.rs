@@ -79,6 +79,23 @@ impl MascotWidget {
         self.pose = pose;
         self
     }
+
+    pub fn alpha(mut self, alpha: f64) -> Self {
+        self.alpha = alpha;
+        self
+    }
+
+    pub fn offset(mut self, offset_x: f64, offset_y: f64) -> Self {
+        self.offset_x = offset_x;
+        self.offset_y = offset_y;
+        self
+    }
+
+    pub fn scale(mut self, scale_x: f64, scale_y: f64) -> Self {
+        self.scale_x = scale_x;
+        self.scale_y = scale_y;
+        self
+    }
 }
 
 impl Widget for MascotWidget {

@@ -22,5 +22,5 @@ pub use input::{
     IslandWidgetContentInput,
 };
 pub use render::render_island_widget;
-pub use spec::IslandWidgetLayout;
+pub use spec::{IslandRenderOverrides, IslandWidgetLayout};
 pub use widget::IslandWidget;

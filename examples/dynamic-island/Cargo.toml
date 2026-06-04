@@ -33,6 +33,7 @@ tauri-plugin-opener = { version = "2", optional = true }
 echoisland-runtime = { path = "../../echoisland-runtime" }
 reef-core = { path = "../../framework/reef-core" }
 reef-app = { path = "../../framework/reef-app" }
+reef-view = { path = "../../framework/reef-view" }
 reef-ui = { path = "../../framework/reef-ui" }
 reef-render = { path = "../../framework/reef-render" }
 reef-widgets = { path = "../../framework/reef-widgets" }

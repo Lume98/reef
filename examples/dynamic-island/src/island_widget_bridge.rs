@@ -1,12 +1,14 @@
 //! 桥接模块：将 `RuntimeSnapshot` 转换为 `reef-widgets` 的 `IslandWidget`。
 //!
-//! 这里只做运行时数据到通用输入模型的映射，不再维护卡片、Mascot 或 settings 的模板细节。
+//! 这里只做运行时数据到组件树的映射，以及渲染期 override 的集中封装。
 
 use echoisland_runtime::RuntimeSnapshot;
 use reef_widgets::{
     build_island_widget as build_framework_island_widget, island_widget::DisplayMode,
+    island_widget::IslandRenderOverrides,
     island_widget::IslandPendingApprovalInput, island_widget::IslandPendingQuestionInput,
     island_widget::IslandSessionInput, island_widget::IslandWidgetContentInput, IslandWidget,
+    ChromeVisibility,
 };
 
 /// 将运行时快照转换为可复用的岛屿输入模型。
@@ -76,6 +78,24 @@ pub fn build_island_widget(
     ))
 }
 
+pub fn island_render_overrides(
+    width: f64,
+    compact_height: f64,
+    expanded_height: f64,
+    chrome: ChromeVisibility,
+    reveal_progress: f64,
+    entering: bool,
+) -> IslandRenderOverrides {
+    IslandRenderOverrides::new(
+        width,
+        compact_height,
+        expanded_height,
+        chrome,
+        reveal_progress,
+        entering,
+    )
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -116,5 +136,23 @@ mod tests {
 
         assert_eq!(widget.mode, DisplayMode::Compact);
         assert_eq!(widget.width, default_layout.width);
+    }
+
+    #[test]
+    fn bridge_builds_render_overrides() {
+        let overrides = island_render_overrides(
+            320.0,
+            48.0,
+            180.0,
+            ChromeVisibility::expanded(),
+            0.5,
+            true,
+        );
+
+        assert_eq!(overrides.width, 320.0);
+        assert_eq!(overrides.compact_height, 48.0);
+        assert_eq!(overrides.expanded_height, 180.0);
+        assert_eq!(overrides.reveal_progress, 0.5);
+        assert!(overrides.entering);
     }
 }

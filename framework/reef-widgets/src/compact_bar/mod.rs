@@ -111,6 +111,46 @@ impl CompactBar {
             height: 48.0,
         }
     }
+
+    pub fn headline(mut self, headline: impl Into<String>) -> Self {
+        self.headline = headline.into();
+        self
+    }
+
+    pub fn headline_emphasized(mut self, emphasized: bool) -> Self {
+        self.headline_emphasized = emphasized;
+        self
+    }
+
+    pub fn counts(
+        mut self,
+        active_count: impl Into<String>,
+        total_count: impl Into<String>,
+    ) -> Self {
+        self.active_count = active_count.into();
+        self.total_count = total_count.into();
+        self
+    }
+
+    pub fn show_actions(mut self, show_actions: bool) -> Self {
+        self.show_actions = show_actions;
+        self
+    }
+
+    pub fn debug_mode(mut self, debug_mode: bool) -> Self {
+        self.debug_mode = debug_mode;
+        self
+    }
+
+    pub fn chrome(mut self, chrome: ChromeVisibility) -> Self {
+        self.chrome = chrome;
+        self
+    }
+
+    pub fn height(mut self, height: f64) -> Self {
+        self.height = height;
+        self
+    }
 }
 
 impl Widget for CompactBar {

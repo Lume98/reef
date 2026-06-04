@@ -892,6 +892,7 @@ dependencies = [
  "reef-native-panel-windows",
  "reef-render",
  "reef-ui",
+ "reef-view",
  "reef-widgets",
  "serde",
  "serde_json",

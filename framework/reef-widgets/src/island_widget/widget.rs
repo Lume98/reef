@@ -11,7 +11,10 @@ use crate::{
     mascot::MascotWidget,
 };
 
-use super::{display_mode::DisplayMode, spec::IslandWidgetSpec};
+use super::{
+    display_mode::DisplayMode,
+    spec::{IslandRenderOverrides, IslandWidgetLayout, IslandWidgetSpec},
+};
 use super::render::paint_island_widget;
 
 /// Top-level widget that composes the entire Dynamic Island UI.
@@ -40,6 +43,72 @@ impl IslandWidget {
         Self::from_spec(IslandWidgetSpec::default())
     }
 
+    pub fn mode(mut self, mode: DisplayMode) -> Self {
+        self.mode = mode;
+        self
+    }
+
+    pub fn layout(mut self, layout: IslandWidgetLayout) -> Self {
+        self.width = layout.width;
+        self.compact_height = layout.compact_height;
+        self.expanded_height = layout.expanded_height;
+        self
+    }
+
+    pub fn compact_bar(mut self, compact_bar: CompactBar) -> Self {
+        self.compact_bar = compact_bar;
+        self.chrome = self.compact_bar.chrome;
+        self.compact_height = self.compact_bar.height;
+        self
+    }
+
+    pub fn expanded_shell(mut self, expanded_shell: ExpandedShell) -> Self {
+        self.expanded_shell = expanded_shell;
+        self
+    }
+
+    pub fn card(mut self, card: Card) -> Self {
+        self.cards.push(card);
+        self
+    }
+
+    pub fn cards(mut self, cards: Vec<Card>) -> Self {
+        self.cards = cards;
+        self
+    }
+
+    pub fn mascot(mut self, mascot: MascotWidget) -> Self {
+        self.mascot = Some(mascot);
+        self
+    }
+
+    pub fn glow(mut self, glow: CompletionGlow) -> Self {
+        self.glow = Some(glow);
+        self
+    }
+
+    pub fn shoulder_left(mut self, shoulder: CompactShoulder) -> Self {
+        self.shoulder_left = Some(shoulder);
+        self
+    }
+
+    pub fn shoulder_right(mut self, shoulder: CompactShoulder) -> Self {
+        self.shoulder_right = Some(shoulder);
+        self
+    }
+
+    pub fn chrome(mut self, chrome: ChromeVisibility) -> Self {
+        self.chrome = chrome;
+        self.compact_bar.chrome = chrome;
+        self
+    }
+
+    pub fn reveal(mut self, progress: f64, entering: bool) -> Self {
+        self.reveal_progress = progress;
+        self.entering = entering;
+        self
+    }
+
     pub fn width(mut self, w: f64) -> Self {
         self.width = w;
         self
@@ -53,6 +122,17 @@ impl IslandWidget {
     pub fn expanded_height(mut self, h: f64) -> Self {
         self.expanded_height = h;
         self
+    }
+
+    pub fn apply_render_overrides(&mut self, overrides: IslandRenderOverrides) {
+        self.width = overrides.width;
+        self.compact_height = overrides.compact_height;
+        self.expanded_height = overrides.expanded_height;
+        self.chrome = overrides.chrome;
+        self.compact_bar.chrome = overrides.chrome;
+        self.compact_bar.height = overrides.compact_height;
+        self.reveal_progress = overrides.reveal_progress;
+        self.entering = overrides.entering;
     }
 
     pub fn from_spec(spec: IslandWidgetSpec) -> Self {
