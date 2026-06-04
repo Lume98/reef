@@ -87,6 +87,10 @@ where
     let _ = render_dynamic_island_initial_plan(&source);
     #[cfg(target_os = "windows")]
     {
+        // The migrated Windows host currently carries a placeholder mascot sprite asset.
+        // Force the stable vector mascot path for the standalone example to avoid a white block
+        // where the assistant should be rendered.
+        std::env::set_var("ECHOISLAND_MASCOT_SPRITE", "0");
         // The current standalone host still renders from the snapshot-backed runtime path.
         // We use the framework preview snapshot to keep the window alive until the source-based
         // host fully replaces the legacy runtime.

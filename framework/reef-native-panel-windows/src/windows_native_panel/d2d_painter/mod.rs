@@ -26,8 +26,7 @@ use super::{
     paint_backend::{
         resolve_windows_native_panel_hit_test_blocker_operations,
         resolve_windows_native_panel_paint_operations,
-        resolve_windows_native_panel_widget_paint_operations, WindowsNativePanelPaintColor,
-        WindowsNativePanelPaintOperation,
+        WindowsNativePanelPaintColor, WindowsNativePanelPaintOperation,
     },
 };
 
@@ -507,13 +506,11 @@ impl Direct2DWindowsNativePanelPainter {
             }));
 
             let mut operations = resolve_windows_native_panel_hit_test_blocker_operations(job);
-            if let Some(widget_plan) = widget_plan {
-                operations.extend(resolve_windows_native_panel_widget_paint_operations(
-                    widget_plan,
-                ));
-            } else {
-                operations.extend(resolve_windows_native_panel_paint_operations(plan));
-            }
+            // The source-derived widget plan is not visually parity-safe on the migrated
+            // Windows host yet. Keep runtime painting on the stable native-panel plan so the
+            // standalone example renders real content instead of a blank shell.
+            let _ = widget_plan;
+            operations.extend(resolve_windows_native_panel_paint_operations(plan));
             for operation in operations {
                 match operation {
                     WindowsNativePanelPaintOperation::PushClip { frame } => {
