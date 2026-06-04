@@ -24,7 +24,7 @@ pub use compact_bar::{
 };
 pub use dynamic_island::{
     DynamicIsland, DynamicIslandActionBinding, DynamicIslandActions, DynamicIslandChild,
-    DynamicIslandGesture,
+    DynamicIslandGesture, DynamicIslandTarget, DynamicIslandTargetActionBinding,
 };
 pub use island::{ExpandedCardStack, ExpandedShell};
 pub use island_widget::{build_island_widget, IslandWidget};

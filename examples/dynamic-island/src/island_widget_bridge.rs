@@ -9,7 +9,7 @@ use crate::native_panel_renderer::facade::{
 use echoisland_runtime::RuntimeSnapshot;
 use reef_widgets::{
     Badge, BodyLine, Card, CardStyle, ChromeVisibility, CompactBar, DynamicIsland,
-    DynamicIslandGesture, IslandWidget, MascotPose, MascotWidget, SettingsRow,
+    DynamicIslandGesture, DynamicIslandTarget, IslandWidget, MascotPose, MascotWidget, SettingsRow,
 };
 
 pub use reef_native_panel_core::island_render_overrides;
@@ -79,7 +79,7 @@ pub fn resolve_dynamic_island_target_action(
     snapshot: &RuntimeSnapshot,
     panel_expanded: bool,
     settings_active: bool,
-    target: &str,
+    target: &DynamicIslandTarget,
     gesture: DynamicIslandGesture,
 ) -> Option<DynamicIslandRuntimeAction> {
     build_dynamic_island(snapshot, panel_expanded, settings_active)
@@ -129,7 +129,7 @@ pub fn resolve_dynamic_island_target_effect(
     snapshot: &RuntimeSnapshot,
     panel_expanded: bool,
     settings_active: bool,
-    target: &str,
+    target: &DynamicIslandTarget,
     gesture: DynamicIslandGesture,
 ) -> Option<DynamicIslandRuntimeEffect> {
     let action = resolve_dynamic_island_target_action(
@@ -142,10 +142,12 @@ pub fn resolve_dynamic_island_target_effect(
     resolve_dynamic_island_effect(snapshot, action)
 }
 
-pub fn dynamic_island_target_key_for_hit_target(target: &PanelHitTarget) -> Option<String> {
+pub fn dynamic_island_target_for_hit_target(
+    target: &PanelHitTarget,
+) -> Option<DynamicIslandTarget> {
     match target.action {
         PanelHitAction::FocusSession if !target.value.is_empty() => {
-            Some(format!("session:{}", target.value))
+            Some(DynamicIslandTarget::Session(target.value.clone()))
         }
         _ => None,
     }
@@ -244,7 +246,10 @@ fn resolve_primary_session_id(snapshot: &RuntimeSnapshot) -> Option<String> {
 
 fn build_runtime_cards(
     snapshot: &RuntimeSnapshot,
-) -> Vec<(Card, Option<(String, DynamicIslandRuntimeAction)>)> {
+) -> Vec<(
+    Card,
+    Option<(DynamicIslandTarget, DynamicIslandRuntimeAction)>,
+)> {
     let mut cards = Vec::new();
 
     for pending in &snapshot.pending_permissions {
@@ -259,7 +264,7 @@ fn build_runtime_cards(
         cards.push((
             card.height(104.0),
             Some((
-                format!("session:{session_id}"),
+                DynamicIslandTarget::Session(session_id.clone()),
                 DynamicIslandRuntimeAction::OpenSession(session_id),
             )),
         ));
@@ -279,7 +284,7 @@ fn build_runtime_cards(
                 .body_line(BodyLine::plain(None, pending.text.clone()))
                 .height(112.0),
             Some((
-                format!("session:{session_id}"),
+                DynamicIslandTarget::Session(session_id.clone()),
                 DynamicIslandRuntimeAction::OpenSession(session_id),
             )),
         ));
@@ -308,7 +313,7 @@ fn build_runtime_cards(
         cards.push((
             card.height(96.0),
             Some((
-                format!("session:{session_id}"),
+                DynamicIslandTarget::Session(session_id.clone()),
                 DynamicIslandRuntimeAction::OpenSession(session_id),
             )),
         ));
@@ -419,7 +424,7 @@ mod tests {
             &snapshot,
             true,
             false,
-            "session:session-1",
+            &DynamicIslandTarget::Session("session-1".to_string()),
             DynamicIslandGesture::Click,
         );
 
@@ -444,13 +449,16 @@ mod tests {
     }
 
     #[test]
-    fn bridge_maps_hit_target_to_dynamic_island_target_key() {
-        let key = dynamic_island_target_key_for_hit_target(&PanelHitTarget {
+    fn bridge_maps_hit_target_to_dynamic_island_target() {
+        let key = dynamic_island_target_for_hit_target(&PanelHitTarget {
             action: PanelHitAction::FocusSession,
             value: "session-1".to_string(),
         });
 
-        assert_eq!(key, Some("session:session-1".to_string()));
+        assert_eq!(
+            key,
+            Some(DynamicIslandTarget::Session("session-1".to_string()))
+        );
     }
 
     #[test]

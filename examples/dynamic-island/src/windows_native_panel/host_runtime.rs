@@ -18,7 +18,7 @@ use super::{
 };
 use crate::{
     island_widget_bridge::{
-        dynamic_island_target_key_for_hit_target, resolve_dynamic_island_gesture_effect,
+        dynamic_island_target_for_hit_target, resolve_dynamic_island_gesture_effect,
         resolve_dynamic_island_target_effect, DynamicIslandRuntimeEffect,
     },
     native_panel_core::{
@@ -499,7 +499,7 @@ impl WindowsNativePanelRuntime {
         let Some(snapshot) = self.scene_cache.last_snapshot.as_ref() else {
             return Ok(None);
         };
-        let Some(target_key) = dynamic_island_target_key_for_hit_target(&target) else {
+        let Some(target_key) = dynamic_island_target_for_hit_target(&target) else {
             return Ok(None);
         };
         let Some(effect) = resolve_dynamic_island_target_effect(

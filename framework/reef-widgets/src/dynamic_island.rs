@@ -13,9 +13,14 @@ pub struct DynamicIslandActionBinding<Action> {
     pub action: Action,
 }
 
+#[derive(Clone, Debug, PartialEq, Eq, Hash)]
+pub enum DynamicIslandTarget {
+    Session(String),
+}
+
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct DynamicIslandTargetActionBinding<Action> {
-    pub target: String,
+    pub target: DynamicIslandTarget,
     pub gesture: DynamicIslandGesture,
     pub action: Action,
 }
@@ -105,9 +110,9 @@ impl<Action> DynamicIsland<Action> {
         self
     }
 
-    pub fn on_target_click(mut self, target: impl Into<String>, action: Action) -> Self {
+    pub fn on_target_click(mut self, target: DynamicIslandTarget, action: Action) -> Self {
         self.target_bindings.push(DynamicIslandTargetActionBinding {
-            target: target.into(),
+            target,
             gesture: DynamicIslandGesture::Click,
             action,
         });
@@ -132,13 +137,13 @@ impl<Action> DynamicIsland<Action> {
 
     pub fn action_for_target_gesture(
         &self,
-        target: &str,
+        target: &DynamicIslandTarget,
         gesture: DynamicIslandGesture,
     ) -> Option<&Action> {
         self.target_bindings
             .iter()
             .rev()
-            .find(|binding| binding.target == target && binding.gesture == gesture)
+            .find(|binding| &binding.target == target && binding.gesture == gesture)
             .map(|binding| &binding.action)
     }
 
@@ -198,14 +203,23 @@ mod tests {
 
     #[test]
     fn dynamic_island_resolves_target_click_binding() {
-        let island = DynamicIsland::new().on_target_click("session:session-1", "open");
+        let island = DynamicIsland::new().on_target_click(
+            DynamicIslandTarget::Session("session-1".to_string()),
+            "open",
+        );
 
         assert_eq!(
-            island.action_for_target_gesture("session:session-1", DynamicIslandGesture::Click),
+            island.action_for_target_gesture(
+                &DynamicIslandTarget::Session("session-1".to_string()),
+                DynamicIslandGesture::Click
+            ),
             Some(&"open")
         );
         assert_eq!(
-            island.action_for_target_gesture("session:session-2", DynamicIslandGesture::Click),
+            island.action_for_target_gesture(
+                &DynamicIslandTarget::Session("session-2".to_string()),
+                DynamicIslandGesture::Click
+            ),
             None
         );
     }
