@@ -4,6 +4,7 @@ use reef_core::{
 };
 use reef_layout::Constraints;
 use reef_render::primitive::VisualPrimitive;
+use reef_theme::mascot as theme;
 use reef_view::widget_host::{PaintContext, Widget};
 
 /// Badge outline layer.
@@ -26,7 +27,7 @@ impl Widget for CompletionBadgeOutline {
         ctx.primitives.push(VisualPrimitive::RoundRect {
             frame: self.frame,
             radius: self.radius,
-            color: Color::rgb(46, 79, 61),
+            color: Color::from(theme::BADGE_OUTLINE),
             alpha: self.alpha,
         });
     }

@@ -3,6 +3,7 @@ use reef_core::{
     geometry::{Rect, Size},
 };
 use reef_layout::Constraints;
+use reef_theme::card as theme;
 use reef_view::widget_host::{PaintContext, Widget};
 
 // ── Card style ────────────────────────────────────────────────────────────
@@ -23,34 +24,38 @@ pub enum CardStyle {
 
 fn shell_border_color(style: CardStyle) -> Color {
     match style {
-        CardStyle::Completion => Color::rgb(46, 79, 61),
+        CardStyle::Completion => Color::from(theme::SHELL_BORDER_COMPLETION),
         CardStyle::Pending | CardStyle::PendingApproval | CardStyle::PromptAssist => {
-            Color::rgb(87, 61, 39)
+            Color::from(theme::SHELL_BORDER_PENDING)
         }
-        CardStyle::PendingQuestion => Color::rgb(74, 62, 103),
-        CardStyle::Settings | CardStyle::Default | CardStyle::Empty => Color::rgb(42, 42, 47),
+        CardStyle::PendingQuestion => Color::from(theme::SHELL_BORDER_PENDING_QUESTION),
+        CardStyle::Settings | CardStyle::Default | CardStyle::Empty => {
+            Color::from(theme::SHELL_BORDER_DEFAULT)
+        }
     }
 }
 
 fn shell_fill_color(style: CardStyle) -> Color {
     match style {
-        CardStyle::Completion => Color::rgb(37, 37, 41),
-        CardStyle::Pending | CardStyle::PendingApproval => Color::rgb(54, 41, 34),
-        CardStyle::PendingQuestion => Color::rgb(45, 42, 57),
-        CardStyle::PromptAssist => Color::rgb(48, 41, 35),
-        CardStyle::Settings | CardStyle::Default | CardStyle::Empty => Color::rgb(37, 37, 41),
+        CardStyle::Completion => Color::from(theme::SHELL_FILL_COMPLETION),
+        CardStyle::Pending | CardStyle::PendingApproval => Color::from(theme::SHELL_FILL_PENDING),
+        CardStyle::PendingQuestion => Color::from(theme::SHELL_FILL_PENDING_QUESTION),
+        CardStyle::PromptAssist => Color::from(theme::SHELL_FILL_PROMPT),
+        CardStyle::Settings | CardStyle::Default | CardStyle::Empty => {
+            Color::from(theme::SHELL_FILL_DEFAULT)
+        }
     }
 }
 
 fn accent_color(style: CardStyle) -> Color {
     match style {
         CardStyle::Pending | CardStyle::PendingApproval | CardStyle::PromptAssist => {
-            Color::rgb(255, 184, 77)
+            Color::from(theme::ACCENT_PENDING)
         }
-        CardStyle::PendingQuestion => Color::rgb(201, 176, 255),
-        CardStyle::Completion => Color::rgb(104, 213, 145),
-        CardStyle::Settings => Color::rgb(142, 166, 255),
-        CardStyle::Default | CardStyle::Empty => Color::rgb(142, 150, 166),
+        CardStyle::PendingQuestion => Color::from(theme::ACCENT_PENDING_QUESTION),
+        CardStyle::Completion => Color::from(theme::ACCENT_COMPLETION),
+        CardStyle::Settings => Color::from(theme::ACCENT_SETTINGS),
+        CardStyle::Default | CardStyle::Empty => Color::from(theme::ACCENT_DEFAULT),
     }
 }
 
@@ -88,28 +93,32 @@ impl BodyLine {
 
 fn body_prefix_color(style: CardStyle, prefix: &str) -> Color {
     match (style, prefix) {
-        (CardStyle::Default, "$") => Color::rgb(217, 120, 87),
-        (CardStyle::Default, ">") | (CardStyle::Completion, _) => Color::rgb(104, 222, 145),
-        (CardStyle::PendingQuestion, _) | (CardStyle::Pending, "?") => Color::rgb(201, 176, 255),
+        (CardStyle::Default, "$") => Color::from(theme::PREFIX_DEFAULT_PROMPT),
+        (CardStyle::Default, ">") | (CardStyle::Completion, _) => {
+            Color::from(theme::PREFIX_DEFAULT_REPLY)
+        }
+        (CardStyle::PendingQuestion, _) | (CardStyle::Pending, "?") => {
+            Color::from(theme::PREFIX_PENDING_QUESTION)
+        }
         _ => accent_color(style),
     }
 }
 
 fn body_text_color(style: CardStyle, role: BodyRole, prefix: Option<&str>) -> Color {
     match (style, role) {
-        (CardStyle::Default, BodyRole::User) => Color::rgb(218, 222, 229),
+        (CardStyle::Default, BodyRole::User) => Color::from(theme::TEXT_BODY_USER),
         _ => match (style, prefix) {
-            (CardStyle::Default, Some(">")) => Color::rgb(218, 222, 229),
-            _ => Color::rgb(177, 183, 194),
+            (CardStyle::Default, Some(">")) => Color::from(theme::TEXT_BODY_USER),
+            _ => Color::from(theme::TEXT_BODY),
         },
     }
 }
 
 fn title_text_color(style: CardStyle) -> Color {
     if style == CardStyle::Empty {
-        Color::rgb(171, 179, 194)
+        Color::from(theme::TEXT_TITLE_EMPTY)
     } else {
-        Color::rgb(245, 247, 252)
+        Color::from(theme::TEXT_TITLE)
     }
 }
 
@@ -152,14 +161,16 @@ fn badge_background_color(style: CardStyle, badge: &Badge) -> Color {
             (
                 BadgeRole::Status,
                 CardStyle::Pending | CardStyle::PendingApproval | CardStyle::PromptAssist,
-            ) => Color::rgb(70, 53, 36),
-            (BadgeRole::Status, CardStyle::PendingQuestion) => Color::rgb(61, 52, 83),
-            _ => Color::rgb(58, 84, 65),
+            ) => Color::from(theme::BADGE_BG_PENDING),
+            (BadgeRole::Status, CardStyle::PendingQuestion) => {
+                Color::from(theme::BADGE_BG_PENDING_QUESTION)
+            }
+            _ => Color::from(theme::BADGE_BG_EMPHASIZED),
         };
     }
     match badge.role {
         BadgeRole::Source => source_badge_bg(&badge.text),
-        BadgeRole::Status => Color::rgb(54, 54, 58),
+        BadgeRole::Status => Color::from(theme::BADGE_BG_DEFAULT),
     }
 }
 
@@ -169,34 +180,36 @@ fn badge_foreground_color(style: CardStyle, badge: &Badge) -> Color {
             (
                 BadgeRole::Status,
                 CardStyle::Pending | CardStyle::PendingApproval | CardStyle::PromptAssist,
-            ) => Color::rgb(255, 184, 77),
-            (BadgeRole::Status, CardStyle::PendingQuestion) => Color::rgb(201, 176, 255),
-            _ => Color::rgb(102, 222, 145),
+            ) => Color::from(theme::BADGE_FG_PENDING),
+            (BadgeRole::Status, CardStyle::PendingQuestion) => {
+                Color::from(theme::BADGE_FG_PENDING_QUESTION)
+            }
+            _ => Color::from(theme::BADGE_FG_EMPHASIZED),
         };
     }
     match badge.role {
         BadgeRole::Source => source_badge_fg(&badge.text),
-        BadgeRole::Status => Color::rgb(230, 235, 245),
+        BadgeRole::Status => Color::from(theme::BADGE_FG_DEFAULT),
     }
 }
 
 fn source_badge_bg(source: &str) -> Color {
     match source.trim().to_ascii_lowercase().as_str() {
-        "claude" => Color::rgb(84, 63, 42),
-        "codex" => Color::rgb(78, 91, 104),
-        "gemini" => Color::rgb(42, 68, 52),
-        "feishu" => Color::rgb(38, 55, 78),
-        _ => Color::rgb(76, 45, 67),
+        "claude" => Color::from(theme::SOURCE_BG_CLAUDE),
+        "codex" => Color::from(theme::SOURCE_BG_CODEX),
+        "gemini" => Color::from(theme::SOURCE_BG_GEMINI),
+        "feishu" => Color::from(theme::SOURCE_BG_FEISHU),
+        _ => Color::from(theme::SOURCE_BG_DEFAULT),
     }
 }
 
 fn source_badge_fg(source: &str) -> Color {
     match source.trim().to_ascii_lowercase().as_str() {
-        "claude" => Color::rgb(255, 199, 122),
-        "codex" => Color::rgb(218, 234, 246),
-        "gemini" => Color::rgb(118, 224, 142),
-        "feishu" => Color::rgb(126, 178, 255),
-        _ => Color::rgb(255, 139, 214),
+        "claude" => Color::from(theme::SOURCE_FG_CLAUDE),
+        "codex" => Color::from(theme::SOURCE_FG_CODEX),
+        "gemini" => Color::from(theme::SOURCE_FG_GEMINI),
+        "feishu" => Color::from(theme::SOURCE_FG_FEISHU),
+        _ => Color::from(theme::SOURCE_FG_DEFAULT),
     }
 }
 
@@ -210,12 +223,12 @@ pub struct ToolPill {
 
 fn tool_tone_color(tool: &str) -> Color {
     match tool.to_ascii_lowercase().as_str() {
-        "bash" => Color::rgb(125, 242, 163),
-        "edit" | "write" => Color::rgb(135, 171, 255),
-        "read" => Color::rgb(240, 209, 125),
-        "grep" | "glob" => Color::rgb(194, 161, 255),
-        "agent" => Color::rgb(255, 156, 102),
-        _ => Color::rgb(245, 247, 252),
+        "bash" => Color::from(theme::TOOL_TONE_BASH),
+        "edit" | "write" => Color::from(theme::TOOL_TONE_EDIT),
+        "read" => Color::from(theme::TOOL_TONE_READ),
+        "grep" | "glob" => Color::from(theme::TOOL_TONE_GREP),
+        "agent" => Color::from(theme::TOOL_TONE_AGENT),
+        _ => Color::from(theme::TOOL_TONE_DEFAULT),
     }
 }
 
@@ -230,33 +243,33 @@ pub struct SettingsRow {
 
 fn settings_row_border_color(active: bool) -> Color {
     if active {
-        Color::rgb(50, 84, 61)
+        Color::from(theme::SETTINGS_ROW_BORDER_ACTIVE)
     } else {
-        Color::rgb(50, 50, 56)
+        Color::from(theme::SETTINGS_ROW_BORDER_INACTIVE)
     }
 }
 
 fn settings_row_fill_color(active: bool) -> Color {
     if active {
-        Color::rgb(42, 50, 44)
+        Color::from(theme::SETTINGS_ROW_FILL_ACTIVE)
     } else {
-        Color::rgb(43, 43, 48)
+        Color::from(theme::SETTINGS_ROW_FILL_INACTIVE)
     }
 }
 
 fn settings_value_badge_bg(active: bool) -> Color {
     if active {
-        Color::rgb(46, 68, 54)
+        Color::from(theme::SETTINGS_VALUE_BG_ACTIVE)
     } else {
-        Color::rgb(54, 54, 58)
+        Color::from(theme::SETTINGS_VALUE_BG_INACTIVE)
     }
 }
 
 fn settings_value_badge_fg(active: bool) -> Color {
     if active {
-        Color::rgb(104, 222, 145)
+        Color::from(theme::SETTINGS_VALUE_FG_ACTIVE)
     } else {
-        Color::rgb(230, 235, 245)
+        Color::from(theme::SETTINGS_VALUE_FG_INACTIVE)
     }
 }
 
@@ -299,9 +312,9 @@ impl Card {
             reveal_phase: 1.0,
             content_visibility: 1.0,
             content_translate_y: 0.0,
-            height: 100.0,
-            radius: 12.0,
-            collapsed_height: 52.0,
+            height: theme::CARD_HEIGHT_DEFAULT,
+            radius: theme::CARD_RADIUS,
+            collapsed_height: theme::CARD_COLLAPSED_HEIGHT_DEFAULT,
             compact: false,
         }
     }
@@ -388,7 +401,7 @@ impl Widget for Card {
             compact: self.compact,
             content_translate_y: self.content_translate_y,
             content_alpha,
-            pad_x: 14.0,
+            pad_x: theme::HEADER_PAD_X,
         }
         .paint(rect, ctx);
 
@@ -397,7 +410,7 @@ impl Widget for Card {
             badges: self.badges.clone(),
             content_translate_y: self.content_translate_y,
             content_alpha,
-            pad_x: 14.0,
+            pad_x: theme::HEADER_PAD_X,
         }
         .paint(rect, ctx);
 
@@ -408,7 +421,7 @@ impl Widget for Card {
             action_hint: self.action_hint.clone(),
             content_translate_y: self.content_translate_y,
             content_alpha,
-            pad_x: 14.0,
+            pad_x: theme::HEADER_PAD_X,
         }
         .paint(rect, ctx);
     }
@@ -520,9 +533,12 @@ mod tests {
 
     #[test]
     fn tool_tone_colors() {
-        assert_eq!(tool_tone_color("bash"), Color::rgb(125, 242, 163));
-        assert_eq!(tool_tone_color("edit"), Color::rgb(135, 171, 255));
-        assert_eq!(tool_tone_color("grep"), Color::rgb(194, 161, 255));
-        assert_eq!(tool_tone_color("agent"), Color::rgb(255, 156, 102));
+        assert_eq!(tool_tone_color("bash"), Color::from(theme::TOOL_TONE_BASH));
+        assert_eq!(tool_tone_color("edit"), Color::from(theme::TOOL_TONE_EDIT));
+        assert_eq!(tool_tone_color("grep"), Color::from(theme::TOOL_TONE_GREP));
+        assert_eq!(
+            tool_tone_color("agent"),
+            Color::from(theme::TOOL_TONE_AGENT)
+        );
     }
 }

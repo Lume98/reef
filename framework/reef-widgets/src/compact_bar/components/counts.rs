@@ -4,6 +4,8 @@ use reef_core::{
 };
 use reef_layout::Constraints;
 use reef_render::primitive::{FontWeight, TextAlignment, VisualPrimitive};
+use reef_theme::card as card_theme;
+use reef_theme::compact_bar as theme;
 use reef_view::widget_host::{PaintContext, Widget};
 
 fn estimate_text_width(text: &str) -> f64 {
@@ -33,12 +35,12 @@ impl Widget for CompactBarCounts {
         let cy = rect.y + rect.height / 2.0;
         let active_count_positive = self.active_count.parse::<usize>().unwrap_or(0) > 0;
         let active_color = if active_count_positive {
-            Color::rgb(104, 222, 145)
+            Color::from(card_theme::TEXT_BODY_EMPHASIZED)
         } else {
             self.text_color
         };
 
-        let mut right_x = rect.x + rect.width - 16.0;
+        let mut right_x = rect.x + rect.width - theme::COUNTS_RIGHT_INSET;
         if !self.total_count.is_empty() {
             let tw = estimate_text_width(&self.total_count);
             right_x -= tw;

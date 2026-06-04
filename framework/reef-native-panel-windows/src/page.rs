@@ -30,7 +30,9 @@ pub fn resolve_dynamic_island_gesture_effect(
     gesture: reef_widgets::DynamicIslandGesture,
 ) -> Option<DynamicIslandRuntimeEffect> {
     let model = build_dynamic_island_page_model(snapshot, panel_expanded, settings_active);
-    let action = dynamic_island_page(&model).action_for_gesture(gesture).cloned()?;
+    let action = dynamic_island_page(&model)
+        .action_for_gesture(gesture)
+        .cloned()?;
     resolve_dynamic_island_effect(snapshot, action)
 }
 

@@ -1,4 +1,4 @@
-use crate::{CompletionBadge, MascotPose, MascotWidget};
+use crate::mascot::{CompletionBadge, MascotPose, MascotWidget};
 
 use super::{DisplayMode, IslandWidgetContentInput};
 

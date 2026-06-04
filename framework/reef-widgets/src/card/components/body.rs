@@ -10,6 +10,7 @@ use crate::card::{
     body_prefix_color, body_text_color, estimated_text_width, tool_tone_color, BodyLine, CardStyle,
     ToolPill,
 };
+use reef_theme::card as theme;
 
 /// Card body content: text lines, tool pill, and action hint.
 #[derive(Clone)]
@@ -95,7 +96,7 @@ impl Widget for CardBody {
                     height: pill_h,
                 },
                 radius: pill_radius,
-                color: Color::rgb(47, 47, 52),
+                color: Color::from(theme::TOOL_PILL_BG),
                 alpha: self.content_alpha,
             });
             ctx.primitives.push(VisualPrimitive::RoundRect {
@@ -106,7 +107,7 @@ impl Widget for CardBody {
                     height: pill_h,
                 },
                 radius: pill_radius,
-                color: Color::rgb(60, 60, 64),
+                color: Color::from(theme::TOOL_PILL_SHADOW),
                 alpha: 0.4 * self.content_alpha,
             });
             ctx.primitives.push(VisualPrimitive::Text {
@@ -132,7 +133,7 @@ impl Widget for CardBody {
                         },
                         max_width: desc_w,
                         text: desc.clone(),
-                        color: Color::rgb(214, 218, 225),
+                        color: Color::from(theme::TEXT_DETAIL),
                         size: 9,
                         weight: FontWeight::Normal,
                         alignment: TextAlignment::Left,
@@ -159,7 +160,7 @@ impl Widget for CardBody {
                         height: hint_h,
                     },
                     radius: hint_radius,
-                    color: Color::rgb(49, 49, 53),
+                    color: Color::from(theme::ACTION_HINT_BG),
                     alpha: self.content_alpha,
                 });
                 ctx.primitives.push(VisualPrimitive::Text {
@@ -169,7 +170,7 @@ impl Widget for CardBody {
                     },
                     max_width: hint_w - 18.0,
                     text: hint_text,
-                    color: Color::rgb(230, 235, 245),
+                    color: Color::from(theme::ACTION_HINT_FG),
                     size: 10,
                     weight: FontWeight::Normal,
                     alignment: TextAlignment::Left,

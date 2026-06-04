@@ -2856,6 +2856,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "reef-theme"
+version = "0.1.0"
+dependencies = [
+ "reef-core",
+]
+
+[[package]]
 name = "reef-ui"
 version = "0.1.0"
 dependencies = [
@@ -2863,6 +2870,7 @@ dependencies = [
  "echoisland-runtime",
  "insta",
  "log",
+ "reef-theme",
  "serde",
  "serde_json",
  "tauri",
@@ -2885,6 +2893,7 @@ dependencies = [
  "reef-core",
  "reef-layout",
  "reef-render",
+ "reef-theme",
  "reef-view",
 ]
 

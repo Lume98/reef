@@ -8,3 +8,4 @@ reef-core = { path = "../reef-core" }
 reef-render = { path = "../reef-render" }
 reef-layout = { path = "../reef-layout" }
 reef-view = { path = "../reef-view" }
+reef-theme = { path = "../reef-theme" }

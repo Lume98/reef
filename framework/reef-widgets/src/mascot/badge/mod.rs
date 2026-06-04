@@ -1,5 +1,6 @@
 use reef_core::geometry::{Rect, Size};
 use reef_layout::Constraints;
+use reef_theme::mascot as theme;
 use reef_view::widget_host::{PaintContext, Widget};
 
 mod label;
@@ -66,7 +67,7 @@ impl Widget for CompletionBadge {
                     height: frame.height - 2.0,
                 },
                 radius: (self.badge_height / 2.0) - 1.0,
-                color: reef_core::color::Color::rgb(37, 37, 41),
+                color: reef_core::color::Color::from(theme::BADGE_FILL),
                 alpha: self.alpha,
             });
 

@@ -4,6 +4,7 @@ use reef_core::{
 };
 use reef_layout::Constraints;
 use reef_render::primitive::{FontWeight, TextAlignment, VisualPrimitive};
+use reef_theme::mascot as theme;
 use reef_view::widget_host::{PaintContext, Widget};
 
 /// Badge count label layer.
@@ -31,7 +32,7 @@ impl Widget for CompletionBadgeLabel {
             },
             max_width: self.frame.width - 8.0,
             text: label,
-            color: Color::rgb(102, 222, 145),
+            color: Color::from(theme::BADGE_LABEL),
             size: 11,
             weight: FontWeight::Semibold,
             alignment: TextAlignment::Center,

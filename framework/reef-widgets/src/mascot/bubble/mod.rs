@@ -3,6 +3,7 @@ use reef_core::{
     geometry::{Rect, Size},
 };
 use reef_layout::Constraints;
+use reef_theme::mascot as theme;
 use reef_view::widget_host::{PaintContext, Widget};
 
 mod background;
@@ -31,7 +32,7 @@ impl MessageBubble {
             bubble_width: 48.0,
             bubble_height: 22.0,
             dot_radius: 3.0,
-            fill_color: Color::rgb(47, 47, 52),
+            fill_color: Color::from(theme::BUBBLE_FILL),
             alpha: 1.0,
         }
     }

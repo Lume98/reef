@@ -4,6 +4,7 @@ use reef_core::{
 };
 use reef_layout::Constraints;
 use reef_render::primitive::{FontWeight, TextAlignment, VisualPrimitive};
+use reef_theme::card as theme;
 use reef_view::widget_host::{PaintContext, Widget};
 
 /// Standard card title and subtitle block.
@@ -56,7 +57,7 @@ impl Widget for CardHeader {
                 },
                 max_width: rect.width - self.pad_x * 2.0,
                 text: sub.clone(),
-                color: Color::rgb(171, 179, 194),
+                color: Color::from(theme::TEXT_SUBTITLE),
                 size: 9,
                 weight: FontWeight::Normal,
                 alignment: TextAlignment::Left,

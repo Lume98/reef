@@ -1049,9 +1049,9 @@ mod tests {
                         width: 80.0,
                         height: 40.0,
                     },
-                    kind: NativePanelPointerRegionKind::HitTarget(
-                        PanelHitTarget::focus_session("session-1"),
-                    ),
+                    kind: NativePanelPointerRegionKind::HitTarget(PanelHitTarget::focus_session(
+                        "session-1",
+                    )),
                 },
                 NativePanelPointerRegion {
                     frame: PanelRect {
@@ -1195,9 +1195,9 @@ mod tests {
                         width: 120.0,
                         height: 40.0,
                     },
-                    kind: NativePanelPointerRegionKind::HitTarget(
-                        PanelHitTarget::focus_session("session-1"),
-                    ),
+                    kind: NativePanelPointerRegionKind::HitTarget(PanelHitTarget::focus_session(
+                        "session-1",
+                    )),
                 }],
                 hover_frames: NativePanelHoverFallbackFrames {
                     interactive_pill_frame: PanelRect {

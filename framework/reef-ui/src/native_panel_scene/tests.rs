@@ -490,6 +490,7 @@ fn scene_builder_emits_settings_rows_and_value_badges() {
         },
         app_version: "0.6.1".to_string(),
         update_status: crate::updater_service::AppUpdateStatus::idle(),
+        interaction_profile: PanelInteractionProfile::FullHost,
     };
 
     let scene = build_panel_scene(&state, &snapshot(0, 0), &input);
@@ -564,6 +565,7 @@ fn settings_scene_hides_wide_width_on_notch_display() {
         },
         app_version: "0.6.1".to_string(),
         update_status: crate::updater_service::AppUpdateStatus::idle(),
+        interaction_profile: PanelInteractionProfile::FullHost,
     };
 
     let scene = build_panel_scene(&state, &snapshot(0, 0), &input);
@@ -589,6 +591,7 @@ fn settings_scene_localizes_panel_language_to_chinese() {
                 language: crate::native_panel_core::PanelLanguage::Zh,
                 ..PanelSettingsState::default()
             },
+            interaction_profile: PanelInteractionProfile::FullHost,
             ..PanelSceneBuildInput::default()
         },
     );
@@ -612,6 +615,7 @@ fn settings_scene_projects_available_update_status() {
             can_install: true,
             can_open_release_page: true,
         },
+        interaction_profile: PanelInteractionProfile::FullHost,
         ..PanelSceneBuildInput::default()
     };
     let scene = build_panel_scene(
@@ -946,6 +950,7 @@ fn scene_cards_total_height_delegates_card_height_resolution() {
             PanelSettingsState::default(),
             env!("CARGO_PKG_VERSION"),
             &crate::updater_service::AppUpdateStatus::idle(),
+            PanelInteractionProfile::FullHost,
         ),
         cards: vec![SceneCard::Empty, SceneCard::Empty, SceneCard::Empty],
         glow: None,

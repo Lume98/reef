@@ -4,6 +4,7 @@ use reef_core::{
 };
 use reef_layout::Constraints;
 use reef_render::primitive::VisualPrimitive;
+use reef_theme::progress_bar as theme;
 use reef_view::widget_host::{PaintContext, Widget};
 
 #[derive(Clone, Debug)]
@@ -21,8 +22,8 @@ impl ProgressBar {
             value,
             height: 8.0,
             radius: 4.0,
-            track_color: Color::rgb(43, 43, 48),
-            fill_color: Color::rgb(104, 213, 145),
+            track_color: Color::from(theme::TRACK),
+            fill_color: Color::from(theme::FILL),
         }
     }
 

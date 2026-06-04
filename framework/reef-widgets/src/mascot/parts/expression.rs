@@ -7,6 +7,7 @@ use reef_render::primitive::{FontWeight, TextAlignment, VisualPrimitive};
 use reef_view::widget_host::{PaintContext, Widget};
 
 use crate::mascot::MascotPose;
+use reef_theme::mascot as theme;
 
 /// Pose-driven mascot expression layer.
 #[derive(Clone)]
@@ -47,7 +48,7 @@ impl Widget for MascotExpression {
                         width: r * 0.4,
                         height: eye_r * 1.5,
                     },
-                    color: Color::rgb(30, 30, 35),
+                    color: Color::from(theme::SHADOW),
                     alpha: self.alpha,
                 });
             }
@@ -60,7 +61,7 @@ impl Widget for MascotExpression {
                         width: mouth_w,
                         height: 2.0,
                     },
-                    color: Color::rgb(255, 130, 100),
+                    color: Color::from(theme::MOUTH),
                     alpha: self.alpha,
                 });
             }
@@ -75,7 +76,7 @@ impl Widget for MascotExpression {
                 },
                 max_width: 20.0,
                 text: "Z".to_string(),
-                color: Color::rgb(160, 170, 190),
+                color: Color::from(theme::EYE_LID),
                 size: 12,
                 weight: FontWeight::Bold,
                 alignment: TextAlignment::Center,

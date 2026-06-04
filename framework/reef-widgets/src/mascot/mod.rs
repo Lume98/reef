@@ -1,5 +1,6 @@
 use reef_core::geometry::{Rect, Size};
 use reef_layout::Constraints;
+use reef_theme::mascot as theme;
 use reef_view::widget_host::{PaintContext, Widget};
 
 mod badge;
@@ -60,9 +61,9 @@ impl MascotWidget {
             radius,
             pose: MascotPose::Idle,
             elapsed_ms: 0,
-            fill_color: reef_core::color::Color::rgb(60, 65, 80),
-            stroke_color: reef_core::color::Color::rgb(220, 160, 60),
-            eye_color: reef_core::color::Color::rgb(220, 225, 240),
+            fill_color: reef_core::color::Color::from(theme::FILL),
+            stroke_color: reef_core::color::Color::from(theme::STROKE),
+            eye_color: reef_core::color::Color::from(theme::EYE),
             alpha: 1.0,
             offset_x: 0.0,
             offset_y: 0.0,

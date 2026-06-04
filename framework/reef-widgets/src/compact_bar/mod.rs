@@ -3,6 +3,7 @@ use reef_core::{
     geometry::{Rect, Size},
 };
 use reef_layout::Constraints;
+use reef_theme::compact_bar as theme;
 use reef_view::widget_host::{PaintContext, Widget};
 
 mod components;
@@ -103,12 +104,12 @@ impl CompactBar {
             action_button_scale: 0.82,
             action_button_opacity: 0.0,
             action_button_offset_y: -4.0,
-            fill_color: Color::rgb(18, 20, 26),
-            border_color: Color::rgb(44, 48, 58),
-            text_color: Color::rgb(200, 210, 225),
-            dim_text_color: Color::rgb(100, 108, 125),
-            radius: 24.0,
-            height: 48.0,
+            fill_color: Color::from(theme::FILL),
+            border_color: Color::from(theme::BORDER),
+            text_color: Color::from(theme::TEXT),
+            dim_text_color: Color::from(theme::DIM_TEXT),
+            radius: theme::RADIUS,
+            height: theme::HEIGHT,
         }
     }
 
@@ -181,7 +182,11 @@ impl Widget for CompactBar {
         }
 
         let action_reserves_space = self.show_actions && self.chrome.action_button_visibility > 0.0;
-        let reserve_width = if action_reserves_space { 44.0 } else { 0.0 };
+        let reserve_width = if action_reserves_space {
+            theme::ACTION_BUTTON_RESERVE_WIDTH
+        } else {
+            0.0
+        };
 
         CompactBarHeadline {
             text: self.headline.clone(),

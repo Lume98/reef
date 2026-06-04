@@ -10,6 +10,7 @@ use crate::card::{
     settings_row_border_color, settings_row_fill_color, settings_value_badge_bg,
     settings_value_badge_fg, SettingsRow,
 };
+use reef_theme::card as theme;
 
 /// Settings card surface: title, version badge, and setting rows.
 #[derive(Clone)]
@@ -34,12 +35,12 @@ impl Widget for CardSettingsPanel {
             let y = rect.y + rect.height - 24.0 + self.content_translate_y;
             ctx.primitives.push(VisualPrimitive::Text {
                 origin: Point {
-                    x: rect.x + 14.0,
+                    x: rect.x + theme::HEADER_PAD_X,
                     y,
                 },
-                max_width: rect.width - 28.0,
+                max_width: rect.width - theme::HEADER_PAD_X * 2.0,
                 text: self.title.clone(),
-                color: Color::rgb(245, 247, 252),
+                color: Color::from(theme::TEXT_TITLE),
                 size: 12,
                 weight: FontWeight::Semibold,
                 alignment: TextAlignment::Left,
@@ -49,8 +50,8 @@ impl Widget for CardSettingsPanel {
 
         if let Some(version) = &self.subtitle {
             let title_y = rect.y + rect.height - 24.0 + self.content_translate_y;
-            let w = 64.0;
-            let bx = rect.x + rect.width - 14.0 - w;
+            let w = theme::BADGE_WIDTH;
+            let bx = rect.x + rect.width - theme::HEADER_PAD_X - w;
             let by = title_y - 3.0;
             ctx.primitives.push(VisualPrimitive::RoundRect {
                 frame: Rect {
@@ -59,8 +60,8 @@ impl Widget for CardSettingsPanel {
                     width: w,
                     height: 22.0,
                 },
-                radius: 11.0,
-                color: Color::rgb(54, 54, 58),
+                radius: theme::BADGE_RADIUS,
+                color: Color::from(theme::BADGE_BG_DEFAULT),
                 alpha: self.content_alpha,
             });
             ctx.primitives.push(VisualPrimitive::Text {
@@ -70,7 +71,7 @@ impl Widget for CardSettingsPanel {
                 },
                 max_width: w - 14.0,
                 text: version.clone(),
-                color: Color::rgb(230, 235, 245),
+                color: Color::from(theme::BADGE_FG_DEFAULT),
                 size: 10,
                 weight: FontWeight::Normal,
                 alignment: TextAlignment::Center,
@@ -80,7 +81,7 @@ impl Widget for CardSettingsPanel {
 
         let row_h = 32.0;
         let row_gap = 2.0;
-        let pad_x = 14.0;
+        let pad_x = theme::HEADER_PAD_X;
         for (i, row) in self.settings_rows.iter().enumerate() {
             let ry = rect.y + 8.0 + (self.settings_rows.len() - 1 - i) as f64 * (row_h + row_gap);
             let row_frame = Rect {
@@ -92,7 +93,7 @@ impl Widget for CardSettingsPanel {
 
             ctx.primitives.push(VisualPrimitive::RoundRect {
                 frame: row_frame,
-                radius: 8.0,
+                radius: theme::SETTINGS_ROW_RADIUS,
                 color: settings_row_border_color(row.active),
                 alpha: self.content_alpha,
             });
@@ -104,7 +105,7 @@ impl Widget for CardSettingsPanel {
             };
             ctx.primitives.push(VisualPrimitive::RoundRect {
                 frame: inner,
-                radius: 7.0,
+                radius: theme::SETTINGS_ROW_RADIUS - 1.0,
                 color: settings_row_fill_color(row.active),
                 alpha: self.content_alpha,
             });
@@ -115,7 +116,7 @@ impl Widget for CardSettingsPanel {
                 },
                 max_width: inner.width - 70.0,
                 text: row.title.clone(),
-                color: Color::rgb(245, 247, 252),
+                color: Color::from(theme::TEXT_TITLE),
                 size: 11,
                 weight: FontWeight::Normal,
                 alignment: TextAlignment::Left,
@@ -133,7 +134,7 @@ impl Widget for CardSettingsPanel {
                     width: badge_w,
                     height: badge_h,
                 },
-                radius: 9.0,
+                radius: theme::SETTINGS_VALUE_BADGE_RADIUS,
                 color: settings_value_badge_bg(row.active),
                 alpha: self.content_alpha,
             });

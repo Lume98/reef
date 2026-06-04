@@ -25,8 +25,8 @@ use super::{
     dpi::WindowsDpiScale,
     paint_backend::{
         resolve_windows_native_panel_hit_test_blocker_operations,
-        resolve_windows_native_panel_paint_operations,
-        WindowsNativePanelPaintColor, WindowsNativePanelPaintOperation,
+        resolve_windows_native_panel_paint_operations, WindowsNativePanelPaintColor,
+        WindowsNativePanelPaintOperation,
     },
 };
 

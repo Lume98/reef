@@ -4,6 +4,7 @@ use reef_core::{
 };
 use reef_layout::Constraints;
 use reef_render::primitive::{FontWeight, TextAlignment, VisualPrimitive};
+use reef_theme::compact_bar as theme;
 use reef_view::widget_host::{PaintContext, Widget};
 
 /// Headline text on the compact bar.
@@ -30,14 +31,18 @@ impl Widget for CompactBarHeadline {
         }
 
         let cy = rect.y + rect.height / 2.0;
-        let max_width = (rect.width - self.leading_reserve - self.trailing_reserve - 32.0).max(0.0);
+        let max_width = (rect.width
+            - self.leading_reserve
+            - self.trailing_reserve
+            - theme::HEADLINE_SIDE_RESERVE)
+            .max(0.0);
         if max_width <= 0.0 {
             return;
         }
 
         ctx.primitives.push(VisualPrimitive::Text {
             origin: Point {
-                x: rect.x + 16.0 + self.leading_reserve,
+                x: rect.x + theme::HEADLINE_LEFT_INSET + self.leading_reserve,
                 y: cy - 8.0,
             },
             max_width,

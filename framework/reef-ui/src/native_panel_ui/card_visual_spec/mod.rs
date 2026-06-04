@@ -9,6 +9,7 @@ use crate::{
     },
     native_panel_scene::{SceneCard, SettingsRowScene},
 };
+use reef_theme::card as theme;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum CardVisualStyle {
@@ -237,6 +238,16 @@ pub struct CardVisualColorSpec {
     pub r: u8,
     pub g: u8,
     pub b: u8,
+}
+
+impl From<reef_theme::Rgb> for CardVisualColorSpec {
+    fn from(value: reef_theme::Rgb) -> Self {
+        Self {
+            r: value.r,
+            g: value.g,
+            b: value.b,
+        }
+    }
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -624,26 +635,26 @@ fn pending_question_card_spec(
 
 pub fn card_visual_shell_border_color(style: CardVisualStyle) -> CardVisualColorSpec {
     match style {
-        CardVisualStyle::Completion => CardVisualColorSpec::rgb(46, 79, 61),
+        CardVisualStyle::Completion => theme::SHELL_BORDER_COMPLETION.into(),
         CardVisualStyle::Pending
         | CardVisualStyle::PendingApproval
-        | CardVisualStyle::PromptAssist => CardVisualColorSpec::rgb(87, 61, 39),
-        CardVisualStyle::PendingQuestion => CardVisualColorSpec::rgb(74, 62, 103),
-        CardVisualStyle::Settings => CardVisualColorSpec::rgb(42, 42, 47),
-        CardVisualStyle::Default | CardVisualStyle::Empty => CardVisualColorSpec::rgb(42, 42, 47),
+        | CardVisualStyle::PromptAssist => theme::SHELL_BORDER_PENDING.into(),
+        CardVisualStyle::PendingQuestion => theme::SHELL_BORDER_PENDING_QUESTION.into(),
+        CardVisualStyle::Settings => theme::SHELL_BORDER_DEFAULT.into(),
+        CardVisualStyle::Default | CardVisualStyle::Empty => theme::SHELL_BORDER_DEFAULT.into(),
     }
 }
 
 pub fn card_visual_shell_fill_color(style: CardVisualStyle) -> CardVisualColorSpec {
     match style {
-        CardVisualStyle::Completion => CardVisualColorSpec::rgb(37, 37, 41),
+        CardVisualStyle::Completion => theme::SHELL_FILL_COMPLETION.into(),
         CardVisualStyle::Pending | CardVisualStyle::PendingApproval => {
-            CardVisualColorSpec::rgb(54, 41, 34)
+            theme::SHELL_FILL_PENDING.into()
         }
-        CardVisualStyle::PendingQuestion => CardVisualColorSpec::rgb(45, 42, 57),
-        CardVisualStyle::PromptAssist => CardVisualColorSpec::rgb(48, 41, 35),
-        CardVisualStyle::Settings => CardVisualColorSpec::rgb(37, 37, 41),
-        CardVisualStyle::Default | CardVisualStyle::Empty => CardVisualColorSpec::rgb(37, 37, 41),
+        CardVisualStyle::PendingQuestion => theme::SHELL_FILL_PENDING_QUESTION.into(),
+        CardVisualStyle::PromptAssist => theme::SHELL_FILL_PROMPT.into(),
+        CardVisualStyle::Settings => theme::SHELL_FILL_DEFAULT.into(),
+        CardVisualStyle::Default | CardVisualStyle::Empty => theme::SHELL_FILL_DEFAULT.into(),
     }
 }
 
@@ -671,7 +682,7 @@ pub fn card_visual_settings_row_paint_spec(
         fill_radius: 7.0,
         border_color: card_visual_settings_row_border_color(row.active),
         fill_color: card_visual_settings_row_fill_color(row.active),
-        title_color: CardVisualColorSpec::rgb(245, 247, 252),
+        title_color: theme::TEXT_TITLE.into(),
         title_size: 11,
         value_badge: CardVisualSettingsValueBadgePaintSpec {
             width: card_visual_settings_value_badge_width(&row.value),
@@ -722,10 +733,10 @@ pub fn card_visual_tool_pill_paint_spec(text: &str) -> Option<CardVisualToolPill
         text_size: 9,
         tool_name_width: resolve_estimated_text_width(&tool_name, 9.0),
         tool_description_gap: 6.0,
-        border_color: CardVisualColorSpec::rgb(60, 60, 64),
-        background_color: CardVisualColorSpec::rgb(47, 47, 52),
+        border_color: theme::TOOL_PILL_SHADOW.into(),
+        background_color: theme::TOOL_PILL_BG.into(),
         tool_name_color: card_visual_tool_tone_color(&tool_name),
-        description_color: CardVisualColorSpec::rgb(214, 218, 225),
+        description_color: theme::TEXT_DETAIL.into(),
     })
 }
 
@@ -743,8 +754,8 @@ pub fn card_visual_action_hint_paint_spec(text: &str) -> Option<CardVisualAction
         text_inset_x: 9.0,
         text_offset_y: 4.0,
         text_size: 10,
-        background_color: CardVisualColorSpec::rgb(49, 49, 53),
-        foreground_color: CardVisualColorSpec::rgb(230, 235, 245),
+        background_color: theme::ACTION_HINT_BG.into(),
+        foreground_color: theme::ACTION_HINT_FG.into(),
     })
 }
 
@@ -752,14 +763,14 @@ pub fn card_visual_header_text_paint_spec(style: CardVisualStyle) -> CardVisualH
     CardVisualHeaderTextPaintSpec {
         title: CardVisualTextPaintSpec {
             color: if style == CardVisualStyle::Empty {
-                CardVisualColorSpec::rgb(171, 179, 194)
+                theme::TEXT_TITLE_EMPTY.into()
             } else {
-                CardVisualColorSpec::rgb(245, 247, 252)
+                theme::TEXT_TITLE.into()
             },
             size: 12,
         },
         subtitle: CardVisualTextPaintSpec {
-            color: CardVisualColorSpec::rgb(171, 179, 194),
+            color: theme::TEXT_TITLE_EMPTY.into(),
             size: 9,
         },
         title_max_chars: 30,
@@ -1113,12 +1124,12 @@ fn inset_rect(rect: PanelRect, inset: f64) -> PanelRect {
 
 fn card_visual_prefix_color(style: CardVisualStyle, prefix: &str) -> CardVisualColorSpec {
     match (style, prefix) {
-        (CardVisualStyle::Default, "$") => CardVisualColorSpec::rgb(217, 120, 87),
+        (CardVisualStyle::Default, "$") => theme::PREFIX_DEFAULT_PROMPT.into(),
         (CardVisualStyle::Default, ">") | (CardVisualStyle::Completion, _) => {
-            CardVisualColorSpec::rgb(104, 222, 145)
+            theme::PREFIX_DEFAULT_REPLY.into()
         }
         (CardVisualStyle::PendingQuestion, _) | (CardVisualStyle::Pending, "?") => {
-            CardVisualColorSpec::rgb(201, 176, 255)
+            theme::PREFIX_PENDING_QUESTION.into()
         }
         _ => card_visual_accent_color(style),
     }
@@ -1130,9 +1141,7 @@ fn card_visual_body_line_text_color(
     prefix: Option<&str>,
 ) -> CardVisualColorSpec {
     match (style, role) {
-        (CardVisualStyle::Default, CardVisualBodyRole::User) => {
-            CardVisualColorSpec::rgb(218, 222, 229)
-        }
+        (CardVisualStyle::Default, CardVisualBodyRole::User) => theme::TEXT_BODY_USER.into(),
         _ => card_visual_body_text_color(style, prefix),
     }
 }
@@ -1142,8 +1151,8 @@ fn card_visual_body_text_color(
     prefix: Option<&str>,
 ) -> CardVisualColorSpec {
     match (style, prefix) {
-        (CardVisualStyle::Default, Some(">")) => CardVisualColorSpec::rgb(218, 222, 229),
-        _ => CardVisualColorSpec::rgb(177, 183, 194),
+        (CardVisualStyle::Default, Some(">")) => theme::TEXT_BODY_USER.into(),
+        _ => theme::TEXT_BODY.into(),
     }
 }
 
@@ -1151,13 +1160,11 @@ fn card_visual_accent_color(style: CardVisualStyle) -> CardVisualColorSpec {
     match style {
         CardVisualStyle::Pending
         | CardVisualStyle::PendingApproval
-        | CardVisualStyle::PromptAssist => CardVisualColorSpec::rgb(255, 184, 77),
-        CardVisualStyle::PendingQuestion => CardVisualColorSpec::rgb(201, 176, 255),
-        CardVisualStyle::Completion => CardVisualColorSpec::rgb(104, 213, 145),
-        CardVisualStyle::Settings => CardVisualColorSpec::rgb(142, 166, 255),
-        CardVisualStyle::Default | CardVisualStyle::Empty => {
-            CardVisualColorSpec::rgb(142, 150, 166)
-        }
+        | CardVisualStyle::PromptAssist => theme::ACCENT_PENDING.into(),
+        CardVisualStyle::PendingQuestion => theme::ACCENT_PENDING_QUESTION.into(),
+        CardVisualStyle::Completion => theme::ACCENT_COMPLETION.into(),
+        CardVisualStyle::Settings => theme::ACCENT_SETTINGS.into(),
+        CardVisualStyle::Default | CardVisualStyle::Empty => theme::ACCENT_DEFAULT.into(),
     }
 }
 
@@ -1176,44 +1183,44 @@ fn split_tool_body_text(text: &str) -> (String, Option<String>) {
 
 fn card_visual_tool_tone_color(tool: &str) -> CardVisualColorSpec {
     match tool.to_ascii_lowercase().as_str() {
-        "bash" => CardVisualColorSpec::rgb(125, 242, 163),
-        "edit" | "write" => CardVisualColorSpec::rgb(135, 171, 255),
-        "read" => CardVisualColorSpec::rgb(240, 209, 125),
-        "grep" | "glob" => CardVisualColorSpec::rgb(194, 161, 255),
-        "agent" => CardVisualColorSpec::rgb(255, 156, 102),
-        _ => CardVisualColorSpec::rgb(245, 247, 252),
+        "bash" => theme::TOOL_TONE_BASH.into(),
+        "edit" | "write" => theme::TOOL_TONE_EDIT.into(),
+        "read" => theme::TOOL_TONE_READ.into(),
+        "grep" | "glob" => theme::TOOL_TONE_GREP.into(),
+        "agent" => theme::TOOL_TONE_AGENT.into(),
+        _ => theme::TOOL_TONE_DEFAULT.into(),
     }
 }
 
 fn card_visual_settings_row_border_color(active: bool) -> CardVisualColorSpec {
     if active {
-        CardVisualColorSpec::rgb(50, 84, 61)
+        theme::SETTINGS_ROW_BORDER_ACTIVE.into()
     } else {
-        CardVisualColorSpec::rgb(50, 50, 56)
+        theme::SETTINGS_ROW_BORDER_INACTIVE.into()
     }
 }
 
 fn card_visual_settings_row_fill_color(active: bool) -> CardVisualColorSpec {
     if active {
-        CardVisualColorSpec::rgb(42, 50, 44)
+        theme::SETTINGS_ROW_FILL_ACTIVE.into()
     } else {
-        CardVisualColorSpec::rgb(43, 43, 48)
+        theme::SETTINGS_ROW_FILL_INACTIVE.into()
     }
 }
 
 fn card_visual_settings_value_badge_background(active: bool) -> CardVisualColorSpec {
     if active {
-        CardVisualColorSpec::rgb(46, 68, 54)
+        theme::SETTINGS_VALUE_BG_ACTIVE.into()
     } else {
-        CardVisualColorSpec::rgb(54, 54, 58)
+        theme::SETTINGS_VALUE_BG_INACTIVE.into()
     }
 }
 
 fn card_visual_settings_value_badge_foreground(active: bool) -> CardVisualColorSpec {
     if active {
-        CardVisualColorSpec::rgb(104, 222, 145)
+        theme::SETTINGS_VALUE_FG_ACTIVE.into()
     } else {
-        CardVisualColorSpec::rgb(230, 235, 245)
+        theme::SETTINGS_VALUE_FG_INACTIVE.into()
     }
 }
 
@@ -1243,17 +1250,17 @@ fn card_visual_badge_background_color(
                 CardVisualStyle::Pending
                 | CardVisualStyle::PendingApproval
                 | CardVisualStyle::PromptAssist,
-            ) => CardVisualColorSpec::rgb(70, 53, 36),
+            ) => theme::BADGE_BG_PENDING.into(),
             (CardVisualBadgeRole::Status, CardVisualStyle::PendingQuestion) => {
-                CardVisualColorSpec::rgb(61, 52, 83)
+                theme::BADGE_BG_PENDING_QUESTION.into()
             }
-            _ => CardVisualColorSpec::rgb(58, 84, 65),
+            _ => theme::BADGE_BG_EMPHASIZED.into(),
         };
     }
 
     match badge.role {
         CardVisualBadgeRole::Source => source_badge_background_color(&badge.text),
-        CardVisualBadgeRole::Status => CardVisualColorSpec::rgb(54, 54, 58),
+        CardVisualBadgeRole::Status => theme::BADGE_BG_DEFAULT.into(),
     }
 }
 
@@ -1268,37 +1275,37 @@ fn card_visual_badge_foreground_color(
                 CardVisualStyle::Pending
                 | CardVisualStyle::PendingApproval
                 | CardVisualStyle::PromptAssist,
-            ) => CardVisualColorSpec::rgb(255, 184, 77),
+            ) => theme::BADGE_FG_PENDING.into(),
             (CardVisualBadgeRole::Status, CardVisualStyle::PendingQuestion) => {
-                CardVisualColorSpec::rgb(201, 176, 255)
+                theme::BADGE_FG_PENDING_QUESTION.into()
             }
-            _ => CardVisualColorSpec::rgb(102, 222, 145),
+            _ => theme::BADGE_FG_EMPHASIZED.into(),
         };
     }
 
     match badge.role {
         CardVisualBadgeRole::Source => source_badge_foreground_color(&badge.text),
-        CardVisualBadgeRole::Status => CardVisualColorSpec::rgb(230, 235, 245),
+        CardVisualBadgeRole::Status => theme::BADGE_FG_DEFAULT.into(),
     }
 }
 
 fn source_badge_background_color(source: &str) -> CardVisualColorSpec {
     match source.trim().to_ascii_lowercase().as_str() {
-        "claude" => CardVisualColorSpec::rgb(84, 63, 42),
-        "codex" => CardVisualColorSpec::rgb(78, 91, 104),
-        "gemini" => CardVisualColorSpec::rgb(42, 68, 52),
-        "feishu" => CardVisualColorSpec::rgb(38, 55, 78),
-        _ => CardVisualColorSpec::rgb(76, 45, 67),
+        "claude" => theme::SOURCE_BG_CLAUDE.into(),
+        "codex" => theme::SOURCE_BG_CODEX.into(),
+        "gemini" => theme::SOURCE_BG_GEMINI.into(),
+        "feishu" => theme::SOURCE_BG_FEISHU.into(),
+        _ => theme::SOURCE_BG_DEFAULT.into(),
     }
 }
 
 fn source_badge_foreground_color(source: &str) -> CardVisualColorSpec {
     match source.trim().to_ascii_lowercase().as_str() {
-        "claude" => CardVisualColorSpec::rgb(255, 199, 122),
-        "codex" => CardVisualColorSpec::rgb(218, 234, 246),
-        "gemini" => CardVisualColorSpec::rgb(118, 224, 142),
-        "feishu" => CardVisualColorSpec::rgb(126, 178, 255),
-        _ => CardVisualColorSpec::rgb(255, 139, 214),
+        "claude" => theme::SOURCE_FG_CLAUDE.into(),
+        "codex" => theme::SOURCE_FG_CODEX.into(),
+        "gemini" => theme::SOURCE_FG_GEMINI.into(),
+        "feishu" => theme::SOURCE_FG_FEISHU.into(),
+        _ => theme::SOURCE_FG_DEFAULT.into(),
     }
 }
 

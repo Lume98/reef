@@ -4,6 +4,7 @@ use reef_core::{
 };
 use reef_layout::Constraints;
 use reef_render::primitive::VisualPrimitive;
+use reef_theme::mascot as theme;
 use reef_view::widget_host::{PaintContext, Widget};
 
 /// Bubble dots layer.
@@ -38,7 +39,7 @@ impl Widget for MessageBubbleDots {
                     width: self.dot_radius * 2.0,
                     height: self.dot_radius * 2.0,
                 },
-                color: Color::rgb(140, 150, 170),
+                color: Color::from(theme::BUBBLE_DOT),
                 alpha: self.alpha * (0.3 + 0.7 * ((i as f64 / 2.0).min(1.0))),
             });
         }

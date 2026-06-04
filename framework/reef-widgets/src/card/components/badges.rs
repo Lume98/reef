@@ -4,6 +4,7 @@ use reef_render::primitive::{FontWeight, TextAlignment, VisualPrimitive};
 use reef_view::widget_host::{PaintContext, Widget};
 
 use crate::card::{badge_background_color, badge_foreground_color, Badge, CardStyle};
+use reef_theme::card as theme;
 
 /// Badge strip on the card header.
 #[derive(Clone)]
@@ -43,7 +44,7 @@ impl Widget for CardBadges {
                     width: w,
                     height: 22.0,
                 },
-                radius: 11.0,
+                radius: theme::BADGE_RADIUS,
                 color: bg,
                 alpha: self.content_alpha,
             });

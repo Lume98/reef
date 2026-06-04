@@ -4,6 +4,7 @@ use reef_core::{
 };
 use reef_layout::Constraints;
 use reef_render::primitive::VisualPrimitive;
+use reef_theme::shell as theme;
 use reef_view::widget_host::{PaintContext, Widget};
 
 /// Expanded panel shell: rounded rect border + separator line.
@@ -20,10 +21,10 @@ pub struct ExpandedShell {
 impl ExpandedShell {
     pub fn new() -> Self {
         Self {
-            fill_color: Color::rgb(18, 20, 26),
-            border_color: Color::rgb(44, 48, 58),
-            separator_color: Color::rgb(40, 44, 54),
-            radius: 20.0,
+            fill_color: Color::from(theme::FILL),
+            border_color: Color::from(theme::BORDER),
+            separator_color: Color::from(theme::SEPARATOR),
+            radius: theme::RADIUS,
             separator_y: None,
             alpha: 1.0,
         }
