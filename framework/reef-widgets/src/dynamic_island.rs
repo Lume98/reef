@@ -14,6 +14,13 @@ pub struct DynamicIslandActionBinding<Action> {
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]
+pub struct DynamicIslandTargetActionBinding<Action> {
+    pub target: String,
+    pub gesture: DynamicIslandGesture,
+    pub action: Action,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct DynamicIslandActions<Action> {
     pub click: Option<Action>,
     pub swipe: Option<Action>,
@@ -66,6 +73,7 @@ impl From<ProgressBar> for DynamicIslandChild {
 pub struct DynamicIsland<Action> {
     children: Vec<DynamicIslandChild>,
     actions: DynamicIslandActions<Action>,
+    target_bindings: Vec<DynamicIslandTargetActionBinding<Action>>,
 }
 
 impl<Action> DynamicIsland<Action> {
@@ -73,6 +81,7 @@ impl<Action> DynamicIsland<Action> {
         Self {
             children: Vec::new(),
             actions: DynamicIslandActions::default(),
+            target_bindings: Vec::new(),
         }
     }
 
@@ -96,8 +105,21 @@ impl<Action> DynamicIsland<Action> {
         self
     }
 
+    pub fn on_target_click(mut self, target: impl Into<String>, action: Action) -> Self {
+        self.target_bindings.push(DynamicIslandTargetActionBinding {
+            target: target.into(),
+            gesture: DynamicIslandGesture::Click,
+            action,
+        });
+        self
+    }
+
     pub fn actions(&self) -> &DynamicIslandActions<Action> {
         &self.actions
+    }
+
+    pub fn target_bindings(&self) -> &[DynamicIslandTargetActionBinding<Action>] {
+        &self.target_bindings
     }
 
     pub fn action_for_gesture(&self, gesture: DynamicIslandGesture) -> Option<&Action> {
@@ -106,6 +128,18 @@ impl<Action> DynamicIsland<Action> {
             DynamicIslandGesture::Swipe => self.actions.swipe.as_ref(),
             DynamicIslandGesture::Hover => self.actions.hover.as_ref(),
         }
+    }
+
+    pub fn action_for_target_gesture(
+        &self,
+        target: &str,
+        gesture: DynamicIslandGesture,
+    ) -> Option<&Action> {
+        self.target_bindings
+            .iter()
+            .rev()
+            .find(|binding| binding.target == target && binding.gesture == gesture)
+            .map(|binding| &binding.action)
     }
 
     pub fn bindings(&self) -> Vec<DynamicIslandActionBinding<&Action>> {
@@ -155,6 +189,25 @@ impl<Action> DynamicIsland<Action> {
 impl<Action> Default for DynamicIsland<Action> {
     fn default() -> Self {
         Self::new()
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn dynamic_island_resolves_target_click_binding() {
+        let island = DynamicIsland::new().on_target_click("session:session-1", "open");
+
+        assert_eq!(
+            island.action_for_target_gesture("session:session-1", DynamicIslandGesture::Click),
+            Some(&"open")
+        );
+        assert_eq!(
+            island.action_for_target_gesture("session:session-2", DynamicIslandGesture::Click),
+            None
+        );
     }
 }
 

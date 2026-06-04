@@ -1,10 +1,10 @@
-use reef_view::widget_host::{PaintContext, Widget};
 use reef_core::{
     color::Color,
     geometry::{Point, Rect, Size},
 };
 use reef_layout::Constraints;
 use reef_render::primitive::{FontWeight, TextAlignment, VisualPrimitive};
+use reef_view::widget_host::{PaintContext, Widget};
 
 use crate::card::{
     body_prefix_color, body_text_color, estimated_text_width, tool_tone_color, BodyLine, CardStyle,

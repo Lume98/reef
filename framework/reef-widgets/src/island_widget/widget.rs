@@ -1,8 +1,6 @@
-use reef_view::widget_host::{PaintContext, Widget};
-use reef_core::{
-    geometry::{Rect, Size},
-};
+use reef_core::geometry::{Rect, Size};
 use reef_layout::Constraints;
+use reef_view::widget_host::{PaintContext, Widget};
 
 use crate::{
     card::Card,
@@ -11,11 +9,11 @@ use crate::{
     mascot::MascotWidget,
 };
 
+use super::render::paint_island_widget;
 use super::{
     display_mode::DisplayMode,
     spec::{IslandRenderOverrides, IslandWidgetLayout, IslandWidgetSpec},
 };
-use super::render::paint_island_widget;
 
 /// Top-level widget that composes the entire Dynamic Island UI.
 #[derive(Clone)]

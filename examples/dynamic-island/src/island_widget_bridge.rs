@@ -2,6 +2,7 @@
 //!
 //! 这里不再构造专用的 `IslandWidgetContentInput`，而是直接组合已有组件，并绑定业务动作。
 
+use crate::native_panel_core::{PanelHitAction, PanelHitTarget};
 use crate::native_panel_renderer::facade::{
     command::NativePanelPlatformEvent, transition::NativePanelTransitionRequest,
 };
@@ -16,6 +17,7 @@ pub use reef_native_panel_core::island_render_overrides;
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum DynamicIslandRuntimeAction {
     OpenPrimarySession,
+    OpenSession(String),
     ToggleSettings,
     Dismiss,
 }
@@ -39,8 +41,11 @@ pub fn build_dynamic_island(
     if settings_active {
         island = island.child(build_settings_card());
     } else {
-        for card in build_runtime_cards(snapshot) {
+        for (card, action_target) in build_runtime_cards(snapshot) {
             island = island.child(card);
+            if let Some((target, action)) = action_target {
+                island = island.on_target_click(target, action);
+            }
         }
     }
 
@@ -70,6 +75,18 @@ pub fn resolve_dynamic_island_action(
         .cloned()
 }
 
+pub fn resolve_dynamic_island_target_action(
+    snapshot: &RuntimeSnapshot,
+    panel_expanded: bool,
+    settings_active: bool,
+    target: &str,
+    gesture: DynamicIslandGesture,
+) -> Option<DynamicIslandRuntimeAction> {
+    build_dynamic_island(snapshot, panel_expanded, settings_active)
+        .action_for_target_gesture(target, gesture)
+        .cloned()
+}
+
 pub fn resolve_dynamic_island_effect(
     snapshot: &RuntimeSnapshot,
     action: DynamicIslandRuntimeAction,
@@ -81,6 +98,11 @@ pub fn resolve_dynamic_island_effect(
                     session_id,
                 ))
             })
+        }
+        DynamicIslandRuntimeAction::OpenSession(session_id) => {
+            Some(DynamicIslandRuntimeEffect::PlatformEvent(
+                NativePanelPlatformEvent::FocusSession(session_id),
+            ))
         }
         DynamicIslandRuntimeAction::ToggleSettings => {
             Some(DynamicIslandRuntimeEffect::PlatformEvent(
@@ -101,6 +123,32 @@ pub fn resolve_dynamic_island_gesture_effect(
 ) -> Option<DynamicIslandRuntimeEffect> {
     let action = resolve_dynamic_island_action(snapshot, panel_expanded, settings_active, gesture)?;
     resolve_dynamic_island_effect(snapshot, action)
+}
+
+pub fn resolve_dynamic_island_target_effect(
+    snapshot: &RuntimeSnapshot,
+    panel_expanded: bool,
+    settings_active: bool,
+    target: &str,
+    gesture: DynamicIslandGesture,
+) -> Option<DynamicIslandRuntimeEffect> {
+    let action = resolve_dynamic_island_target_action(
+        snapshot,
+        panel_expanded,
+        settings_active,
+        target,
+        gesture,
+    )?;
+    resolve_dynamic_island_effect(snapshot, action)
+}
+
+pub fn dynamic_island_target_key_for_hit_target(target: &PanelHitTarget) -> Option<String> {
+    match target.action {
+        PanelHitAction::FocusSession if !target.value.is_empty() => {
+            Some(format!("session:{}", target.value))
+        }
+        _ => None,
+    }
 }
 
 pub fn resolve_dynamic_island_platform_event(
@@ -194,7 +242,9 @@ fn resolve_primary_session_id(snapshot: &RuntimeSnapshot) -> Option<String> {
         })
 }
 
-fn build_runtime_cards(snapshot: &RuntimeSnapshot) -> Vec<Card> {
+fn build_runtime_cards(
+    snapshot: &RuntimeSnapshot,
+) -> Vec<(Card, Option<(String, DynamicIslandRuntimeAction)>)> {
     let mut cards = Vec::new();
 
     for pending in &snapshot.pending_permissions {
@@ -205,7 +255,14 @@ fn build_runtime_cards(snapshot: &RuntimeSnapshot) -> Vec<Card> {
         if let Some(tool) = &pending.tool_description {
             card = card.body_line(BodyLine::plain(Some("$"), tool.clone()));
         }
-        cards.push(card.height(104.0));
+        let session_id = pending.session_id.clone();
+        cards.push((
+            card.height(104.0),
+            Some((
+                format!("session:{session_id}"),
+                DynamicIslandRuntimeAction::OpenSession(session_id),
+            )),
+        ));
     }
 
     for pending in &snapshot.pending_questions {
@@ -213,14 +270,19 @@ fn build_runtime_cards(snapshot: &RuntimeSnapshot) -> Vec<Card> {
             .header
             .clone()
             .unwrap_or_else(|| format!("{} asks a question", pending.source));
-        cards.push(
+        let session_id = pending.session_id.clone();
+        cards.push((
             Card::new(CardStyle::PendingQuestion)
                 .title(title)
                 .badge(Badge::status("Question", true))
                 .badge(Badge::source(pending.source.clone()))
                 .body_line(BodyLine::plain(None, pending.text.clone()))
                 .height(112.0),
-        );
+            Some((
+                format!("session:{session_id}"),
+                DynamicIslandRuntimeAction::OpenSession(session_id),
+            )),
+        ));
     }
 
     for session in &snapshot.sessions {
@@ -242,16 +304,24 @@ fn build_runtime_cards(snapshot: &RuntimeSnapshot) -> Vec<Card> {
         if let Some(tool) = &session.current_tool {
             card = card.tool(tool.clone(), session.tool_description.clone());
         }
-        cards.push(card.height(96.0));
+        let session_id = session.session_id.clone();
+        cards.push((
+            card.height(96.0),
+            Some((
+                format!("session:{session_id}"),
+                DynamicIslandRuntimeAction::OpenSession(session_id),
+            )),
+        ));
     }
 
     if cards.is_empty() {
-        cards.push(
+        cards.push((
             Card::new(CardStyle::Empty)
                 .title("No active sessions")
                 .body_line(BodyLine::plain(None, "Reef is waiting for the next event."))
                 .height(88.0),
-        );
+            None,
+        ));
     }
 
     cards
@@ -313,6 +383,55 @@ mod tests {
     }
 
     #[test]
+    fn bridge_resolves_runtime_action_from_target_click() {
+        let mut snapshot = empty_snapshot();
+        snapshot
+            .sessions
+            .push(echoisland_runtime::SessionSnapshotView {
+                session_id: "session-1".to_string(),
+                source: "reef".to_string(),
+                project_name: None,
+                cwd: None,
+                model: None,
+                terminal_app: None,
+                terminal_bundle: None,
+                host_app: None,
+                window_title: None,
+                tty: None,
+                terminal_pid: None,
+                cli_pid: None,
+                iterm_session_id: None,
+                kitty_window_id: None,
+                tmux_env: None,
+                tmux_pane: None,
+                tmux_client_tty: None,
+                status: "running".to_string(),
+                current_tool: None,
+                tool_description: None,
+                last_user_prompt: None,
+                last_assistant_message: None,
+                tool_history_count: 0,
+                tool_history: vec![],
+                last_activity: chrono::Utc::now(),
+            });
+
+        let action = resolve_dynamic_island_target_action(
+            &snapshot,
+            true,
+            false,
+            "session:session-1",
+            DynamicIslandGesture::Click,
+        );
+
+        assert_eq!(
+            action,
+            Some(DynamicIslandRuntimeAction::OpenSession(
+                "session-1".to_string()
+            ))
+        );
+    }
+
+    #[test]
     fn bridge_resolves_runtime_action_from_gesture() {
         let action = resolve_dynamic_island_action(
             &empty_snapshot(),
@@ -322,6 +441,16 @@ mod tests {
         );
 
         assert_eq!(action, Some(DynamicIslandRuntimeAction::Dismiss));
+    }
+
+    #[test]
+    fn bridge_maps_hit_target_to_dynamic_island_target_key() {
+        let key = dynamic_island_target_key_for_hit_target(&PanelHitTarget {
+            action: PanelHitAction::FocusSession,
+            value: "session-1".to_string(),
+        });
+
+        assert_eq!(key, Some("session:session-1".to_string()));
     }
 
     #[test]

@@ -1,7 +1,7 @@
-use reef_view::widget_host::{PaintContext, Widget};
 use reef_core::geometry::{Point, Rect, Size};
 use reef_layout::Constraints;
 use reef_render::primitive::{FontWeight, TextAlignment, VisualPrimitive};
+use reef_view::widget_host::{PaintContext, Widget};
 
 use crate::card::{badge_background_color, badge_foreground_color, Badge, CardStyle};
 

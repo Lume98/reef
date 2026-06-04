@@ -90,7 +90,10 @@ mod tests {
 
         let card = build_session_card(&session);
 
-        assert_eq!(card.tool.as_ref().map(|tool| tool.name.as_str()), Some("bash"));
+        assert_eq!(
+            card.tool.as_ref().map(|tool| tool.name.as_str()),
+            Some("bash")
+        );
         assert_eq!(card.body_lines.len(), 2);
         assert_eq!(card.body_lines[0].prefix.as_deref(), Some("$"));
         assert_eq!(card.body_lines[0].text, "run command");

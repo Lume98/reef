@@ -1,10 +1,10 @@
-use reef_view::widget_host::{PaintContext, Widget};
 use reef_core::{
     color::Color,
     geometry::{Point, Rect, Size},
 };
 use reef_layout::Constraints;
 use reef_render::primitive::{FontWeight, TextAlignment, VisualPrimitive};
+use reef_view::widget_host::{PaintContext, Widget};
 
 /// Headline text on the compact bar.
 #[derive(Clone)]

@@ -1,9 +1,9 @@
-use reef_view::widget_host::{PaintContext, Widget};
 use reef_core::{
     color::Color,
     geometry::{Rect, Size},
 };
 use reef_layout::Constraints;
+use reef_view::widget_host::{PaintContext, Widget};
 
 use super::shoulder_path::{ShoulderPath, ShoulderSide};
 

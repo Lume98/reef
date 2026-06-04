@@ -1,10 +1,10 @@
-use reef_view::widget_host::{PaintContext, Widget};
 use reef_core::{
     color::Color,
     geometry::{Rect, Size},
 };
 use reef_layout::Constraints;
 use reef_render::primitive::VisualPrimitive;
+use reef_view::widget_host::{PaintContext, Widget};
 
 /// Mascot body blob with fill and stroke.
 pub struct MascotDot {

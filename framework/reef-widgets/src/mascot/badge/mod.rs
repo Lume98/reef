@@ -1,6 +1,6 @@
-use reef_view::widget_host::{PaintContext, Widget};
 use reef_core::geometry::{Rect, Size};
 use reef_layout::Constraints;
+use reef_view::widget_host::{PaintContext, Widget};
 
 mod label;
 mod outline;

@@ -17,12 +17,17 @@ use super::{
     WindowsNativePanelRenderer,
 };
 use crate::{
-    island_widget_bridge::{resolve_dynamic_island_gesture_effect, DynamicIslandRuntimeEffect},
+    island_widget_bridge::{
+        dynamic_island_target_key_for_hit_target, resolve_dynamic_island_gesture_effect,
+        resolve_dynamic_island_target_effect, DynamicIslandRuntimeEffect,
+    },
     native_panel_core::{
-        ExpandedSurface, HoverTransition, PanelAnimationDescriptor, PanelPoint, PanelState,
+        ExpandedSurface, HoverTransition, PanelAnimationDescriptor, PanelInteractionCommand,
+        PanelPoint, PanelState,
     },
     native_panel_renderer::facade::{
         command::{
+            dispatch_native_panel_click_command_with_handler, dispatch_native_panel_platform_event,
             NativePanelPlatformEvent, NativePanelPointerInput, NativePanelPointerInputOutcome,
             NativePanelRuntimeCommandHandler,
         },
@@ -33,15 +38,15 @@ use crate::{
             set_native_panel_host_shared_body_height_via_controller, NativePanelHost,
         },
         interaction::{
-            dispatch_native_panel_click_command_at_point_with_handler,
             handle_native_panel_pointer_input_with_handler,
             handle_optional_native_panel_pointer_input_with_handler,
-            native_panel_click_state_slots, sync_native_panel_hover_and_refresh_for_runtime,
+            native_panel_click_state_slots, resolve_native_panel_click_command_for_pointer_state,
+            sync_native_panel_hover_and_refresh_for_runtime,
             sync_native_panel_hover_interaction_and_rerender_at_point_with_input_descriptor,
             sync_native_panel_hover_interaction_and_rerender_for_inside_with_input_descriptor,
             sync_native_panel_hover_interaction_and_rerender_for_pointer_input_with_input_descriptor,
-            sync_native_panel_hover_interaction_for_state, NativePanelHoverSyncResult,
-            NativePanelSettingsSurfaceToggleResult,
+            sync_native_panel_hover_interaction_for_state, NativePanelClickInteractionHost,
+            NativePanelHoverSyncResult, NativePanelSettingsSurfaceToggleResult,
         },
         presentation::NativePanelPresentationModel,
         renderer::NativePanelRuntimeSceneCache,
@@ -340,20 +345,28 @@ impl WindowsNativePanelRuntime {
     where
         H: NativePanelRuntimeCommandHandler,
     {
+        let pointer_state = self.host.click_pointer_state_at_point(point);
+        let cards_visible = self.host.click_cards_visible() || pointer_state.hit_target.is_some();
         let mut click_state =
             native_panel_click_state_slots(&self.panel_state, &mut self.last_focus_click);
-        dispatch_native_panel_click_command_at_point_with_handler(
+        let command = resolve_native_panel_click_command_for_pointer_state(
             &mut click_state,
-            &self.host,
-            point,
+            &pointer_state,
+            true,
+            cards_visible,
             now,
             crate::native_panel_core::CARD_FOCUS_CLICK_DEBOUNCE_MS,
-            handler,
-        )
-        .and_then(|event| match event {
+        );
+
+        match self
+            .dispatch_declarative_target_click_command_with_handler(command.clone(), handler)?
+        {
             Some(event) => Ok(Some(event)),
-            None => self.dispatch_declarative_click_fallback_with_handler(point, handler),
-        })
+            None => match dispatch_native_panel_click_command_with_handler(handler, command)? {
+                Some(event) => Ok(Some(event)),
+                None => self.dispatch_declarative_click_fallback_with_handler(point, handler),
+            },
+        }
     }
 
     pub(super) fn take_queued_platform_events(&mut self) -> Vec<NativePanelPlatformEvent> {
@@ -469,6 +482,46 @@ impl WindowsNativePanelRuntime {
                 Ok(None)
             }
             None => Ok(None),
+        }
+    }
+
+    fn dispatch_declarative_target_click_command_with_handler<H>(
+        &mut self,
+        command: PanelInteractionCommand,
+        handler: &mut H,
+    ) -> Result<Option<NativePanelPlatformEvent>, H::Error>
+    where
+        H: NativePanelRuntimeCommandHandler,
+    {
+        let PanelInteractionCommand::HitTarget(target) = command else {
+            return Ok(None);
+        };
+        let Some(snapshot) = self.scene_cache.last_snapshot.as_ref() else {
+            return Ok(None);
+        };
+        let Some(target_key) = dynamic_island_target_key_for_hit_target(&target) else {
+            return Ok(None);
+        };
+        let Some(effect) = resolve_dynamic_island_target_effect(
+            snapshot,
+            self.panel_state.expanded,
+            self.panel_state.surface_mode == ExpandedSurface::Settings,
+            &target_key,
+            reef_widgets::DynamicIslandGesture::Click,
+        )
+        .map(map_dynamic_island_runtime_effect) else {
+            return Ok(None);
+        };
+
+        match effect {
+            DynamicIslandInteractionEffect::PlatformEvent(event) => {
+                dispatch_native_panel_platform_event(handler, event.clone())?;
+                Ok(Some(event))
+            }
+            DynamicIslandInteractionEffect::Transition(request) => {
+                self.last_transition_request = Some(request);
+                Ok(None)
+            }
         }
     }
 

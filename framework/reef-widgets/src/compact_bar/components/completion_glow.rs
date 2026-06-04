@@ -1,7 +1,7 @@
-use reef_view::widget_host::{PaintContext, Widget};
 use reef_core::geometry::{Rect, Size};
 use reef_layout::Constraints;
 use reef_render::primitive::VisualPrimitive;
+use reef_view::widget_host::{PaintContext, Widget};
 
 /// Breathing 9-slice glow image for completion animation.
 #[derive(Clone)]

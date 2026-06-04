@@ -1,7 +1,7 @@
-use reef_view::widget_host::{PaintContext, Widget};
 use reef_core::geometry::{Rect, Size};
 use reef_layout::Constraints;
 use reef_render::primitive::VisualPrimitive;
+use reef_view::widget_host::{PaintContext, Widget};
 
 use crate::base::{card_content_visibility, lerp, shell_reveal_frame, staggered_card_phase};
 use crate::card::Card;

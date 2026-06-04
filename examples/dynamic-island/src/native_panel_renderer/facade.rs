@@ -3,12 +3,16 @@
 // 平台事件和运行时命令派发。
 pub(crate) mod command {
     pub(crate) use super::super::descriptors::{
-        NativePanelPlatformEvent, NativePanelPointerInput, NativePanelPointerInputOutcome,
-        NativePanelRuntimeCommandCapability, NativePanelRuntimeCommandHandler,
+        dispatch_native_panel_platform_event, NativePanelPlatformEvent, NativePanelPointerInput,
+        NativePanelPointerInputOutcome, NativePanelRuntimeCommandCapability,
+        NativePanelRuntimeCommandHandler,
     };
     #[cfg(feature = "tauri-host")]
     pub(crate) use super::super::host_runtime_facade::NativePanelRuntimeDispatchMode;
-    pub(crate) use super::super::runtime_click::dispatch_queued_native_panel_platform_events_with_handler;
+    pub(crate) use super::super::runtime_click::{
+        dispatch_native_panel_click_command_with_handler,
+        dispatch_queued_native_panel_platform_events_with_handler,
+    };
     #[cfg(feature = "tauri-host")]
     pub(crate) use super::super::runtime_commands::{
         dispatch_drained_native_panel_platform_events_with_host,
@@ -75,7 +79,11 @@ pub(crate) mod host {
 // Hover、click、轮询和设置面板交互。
 pub(crate) mod interaction {
     pub(crate) use super::super::descriptors::NativePanelRuntimeCommandHandler;
-    pub(crate) use super::super::runtime_click::dispatch_native_panel_click_command_at_point_with_handler;
+    pub(crate) use super::super::runtime_click::resolve_native_panel_click_command_for_pointer_state;
+    pub(crate) use super::super::runtime_click::{
+        dispatch_native_panel_click_command_at_point_with_handler,
+        dispatch_native_panel_click_command_with_handler,
+    };
     pub(crate) use super::super::runtime_hover::{
         sync_native_panel_hover_expansion_state_for_state,
         sync_native_panel_hover_interaction_and_rerender_at_point_with_input_descriptor,
@@ -87,14 +95,14 @@ pub(crate) mod interaction {
     };
     pub(crate) use super::super::runtime_interaction::{
         native_panel_click_state_slots, record_native_panel_focus_click_session,
-        resolve_native_panel_last_focus_click, NativePanelClickStateBridge,
-        NativePanelCoreStateBridge, NativePanelHostBehaviorCommand, NativePanelHostBehaviorPlan,
-        NativePanelHostInteractionStateBridge, NativePanelHostPollingInteractionResult,
-        NativePanelHoverFallbackFrames, NativePanelHoverSyncResult,
-        NativePanelPointerInputRuntimeBridge, NativePanelPointerRegionInteractionBridge,
-        NativePanelPollingHostFacts, NativePanelPrimaryPointerStateBridge,
-        NativePanelQueuedPlatformEventBridge, NativePanelSettingsSurfaceSnapshotUpdate,
-        NativePanelSettingsSurfaceToggleResult,
+        resolve_native_panel_last_focus_click, NativePanelClickInteractionHost,
+        NativePanelClickStateBridge, NativePanelCoreStateBridge, NativePanelHostBehaviorCommand,
+        NativePanelHostBehaviorPlan, NativePanelHostInteractionStateBridge,
+        NativePanelHostPollingInteractionResult, NativePanelHoverFallbackFrames,
+        NativePanelHoverSyncResult, NativePanelPointerInputRuntimeBridge,
+        NativePanelPointerRegionInteractionBridge, NativePanelPollingHostFacts,
+        NativePanelPrimaryPointerStateBridge, NativePanelQueuedPlatformEventBridge,
+        NativePanelSettingsSurfaceSnapshotUpdate, NativePanelSettingsSurfaceToggleResult,
     };
     pub(crate) use super::super::runtime_pointer_input::{
         handle_native_panel_pointer_input_with_handler,

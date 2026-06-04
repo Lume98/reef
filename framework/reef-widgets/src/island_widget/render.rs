@@ -1,10 +1,8 @@
-use reef_view::widget_host::{PaintContext, Widget};
 use reef_core::geometry::Rect;
 use reef_render::primitive::{VisualPlan, VisualPrimitive};
+use reef_view::widget_host::{PaintContext, Widget};
 
-use crate::{
-    island::ExpandedCardStack,
-};
+use crate::island::ExpandedCardStack;
 
 use super::{display_mode::DisplayMode, widget::IslandWidget};
 
@@ -36,11 +34,7 @@ pub(crate) fn render_island_widget_primitives(
     paint_island_widget(widget, rect, &mut ctx);
 }
 
-pub(crate) fn paint_island_widget(
-    widget: &IslandWidget,
-    rect: Rect,
-    ctx: &mut PaintContext,
-) {
+pub(crate) fn paint_island_widget(widget: &IslandWidget, rect: Rect, ctx: &mut PaintContext) {
     if widget.mode == DisplayMode::Hidden {
         return;
     }
@@ -58,12 +52,8 @@ pub(crate) fn paint_island_widget(
         if sep_vis > 0.0 {
             let bar_y = rect.height - widget.compact_height;
             shell.separator_y = Some(bar_y);
-            shell.separator_color = reef_core::color::Color::rgba(
-                40,
-                44,
-                54,
-                (0.5 * sep_vis * 255.0) as u8,
-            );
+            shell.separator_color =
+                reef_core::color::Color::rgba(40, 44, 54, (0.5 * sep_vis * 255.0) as u8);
         }
         shell.paint(rect, ctx);
 
