@@ -476,7 +476,8 @@ impl WindowsNativePanelRenderer {
             width: layout.panel_frame.width.max(1.0),
             height: layout.panel_frame.height.max(1.0),
         });
-        self.last_widget_plan = Some(widget_root.render(island));
+        widget_root.set_root(island);
+        self.last_widget_plan = Some(widget_root.render_current());
     }
 
     fn refresh_cached_window_state(

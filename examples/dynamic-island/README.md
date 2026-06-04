@@ -93,7 +93,8 @@ let island = dynamic_island_page(&model).render_overrides(IslandRenderOverrides:
     1.0,
     true,
 ));
-let plan = root.render(island);
+root.set_root(island);
+let plan = root.render_current();
 ```
 
 运行时路径和这个 page 入口复用同一棵 `DynamicIsland` 声明树；page 只负责 `RuntimeSnapshot -> page model -> DynamicIsland<Action>`，尺寸和动画参数仍由 renderer 在最后一跳注入。

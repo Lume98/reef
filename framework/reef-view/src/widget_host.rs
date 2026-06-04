@@ -41,6 +41,8 @@ pub struct WidgetHost {
     root: Option<Box<dyn Widget>>,
     /// 脏标记，为 true 时表示需要重新 measure/paint
     dirty: bool,
+    /// 最近一次生成的视觉计划
+    last_plan: Option<VisualPlan>,
     /// 窗口逻辑尺寸
     size: Size,
 }
@@ -50,6 +52,7 @@ impl WidgetHost {
         Self {
             root: None,
             dirty: true,
+            last_plan: None,
             size: Size {
                 width: 800.0,
                 height: 600.0,
@@ -61,6 +64,11 @@ impl WidgetHost {
     pub fn set_root(&mut self, widget: Box<dyn Widget>) {
         self.root = Some(widget);
         self.dirty = true;
+    }
+
+    /// 以泛型组件类型设置根组件，避免调用方手动装箱。
+    pub fn set_root_widget<W: Widget + 'static>(&mut self, widget: W) {
+        self.set_root(Box::new(widget));
     }
 
     /// 设置窗口尺寸，尺寸变化时自动标记为脏。
@@ -76,6 +84,11 @@ impl WidgetHost {
         self.dirty = true;
     }
 
+    /// 返回当前宿主是否需要重新布局或绘制。
+    pub fn is_dirty(&self) -> bool {
+        self.dirty
+    }
+
     /// 获取根组件的不可变引用。
     pub fn root(&self) -> Option<&dyn Widget> {
         self.root.as_deref()
@@ -86,8 +99,21 @@ impl WidgetHost {
         self.root.as_mut()
     }
 
+    /// 移除并返回当前根组件。
+    pub fn take_root(&mut self) -> Option<Box<dyn Widget>> {
+        self.dirty = true;
+        self.last_plan = None;
+        self.root.take()
+    }
+
     /// 先 measure 再 paint，产出完整的 VisualPlan 交给渲染层。
     pub fn render(&mut self) -> VisualPlan {
+        if !self.dirty {
+            if let Some(plan) = &self.last_plan {
+                return plan.clone();
+            }
+        }
+
         let mut plan = VisualPlan::new();
         if let Some(root) = &self.root {
             let root_rect = Rect {
@@ -109,6 +135,7 @@ impl WidgetHost {
             root.paint(root_rect, &mut ctx);
             plan.primitives = primitives;
         }
+        self.last_plan = Some(plan.clone());
         self.dirty = false;
         plan
     }
@@ -238,5 +265,58 @@ mod tests {
             button: None,
         });
         assert!(!host.dispatch_event(&event, Point { x: 500.0, y: 500.0 }));
+    }
+
+    struct CountingWidget {
+        size: Size,
+        measure_count: std::rc::Rc<std::cell::Cell<usize>>,
+        paint_count: std::rc::Rc<std::cell::Cell<usize>>,
+    }
+
+    impl Widget for CountingWidget {
+        fn measure(&self, _constraints: Constraints) -> Size {
+            self.measure_count
+                .set(self.measure_count.get().saturating_add(1));
+            self.size
+        }
+
+        fn paint(&self, rect: Rect, ctx: &mut PaintContext) {
+            self.paint_count
+                .set(self.paint_count.get().saturating_add(1));
+            ctx.primitives.push(VisualPrimitive::RoundRect {
+                frame: rect,
+                radius: 8.0,
+                color: Color::BLACK,
+                alpha: 1.0,
+            });
+        }
+    }
+
+    #[test]
+    fn widget_host_reuses_clean_render_plan() {
+        let measure_count = std::rc::Rc::new(std::cell::Cell::new(0));
+        let paint_count = std::rc::Rc::new(std::cell::Cell::new(0));
+
+        let mut host = WidgetHost::new();
+        host.set_size(Size {
+            width: 200.0,
+            height: 100.0,
+        });
+        host.set_root_widget(CountingWidget {
+            size: Size {
+                width: 200.0,
+                height: 100.0,
+            },
+            measure_count: measure_count.clone(),
+            paint_count: paint_count.clone(),
+        });
+
+        let first = host.render();
+        let second = host.render();
+
+        assert_eq!(first, second);
+        assert_eq!(measure_count.get(), 1);
+        assert_eq!(paint_count.get(), 1);
+        assert!(!host.is_dirty());
     }
 }

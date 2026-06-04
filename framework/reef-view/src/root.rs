@@ -3,7 +3,7 @@ use reef_render::primitive::VisualPlan;
 
 use crate::widget_host::{Widget, WidgetHost};
 
-/// Declarative root facade over `WidgetHost`, aligned with `createRoot(...).render(...)`.
+/// Declarative root facade over `WidgetHost`, aligned with `createRoot(...).set_root(...).render_current()`.
 pub struct WidgetRoot {
     host: WidgetHost,
 }
@@ -19,6 +19,10 @@ impl WidgetRoot {
         self.host.set_size(size);
     }
 
+    pub fn set_root<W: Widget + 'static>(&mut self, widget: W) {
+        self.host.set_root_widget(widget);
+    }
+
     pub fn host(&self) -> &WidgetHost {
         &self.host
     }
@@ -27,9 +31,13 @@ impl WidgetRoot {
         &mut self.host
     }
 
-    pub fn render<W: Widget + 'static>(&mut self, widget: W) -> VisualPlan {
-        self.host.set_root(Box::new(widget));
+    pub fn render_current(&mut self) -> VisualPlan {
         self.host.render()
+    }
+
+    pub fn render<W: Widget + 'static>(&mut self, widget: W) -> VisualPlan {
+        self.set_root(widget);
+        self.render_current()
     }
 
     pub fn dispatch_event(&mut self, event: &reef_core::event::Event, position: Point) -> bool {
@@ -78,8 +86,8 @@ mod tests {
             width: 320.0,
             height: 48.0,
         });
-
-        let plan = root.render(TestWidget);
+        root.set_root(TestWidget);
+        let plan = root.render_current();
 
         assert!(!plan.hidden);
         assert_eq!(plan.primitives.len(), 1);

@@ -12,6 +12,9 @@ pub mod native_panel_scene;
 // 原生宿主消费的纯 UI 描述、表现模型、视觉计划和渲染命令。
 pub mod native_panel_ui;
 
+// 稳定 facade：把 core / scene / ui 三层聚合成单一入口，供新代码优先使用。
+pub mod panel;
+
 // 稳定 facade：保留根级入口，兼容旧调用方，同时让对外 API 更清晰。
 pub mod components {
     pub use crate::native_panel_ui::components::*;

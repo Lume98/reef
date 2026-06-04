@@ -76,7 +76,8 @@ where
         width: widget.width.max(1.0),
         height: widget.expanded_height.max(widget.compact_height).max(1.0),
     });
-    root.render(island)
+    root.set_root(island);
+    root.render_current()
 }
 
 pub fn run_dynamic_island_standalone<S>(source: S) -> Result<(), String>

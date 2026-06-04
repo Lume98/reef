@@ -86,7 +86,8 @@ fn main() -> Result<(), String> {
         width: widget.width.max(1.0),
         height: widget.expanded_height.max(widget.compact_height).max(1.0),
     });
-    let plan = root.render(island);
+    root.set_root(island);
+    let plan = root.render_current();
 
     println!(
         "initial-plan hidden={} primitives={} layout={:.0}x{:.0} mode={:?}",
@@ -124,7 +125,8 @@ mod tests {
             width: widget.width.max(1.0),
             height: widget.expanded_height.max(widget.compact_height).max(1.0),
         });
-        let plan = root.render(island);
+        root.set_root(island);
+        let plan = root.render_current();
 
         assert!(!plan.hidden);
         assert!(!plan.primitives.is_empty());

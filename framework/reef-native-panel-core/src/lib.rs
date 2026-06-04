@@ -5,15 +5,15 @@
 pub use echoisland_runtime;
 
 pub mod native_panel_core {
-    pub use reef_ui::native_panel_core::*;
+    pub use reef_ui::panel::core::*;
 }
 
 pub mod native_panel_scene {
-    pub use reef_ui::native_panel_scene::*;
+    pub use reef_ui::panel::scene::*;
 }
 
 pub mod native_panel_ui {
-    pub use reef_ui::native_panel_ui::*;
+    pub use reef_ui::panel::ui::*;
 }
 
 pub mod dynamic_island_interaction;
