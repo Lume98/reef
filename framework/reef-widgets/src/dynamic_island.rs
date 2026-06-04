@@ -1,4 +1,12 @@
-use crate::{Card, CompactBar, IslandWidget, MascotWidget, ProgressBar};
+use reef_core::geometry::{Rect, Size};
+use reef_layout::Constraints;
+use reef_view::widget_host::{PaintContext, Widget};
+
+use crate::{
+    Card, CardStyle, ChromeVisibility, CompactBar, CompactShoulder, CompletionGlow, DisplayMode,
+    ExpandedShell, IslandRenderOverrides, IslandRevealSpec, IslandWidget, IslandWidgetLayout,
+    IslandWidgetSpec, MascotWidget, ProgressBar,
+};
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum DynamicIslandGesture {
@@ -76,7 +84,8 @@ impl From<ProgressBar> for DynamicIslandChild {
 
 #[derive(Clone)]
 pub struct DynamicIsland<Action> {
-    children: Vec<DynamicIslandChild>,
+    spec: IslandWidgetSpec,
+    render_overrides: Option<IslandRenderOverrides>,
     actions: DynamicIslandActions<Action>,
     target_bindings: Vec<DynamicIslandTargetActionBinding<Action>>,
 }
@@ -84,14 +93,77 @@ pub struct DynamicIsland<Action> {
 impl<Action> DynamicIsland<Action> {
     pub fn new() -> Self {
         Self {
-            children: Vec::new(),
+            spec: IslandWidgetSpec::default(),
+            render_overrides: None,
             actions: DynamicIslandActions::default(),
             target_bindings: Vec::new(),
         }
     }
 
     pub fn child(mut self, child: impl Into<DynamicIslandChild>) -> Self {
-        self.children.push(child.into());
+        match child.into() {
+            DynamicIslandChild::CompactBar(bar) => {
+                self.spec.chrome = bar.chrome;
+                self.spec.layout.compact_height = bar.height;
+                self.spec.compact_bar = bar;
+            }
+            DynamicIslandChild::Card(card) => self.spec.cards.push(card),
+            DynamicIslandChild::Mascot(mascot) => self.spec.mascot = Some(mascot),
+            DynamicIslandChild::ProgressBar(progress) => {
+                self.spec.cards.push(
+                    Card::new(CardStyle::Default)
+                        .title("Progress")
+                        .height(40.0)
+                        .action_hint(format!("{:.0}%", progress.value.clamp(0.0, 1.0) * 100.0)),
+                );
+            }
+        }
+        self
+    }
+
+    pub fn mode(mut self, mode: DisplayMode) -> Self {
+        self.spec.mode = mode;
+        self
+    }
+
+    pub fn layout(mut self, layout: IslandWidgetLayout) -> Self {
+        self.spec.layout = layout;
+        self
+    }
+
+    pub fn chrome(mut self, chrome: ChromeVisibility) -> Self {
+        self.spec.chrome = chrome;
+        self.spec.compact_bar.chrome = chrome;
+        self
+    }
+
+    pub fn reveal(mut self, progress: f64, entering: bool) -> Self {
+        self.spec.reveal = IslandRevealSpec::new(progress, entering);
+        self
+    }
+
+    pub fn expanded_shell(mut self, expanded_shell: ExpandedShell) -> Self {
+        self.spec.expanded_shell = expanded_shell;
+        self
+    }
+
+    pub fn glow(mut self, glow: CompletionGlow) -> Self {
+        self.spec.glow = Some(glow);
+        self
+    }
+
+    pub fn shoulder_left(mut self, shoulder: CompactShoulder) -> Self {
+        self.spec.shoulder_left = Some(shoulder);
+        self
+    }
+
+    pub fn shoulder_right(mut self, shoulder: CompactShoulder) -> Self {
+        self.spec.shoulder_right = Some(shoulder);
+        self
+    }
+
+    pub fn render_overrides(mut self, overrides: IslandRenderOverrides) -> Self {
+        self.render_overrides = Some(overrides);
         self
     }
 
@@ -170,24 +242,26 @@ impl<Action> DynamicIsland<Action> {
         bindings
     }
 
-    pub fn into_widget(self) -> IslandWidget {
-        let mut widget = IslandWidget::new();
-        for child in self.children {
-            match child {
-                DynamicIslandChild::CompactBar(bar) => widget = widget.compact_bar(bar),
-                DynamicIslandChild::Card(card) => widget = widget.card(card),
-                DynamicIslandChild::Mascot(mascot) => widget = widget.mascot(mascot),
-                DynamicIslandChild::ProgressBar(progress) => {
-                    widget = widget.card(
-                        Card::new(crate::CardStyle::Default)
-                            .title("Progress")
-                            .height(40.0)
-                            .action_hint(format!("{:.0}%", progress.value.clamp(0.0, 1.0) * 100.0)),
-                    );
-                }
-            }
+    pub fn to_widget(&self) -> IslandWidget {
+        let mut widget = IslandWidget::from_spec(self.spec.clone());
+        if let Some(overrides) = self.render_overrides {
+            widget.apply_render_overrides(overrides);
         }
         widget
+    }
+
+    pub fn into_widget(self) -> IslandWidget {
+        self.to_widget()
+    }
+}
+
+impl<Action> Widget for DynamicIsland<Action> {
+    fn measure(&self, constraints: Constraints) -> Size {
+        self.to_widget().measure(constraints)
+    }
+
+    fn paint(&self, rect: Rect, ctx: &mut PaintContext) {
+        self.to_widget().paint(rect, ctx);
     }
 }
 
@@ -200,6 +274,8 @@ impl<Action> Default for DynamicIsland<Action> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::compact_bar::ChromeVisibility;
+    use reef_core::geometry::Rect;
 
     #[test]
     fn dynamic_island_resolves_target_click_binding() {
@@ -221,6 +297,85 @@ mod tests {
                 DynamicIslandGesture::Click
             ),
             None
+        );
+    }
+
+    #[test]
+    fn dynamic_island_materializes_spec_with_overrides() {
+        let widget = DynamicIsland::<()>::new()
+            .mode(DisplayMode::Expanded)
+            .layout(IslandWidgetLayout::new(320.0, 52.0, 200.0))
+            .chrome(ChromeVisibility::expanded())
+            .reveal(0.25, false)
+            .child(CompactBar::new().headline("Reef"))
+            .child(Card::new(CardStyle::Default).title("Status"))
+            .render_overrides(IslandRenderOverrides::new(
+                400.0,
+                48.0,
+                220.0,
+                ChromeVisibility::compact(),
+                0.75,
+                true,
+            ))
+            .to_widget();
+
+        assert_eq!(widget.mode, DisplayMode::Expanded);
+        assert_eq!(widget.width, 400.0);
+        assert_eq!(widget.compact_height, 48.0);
+        assert_eq!(widget.expanded_height, 220.0);
+        assert_eq!(widget.reveal_progress, 0.75);
+        assert!(widget.entering);
+        assert_eq!(widget.cards.len(), 1);
+    }
+
+    #[test]
+    fn dynamic_island_widget_measure_and_paint_delegate() {
+        let compact = DynamicIsland::<()>::new()
+            .mode(DisplayMode::Compact)
+            .layout(IslandWidgetLayout::new(320.0, 48.0, 180.0))
+            .child(CompactBar::new());
+        assert_eq!(
+            compact.measure(Constraints::tight(Size {
+                width: 320.0,
+                height: 48.0,
+            })),
+            Size {
+                width: 320.0,
+                height: 48.0,
+            }
+        );
+
+        let expanded = DynamicIsland::<()>::new()
+            .mode(DisplayMode::Expanded)
+            .layout(IslandWidgetLayout::new(320.0, 48.0, 180.0))
+            .chrome(ChromeVisibility::expanded())
+            .child(CompactBar::new())
+            .child(Card::new(CardStyle::Default).title("Status").height(80.0));
+        let mut primitives = Vec::new();
+        let mut ctx = PaintContext {
+            primitives: &mut primitives,
+        };
+        expanded.paint(
+            Rect {
+                x: 0.0,
+                y: 0.0,
+                width: 320.0,
+                height: 180.0,
+            },
+            &mut ctx,
+        );
+        assert!(!primitives.is_empty());
+
+        let hidden = DynamicIsland::<()>::new();
+        assert_eq!(
+            hidden.measure(Constraints::tight(Size {
+                width: 320.0,
+                height: 0.0,
+            })),
+            Size {
+                width: 320.0,
+                height: 0.0,
+            }
         );
     }
 }

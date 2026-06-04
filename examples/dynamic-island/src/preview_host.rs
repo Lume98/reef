@@ -1,9 +1,5 @@
 use echoisland_runtime::RuntimeSnapshot;
-
-pub trait DynamicIslandUiPreviewHost {
-    fn show(&self, snapshot: &RuntimeSnapshot) -> Result<(), String>;
-    fn run(&self) -> Result<(), String>;
-}
+pub use reef_native_panel_core::DynamicIslandUiPreviewHost;
 
 #[derive(Clone, Copy, Debug, Default)]
 pub struct StandaloneDynamicIslandUiPreviewHost;

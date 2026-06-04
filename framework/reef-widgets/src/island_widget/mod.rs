@@ -25,5 +25,5 @@ pub use input::{
 };
 pub use mascot_builder::build_mascot_from_input;
 pub use render::render_island_widget;
-pub use spec::{IslandRenderOverrides, IslandWidgetLayout};
+pub use spec::{IslandRenderOverrides, IslandRevealSpec, IslandWidgetLayout, IslandWidgetSpec};
 pub use widget::IslandWidget;

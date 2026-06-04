@@ -12,10 +12,6 @@ use super::{
     WindowsNativePanelRenderer,
 };
 use crate::{
-    island_widget_bridge::{
-        dynamic_island_target_for_hit_target, resolve_dynamic_island_gesture_effect,
-        resolve_dynamic_island_target_effect, DynamicIslandRuntimeEffect,
-    },
     native_panel_core::{
         ExpandedSurface, HoverTransition, PanelAnimationDescriptor, PanelInteractionCommand,
         PanelPoint, PanelState,
@@ -55,6 +51,10 @@ use crate::{
         },
         shell::pump_native_panel_host_shell_runtime,
         transition::NativePanelTransitionRequest,
+    },
+    page::{
+        dynamic_island_target_for_hit_target, resolve_dynamic_island_gesture_effect,
+        resolve_dynamic_island_target_effect, DynamicIslandRuntimeEffect,
     },
 };
 use reef_native_panel_core::{

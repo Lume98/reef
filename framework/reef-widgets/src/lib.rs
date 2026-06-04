@@ -27,7 +27,10 @@ pub use dynamic_island::{
     DynamicIslandGesture, DynamicIslandTarget, DynamicIslandTargetActionBinding,
 };
 pub use island::{ExpandedCardStack, ExpandedShell};
-pub use island_widget::{build_island_widget, IslandWidget};
+pub use island_widget::{
+    build_island_widget, DisplayMode, IslandRenderOverrides, IslandRevealSpec, IslandWidget,
+    IslandWidgetLayout, IslandWidgetSpec,
+};
 pub use mascot::{
     CompletionBadge, CompletionBadgeLabel, CompletionBadgeOutline, MascotBody, MascotDot,
     MascotExpression, MascotEye, MascotEyes, MascotPose, MascotShadow, MascotSprite, MascotWidget,

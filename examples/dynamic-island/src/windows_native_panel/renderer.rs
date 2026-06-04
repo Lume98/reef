@@ -32,9 +32,9 @@ use crate::{
 };
 use reef_render::primitive::VisualPlan;
 use reef_view::create_root;
-use reef_widgets::ChromeVisibility;
+use reef_widgets::{ChromeVisibility, DynamicIsland, IslandRenderOverrides};
 
-use crate::island_widget_bridge::{build_island_widget, island_render_overrides};
+use crate::page::{build_dynamic_island_page_model, dynamic_island_page};
 
 use super::{host_runtime::WindowsNativePanelHost, WINDOWS_FALLBACK_PANEL_SCREEN_FRAME};
 
@@ -448,7 +448,7 @@ impl WindowsNativePanelRenderer {
 
         let panel_expanded = presentation.shell.visible;
         let settings_active = presentation.shell.surface == ExpandedSurface::Settings;
-        let mut widget = build_island_widget(snapshot, panel_expanded, settings_active);
+        let model = build_dynamic_island_page_model(snapshot, panel_expanded, settings_active);
         let chrome = if panel_expanded {
             ChromeVisibility::interpolate(
                 &ChromeVisibility::compact(),
@@ -458,7 +458,7 @@ impl WindowsNativePanelRenderer {
         } else {
             ChromeVisibility::compact()
         };
-        let mut overrides = island_render_overrides(
+        let mut overrides = IslandRenderOverrides::new(
             layout.panel_frame.width.max(1.0),
             crate::native_panel_core::DEFAULT_COMPACT_PILL_HEIGHT,
             layout
@@ -470,14 +470,13 @@ impl WindowsNativePanelRenderer {
             animation_plan.card_stack.entering,
         );
         overrides.chrome.shoulder_progress = animation_plan.card_stack.separator_visibility;
-        widget.apply_render_overrides(overrides);
-        widget.compact_bar.show_actions = panel_expanded || settings_active;
+        let island: DynamicIsland<_> = dynamic_island_page(&model).render_overrides(overrides);
 
         let mut widget_root = create_root(reef_core::geometry::Size {
             width: layout.panel_frame.width.max(1.0),
             height: layout.panel_frame.height.max(1.0),
         });
-        self.last_widget_plan = Some(widget_root.render(widget));
+        self.last_widget_plan = Some(widget_root.render(island));
     }
 
     fn refresh_cached_window_state(

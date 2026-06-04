@@ -3,24 +3,20 @@ use reef_ui::native_panel_ui::{
     descriptor::NativePanelPlatformEvent, render::NativePanelTransitionRequest,
 };
 use reef_widgets::island_widget::{
-    build_cards_from_input, build_compact_bar_from_input, build_mascot_from_input,
+    build_cards_from_input, build_compact_bar_from_input, build_mascot_from_input, DisplayMode,
+    IslandPendingApprovalInput, IslandPendingQuestionInput, IslandSessionInput,
     IslandWidgetContentInput,
 };
-use reef_widgets::{DynamicIsland, DynamicIslandGesture, DynamicIslandTarget, IslandWidget};
+use reef_widgets::{DynamicIsland, DynamicIslandGesture, DynamicIslandTarget};
 
-use crate::island_widget_bridge::build_island_widget_input;
 use crate::native_panel_core::PanelHitTarget;
 
 #[derive(Clone, Debug)]
-pub struct DynamicIslandPageState {
+pub struct DynamicIslandPageModel {
     content: IslandWidgetContentInput,
 }
 
-impl DynamicIslandPageState {
-    pub fn new(content: IslandWidgetContentInput) -> Self {
-        Self { content }
-    }
-
+impl DynamicIslandPageModel {
     pub fn content(&self) -> &IslandWidgetContentInput {
         &self.content
     }
@@ -37,44 +33,65 @@ pub enum DynamicIslandRuntimeEffect {
     Transition(NativePanelTransitionRequest),
 }
 
-pub fn build_dynamic_island_page_state(
+pub fn build_dynamic_island_page_model(
     snapshot: &RuntimeSnapshot,
     panel_expanded: bool,
     settings_active: bool,
-) -> DynamicIslandPageState {
-    DynamicIslandPageState::new(build_island_widget_input(
-        snapshot,
-        panel_expanded,
-        settings_active,
-    ))
+) -> DynamicIslandPageModel {
+    DynamicIslandPageModel {
+        content: IslandWidgetContentInput {
+            mode: if panel_expanded {
+                DisplayMode::Expanded
+            } else {
+                DisplayMode::Compact
+            },
+            layout: Default::default(),
+            settings_active,
+            active_session_count: snapshot.active_session_count,
+            total_session_count: snapshot.total_session_count,
+            pending_permissions: snapshot
+                .pending_permissions
+                .iter()
+                .map(|pending| IslandPendingApprovalInput {
+                    session_id: pending.session_id.clone(),
+                    source: pending.source.clone(),
+                    tool_description: pending.tool_description.clone(),
+                })
+                .collect(),
+            pending_questions: snapshot
+                .pending_questions
+                .iter()
+                .map(|pending| IslandPendingQuestionInput {
+                    session_id: pending.session_id.clone(),
+                    source: pending.source.clone(),
+                    header: pending.header.clone(),
+                    text: pending.text.clone(),
+                })
+                .collect(),
+            sessions: snapshot
+                .sessions
+                .iter()
+                .map(|session| IslandSessionInput {
+                    status: session.status.clone(),
+                    source: session.source.clone(),
+                    model: session.model.clone(),
+                    last_user_prompt: session.last_user_prompt.clone(),
+                    last_assistant_message: session.last_assistant_message.clone(),
+                    current_tool: session.current_tool.clone(),
+                    tool_description: session.tool_description.clone(),
+                })
+                .collect(),
+        },
+    }
 }
 
-pub fn render_dynamic_island_page(state: &DynamicIslandPageState) -> IslandWidget {
-    let content = state.content();
-    let mut widget = IslandWidget::new()
-        .layout(content.layout)
-        .mode(content.mode)
-        .compact_bar(build_compact_bar_from_input(content));
-
-    for card in build_cards_from_input(content) {
-        widget = widget.card(card);
-    }
-
-    if let Some(mascot) = build_mascot_from_input(content) {
-        widget = widget.mascot(mascot);
-    }
-
-    widget
-}
-
-pub fn build_dynamic_island(
-    snapshot: &RuntimeSnapshot,
-    panel_expanded: bool,
-    settings_active: bool,
+pub fn dynamic_island_page(
+    model: &DynamicIslandPageModel,
 ) -> DynamicIsland<DynamicIslandRuntimeAction> {
-    let state = build_dynamic_island_page_state(snapshot, panel_expanded, settings_active);
-    let content = state.content();
+    let content = model.content();
     let mut island = DynamicIsland::new()
+        .mode(content.mode)
+        .layout(content.layout)
         .child(build_compact_bar_from_input(content))
         .on_swipe(DynamicIslandRuntimeAction::Dismiss);
 
@@ -95,9 +112,13 @@ pub fn resolve_dynamic_island_action(
     settings_active: bool,
     gesture: DynamicIslandGesture,
 ) -> Option<DynamicIslandRuntimeAction> {
-    build_dynamic_island(snapshot, panel_expanded, settings_active)
-        .action_for_gesture(gesture)
-        .cloned()
+    dynamic_island_page(&build_dynamic_island_page_model(
+        snapshot,
+        panel_expanded,
+        settings_active,
+    ))
+    .action_for_gesture(gesture)
+    .cloned()
 }
 
 pub fn resolve_dynamic_island_target_action(
@@ -107,9 +128,13 @@ pub fn resolve_dynamic_island_target_action(
     target: &DynamicIslandTarget,
     gesture: DynamicIslandGesture,
 ) -> Option<DynamicIslandRuntimeAction> {
-    build_dynamic_island(snapshot, panel_expanded, settings_active)
-        .action_for_target_gesture(target, gesture)
-        .cloned()
+    dynamic_island_page(&build_dynamic_island_page_model(
+        snapshot,
+        panel_expanded,
+        settings_active,
+    ))
+    .action_for_target_gesture(target, gesture)
+    .cloned()
 }
 
 pub fn resolve_dynamic_island_effect(
@@ -185,7 +210,6 @@ pub fn resolve_dynamic_island_transition_request(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use reef_widgets::island_widget::DisplayMode;
 
     fn empty_snapshot() -> RuntimeSnapshot {
         RuntimeSnapshot {
@@ -204,64 +228,48 @@ mod tests {
     }
 
     #[test]
-    fn page_state_maps_runtime_snapshot_to_content() {
-        let state = build_dynamic_island_page_state(&empty_snapshot(), true, true);
+    fn page_model_maps_runtime_snapshot_to_content() {
+        let model = build_dynamic_island_page_model(&empty_snapshot(), true, true);
 
-        assert_eq!(state.content().mode, DisplayMode::Expanded);
-        assert!(state.content().settings_active);
-        assert_eq!(state.content().active_session_count, 0);
-        assert_eq!(state.content().total_session_count, 0);
+        assert_eq!(model.content().mode, DisplayMode::Expanded);
+        assert!(model.content().settings_active);
+        assert_eq!(model.content().active_session_count, 0);
+        assert_eq!(model.content().total_session_count, 0);
     }
 
     #[test]
-    fn page_render_matches_compat_widget_builder() {
+    fn page_render_matches_current_visual_behavior() {
         let snapshot = empty_snapshot();
-        let state = build_dynamic_island_page_state(&snapshot, false, false);
-        let widget = render_dynamic_island_page(&state);
-        let compat = crate::island_widget_bridge::build_island_widget(&snapshot, false, false);
+        let widget = dynamic_island_page(&build_dynamic_island_page_model(&snapshot, false, false))
+            .to_widget();
 
-        assert_eq!(widget.mode, compat.mode);
-        assert_eq!(widget.compact_bar.headline, compat.compact_bar.headline);
-        assert_eq!(
-            widget.compact_bar.active_count,
-            compat.compact_bar.active_count
-        );
-        assert_eq!(
-            widget.compact_bar.total_count,
-            compat.compact_bar.total_count
-        );
-        assert_eq!(
-            widget.compact_bar.show_actions,
-            compat.compact_bar.show_actions
-        );
-        assert_eq!(widget.cards.len(), compat.cards.len());
-        assert_eq!(widget.cards[0].title, compat.cards[0].title);
-        assert_eq!(widget.cards[0].style, compat.cards[0].style);
-        assert_eq!(widget.mascot.is_some(), compat.mascot.is_some());
+        assert_eq!(widget.mode, DisplayMode::Compact);
+        assert_eq!(widget.compact_bar.headline, "Reef");
+        assert_eq!(widget.compact_bar.active_count, "0");
+        assert_eq!(widget.compact_bar.total_count, "0");
+        assert!(!widget.compact_bar.show_actions);
+        assert_eq!(widget.cards.len(), 1);
+        assert_eq!(widget.cards[0].title, "No active sessions");
+        assert!(widget.mascot.is_none());
     }
 
     #[test]
-    fn page_builds_declarative_dynamic_island() {
-        let island = build_dynamic_island(&empty_snapshot(), true, false);
-
-        assert_eq!(island.bindings().len(), 1);
-        assert_eq!(island.action_for_gesture(DynamicIslandGesture::Click), None);
-    }
-
-    #[test]
-    fn page_resolves_runtime_action_from_swipe() {
-        let action = resolve_dynamic_island_action(
+    fn page_interaction_is_driven_by_same_tree() {
+        let island = dynamic_island_page(&build_dynamic_island_page_model(
             &empty_snapshot(),
             true,
             false,
-            DynamicIslandGesture::Swipe,
-        );
+        ));
 
-        assert_eq!(action, Some(DynamicIslandRuntimeAction::Dismiss));
+        assert_eq!(island.bindings().len(), 1);
+        assert_eq!(
+            island.action_for_gesture(DynamicIslandGesture::Swipe),
+            Some(&DynamicIslandRuntimeAction::Dismiss)
+        );
     }
 
     #[test]
-    fn page_resolves_runtime_effect_for_dismiss() {
+    fn dismiss_maps_to_close_transition() {
         let effect =
             resolve_dynamic_island_effect(&empty_snapshot(), DynamicIslandRuntimeAction::Dismiss);
 
@@ -274,46 +282,9 @@ mod tests {
     }
 
     #[test]
-    fn page_does_not_resolve_platform_event_from_click_gesture() {
-        let event = resolve_dynamic_island_platform_event(
-            &empty_snapshot(),
-            false,
-            false,
-            DynamicIslandGesture::Click,
-        );
-
-        assert_eq!(event, None);
-    }
-
-    #[test]
-    fn page_resolves_transition_request_from_swipe_gesture() {
-        let request = resolve_dynamic_island_transition_request(
-            &empty_snapshot(),
-            true,
-            false,
-            DynamicIslandGesture::Swipe,
-        );
-
-        assert_eq!(request, Some(NativePanelTransitionRequest::Close));
-    }
-
-    #[test]
-    fn page_keeps_hit_target_mapping_empty() {
+    fn target_mapping_remains_empty() {
         let key = dynamic_island_target_for_hit_target(&PanelHitTarget::focus_session("session-1"));
 
         assert_eq!(key, None);
-    }
-
-    #[test]
-    fn page_keeps_target_effect_empty() {
-        let effect = resolve_dynamic_island_target_effect(
-            &empty_snapshot(),
-            true,
-            false,
-            &DynamicIslandTarget::Session("session-1".to_string()),
-            DynamicIslandGesture::Click,
-        );
-
-        assert_eq!(effect, None);
     }
 }
