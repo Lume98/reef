@@ -2827,11 +2827,23 @@ dependencies = [
 name = "reef-native-panel-windows"
 version = "0.1.0"
 dependencies = [
+ "anyhow",
+ "chrono",
+ "dirs 5.0.1",
  "echoisland-runtime",
+ "insta",
  "log",
+ "reef-core",
  "reef-native-panel-core",
+ "reef-render",
  "reef-ui",
+ "reef-view",
+ "reef-widgets",
+ "serde",
+ "serde_json",
  "tauri",
+ "tokio",
+ "tracing",
  "windows 0.58.0",
  "windows-sys 0.59.0",
 ]

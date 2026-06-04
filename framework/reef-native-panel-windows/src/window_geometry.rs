@@ -129,9 +129,12 @@ mod tests {
         let layout = resolve_panel_layout(PanelLayoutInput {
             screen_frame,
             metrics: PanelGeometryMetrics {
-                compact_height: reef_native_panel_core::native_panel_core::DEFAULT_COMPACT_PILL_HEIGHT,
-                compact_width: reef_native_panel_core::native_panel_core::DEFAULT_COMPACT_PILL_WIDTH,
-                expanded_width: reef_native_panel_core::native_panel_core::DEFAULT_EXPANDED_PILL_WIDTH,
+                compact_height:
+                    reef_native_panel_core::native_panel_core::DEFAULT_COMPACT_PILL_HEIGHT,
+                compact_width:
+                    reef_native_panel_core::native_panel_core::DEFAULT_COMPACT_PILL_WIDTH,
+                expanded_width:
+                    reef_native_panel_core::native_panel_core::DEFAULT_EXPANDED_PILL_WIDTH,
                 panel_width: reef_native_panel_core::native_panel_core::DEFAULT_PANEL_CANVAS_WIDTH,
             },
             canvas_height: animation.canvas_height,
@@ -143,10 +146,12 @@ mod tests {
             collapsed_height: reef_native_panel_core::native_panel_core::COLLAPSED_PANEL_HEIGHT,
             drop_distance: reef_native_panel_core::native_panel_core::PANEL_DROP_DISTANCE,
             content_top_gap: reef_native_panel_core::native_panel_core::EXPANDED_CONTENT_TOP_GAP,
-            content_bottom_inset: reef_native_panel_core::native_panel_core::EXPANDED_CONTENT_BOTTOM_INSET,
+            content_bottom_inset:
+                reef_native_panel_core::native_panel_core::EXPANDED_CONTENT_BOTTOM_INSET,
             cards_side_inset: reef_native_panel_core::native_panel_core::EXPANDED_CARDS_SIDE_INSET,
             shoulder_size: reef_native_panel_core::native_panel_core::COMPACT_SHOULDER_SIZE,
-            separator_side_inset: reef_native_panel_core::native_panel_core::EXPANDED_SEPARATOR_SIDE_INSET,
+            separator_side_inset:
+                reef_native_panel_core::native_panel_core::EXPANDED_SEPARATOR_SIDE_INSET,
         });
 
         let frame = resolve_windows_panel_window_frame(

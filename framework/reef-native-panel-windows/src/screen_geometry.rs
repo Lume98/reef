@@ -22,4 +22,3 @@ pub fn windows_standalone_screen_frame_with_scale(
         height: display_geometry.height as f64 / dpi_scale.scale,
     }
 }
-

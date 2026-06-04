@@ -46,8 +46,8 @@ fn windows_native_panel_platform_loop_controller(
         .get_or_init(WindowsNativePanelPlatformLoopController::default)
 }
 
-fn windows_native_panel_delayed_wake_controller(
-) -> &'static WindowsNativePanelDelayedWakeController {
+fn windows_native_panel_delayed_wake_controller() -> &'static WindowsNativePanelDelayedWakeController
+{
     WINDOWS_NATIVE_PANEL_DELAYED_WAKE_CONTROLLER
         .get_or_init(WindowsNativePanelDelayedWakeController::default)
 }
@@ -55,9 +55,7 @@ fn windows_native_panel_delayed_wake_controller(
 #[cfg(all(windows, not(test)))]
 const WINDOWS_NATIVE_PANEL_LOOP_WAKE_MESSAGE: u32 = 0x8001;
 
-pub fn ensure_windows_native_platform_loop_thread(
-    pump_runtime_once: fn() -> Result<(), String>,
-) {
+pub fn ensure_windows_native_platform_loop_thread(pump_runtime_once: fn() -> Result<(), String>) {
     let controller = windows_native_panel_platform_loop_controller();
     let mut state = match controller.state.lock() {
         Ok(guard) => guard,

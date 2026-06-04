@@ -62,7 +62,10 @@ impl WindowsDpiScale {
         }
     }
 
-    pub fn pointer_region_to_physical(self, region: &NativePanelPointerRegion) -> WindowsPhysicalRect {
+    pub fn pointer_region_to_physical(
+        self,
+        region: &NativePanelPointerRegion,
+    ) -> WindowsPhysicalRect {
         self.rect_to_physical(region.frame)
     }
 }
@@ -70,7 +73,7 @@ impl WindowsDpiScale {
 #[cfg(all(windows, not(test)))]
 pub fn ensure_windows_process_dpi_awareness() {
     use windows::Win32::UI::HiDpi::{
-        DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2, SetProcessDpiAwarenessContext,
+        SetProcessDpiAwarenessContext, DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2,
     };
 
     unsafe {
@@ -215,4 +218,3 @@ mod tests {
         );
     }
 }
-

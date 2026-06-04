@@ -77,8 +77,30 @@ pub fn is_dynamic_island_horizontal_swipe(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::dynamic_island_page::{DynamicIslandSource, DynamicIslandViewState};
     use reef_ui::native_panel_core::{PanelHitTarget, PanelRect};
     use reef_ui::native_panel_ui::descriptor::NativePanelPointerRegionKind;
+    use reef_widgets::DynamicIsland;
+
+    #[derive(Clone, Copy)]
+    struct TestSource;
+
+    impl DynamicIslandSource for TestSource {
+        type Action = &'static str;
+        type Effect = &'static str;
+
+        fn build(&self, _state: DynamicIslandViewState) -> DynamicIsland<Self::Action> {
+            DynamicIsland::new().on_click("focus")
+        }
+
+        fn resolve_effect(
+            &self,
+            action: Self::Action,
+            _state: DynamicIslandViewState,
+        ) -> Option<Self::Effect> {
+            Some(action)
+        }
+    }
 
     #[test]
     fn root_gesture_resolves_inside_non_target_region() {

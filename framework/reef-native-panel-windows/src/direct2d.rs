@@ -81,4 +81,3 @@ mod tests {
         assert!(factory.is_initialized());
     }
 }
-

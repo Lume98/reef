@@ -2,10 +2,7 @@ use reef_ui::native_panel_ui::descriptor::{
     NativePanelRuntimeInputContext, NativePanelRuntimeInputDescriptor,
 };
 
-use crate::{
-    native_panel_core::PanelSettingsState,
-    native_panel_scene::PanelInteractionProfile,
-};
+use crate::{native_panel_core::PanelSettingsState, native_panel_scene::PanelInteractionProfile};
 
 pub fn panel_scene_build_input_from_parts(
     display_options: Vec<reef_ui::native_panel_scene::PanelDisplayOptionState>,

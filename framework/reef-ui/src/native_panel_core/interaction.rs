@@ -120,8 +120,12 @@ pub fn resolve_panel_click_action(input: PanelClickInput<'_>) -> PanelClickResol
         };
     };
 
-    if focus_click_suppressed(session_id, input.last_focus_click, input.now, input.focus_debounce_ms)
-    {
+    if focus_click_suppressed(
+        session_id,
+        input.last_focus_click,
+        input.now,
+        input.focus_debounce_ms,
+    ) {
         return PanelClickResolution::none();
     }
 

@@ -32,11 +32,7 @@ impl WidgetRoot {
         self.host.render()
     }
 
-    pub fn dispatch_event(
-        &mut self,
-        event: &reef_core::event::Event,
-        position: Point,
-    ) -> bool {
+    pub fn dispatch_event(&mut self, event: &reef_core::event::Event, position: Point) -> bool {
         self.host.dispatch_event(event, position)
     }
 }
@@ -48,13 +44,13 @@ pub fn create_root(size: Size) -> WidgetRoot {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::widget_host::{PaintContext, Widget};
     use reef_core::{
         color::Color,
         geometry::{Rect, Size},
     };
     use reef_layout::Constraints;
     use reef_render::primitive::VisualPrimitive;
-    use crate::widget_host::{PaintContext, Widget};
 
     struct TestWidget;
 

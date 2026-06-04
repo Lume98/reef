@@ -1,8 +1,8 @@
 use crate::native_panel_core::{
     displayed_default_pending_permissions, displayed_default_pending_questions,
     displayed_prompt_assist_sessions, displayed_sessions, format_status, normalize_status,
-    session_title, sync_panel_snapshot_state, ExpandedSurface, PanelHitAction,
-    PanelSemanticTarget, PanelSettingsState, PanelState, StatusQueuePayload,
+    session_title, sync_panel_snapshot_state, ExpandedSurface, PanelHitAction, PanelSemanticTarget,
+    PanelSettingsState, PanelState, StatusQueuePayload,
 };
 use chrono::{DateTime, Utc};
 use echoisland_runtime::RuntimeSnapshot;

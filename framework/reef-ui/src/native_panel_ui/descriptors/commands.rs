@@ -264,7 +264,10 @@ pub fn native_panel_platform_event_for_hit_target(
 ) -> NativePanelPlatformEvent {
     match target.action {
         PanelHitAction::FocusSession => NativePanelPlatformEvent::FocusSession(
-            target.session_id().unwrap_or(target.value.as_str()).to_string(),
+            target
+                .session_id()
+                .unwrap_or(target.value.as_str())
+                .to_string(),
         ),
         PanelHitAction::CycleDisplay => NativePanelPlatformEvent::CycleDisplay,
         PanelHitAction::CycleIslandWidth => NativePanelPlatformEvent::CycleIslandWidth,

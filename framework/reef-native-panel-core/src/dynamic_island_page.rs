@@ -11,6 +11,25 @@ use reef_widgets::{DynamicIsland, DynamicIslandGesture, DynamicIslandTarget};
 
 use crate::native_panel_core::PanelHitTarget;
 
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+pub struct DynamicIslandViewState {
+    pub panel_expanded: bool,
+    pub settings_active: bool,
+}
+
+pub trait DynamicIslandSource {
+    type Action: Clone;
+    type Effect;
+
+    fn build(&self, state: DynamicIslandViewState) -> DynamicIsland<Self::Action>;
+
+    fn resolve_effect(
+        &self,
+        action: Self::Action,
+        state: DynamicIslandViewState,
+    ) -> Option<Self::Effect>;
+}
+
 #[derive(Clone, Debug)]
 pub struct DynamicIslandPageModel {
     content: IslandWidgetContentInput,
@@ -33,20 +52,51 @@ pub enum DynamicIslandRuntimeEffect {
     Transition(NativePanelTransitionRequest),
 }
 
+#[derive(Clone, Copy, Debug)]
+pub struct RuntimeSnapshotDynamicIslandSource<'a> {
+    snapshot: &'a RuntimeSnapshot,
+}
+
+impl<'a> RuntimeSnapshotDynamicIslandSource<'a> {
+    pub fn new(snapshot: &'a RuntimeSnapshot) -> Self {
+        Self { snapshot }
+    }
+
+    pub fn snapshot(&self) -> &'a RuntimeSnapshot {
+        self.snapshot
+    }
+}
+
+impl DynamicIslandSource for RuntimeSnapshotDynamicIslandSource<'_> {
+    type Action = DynamicIslandRuntimeAction;
+    type Effect = DynamicIslandRuntimeEffect;
+
+    fn build(&self, state: DynamicIslandViewState) -> DynamicIsland<Self::Action> {
+        dynamic_island_page(&build_dynamic_island_page_model(self.snapshot, state))
+    }
+
+    fn resolve_effect(
+        &self,
+        action: Self::Action,
+        _state: DynamicIslandViewState,
+    ) -> Option<Self::Effect> {
+        resolve_dynamic_island_effect(self.snapshot, action)
+    }
+}
+
 pub fn build_dynamic_island_page_model(
     snapshot: &RuntimeSnapshot,
-    panel_expanded: bool,
-    settings_active: bool,
+    state: DynamicIslandViewState,
 ) -> DynamicIslandPageModel {
     DynamicIslandPageModel {
         content: IslandWidgetContentInput {
-            mode: if panel_expanded {
+            mode: if state.panel_expanded {
                 DisplayMode::Expanded
             } else {
                 DisplayMode::Compact
             },
             layout: Default::default(),
-            settings_active,
+            settings_active: state.settings_active,
             active_session_count: snapshot.active_session_count,
             total_session_count: snapshot.total_session_count,
             pending_permissions: snapshot
@@ -106,35 +156,32 @@ pub fn dynamic_island_page(
     island
 }
 
-pub fn resolve_dynamic_island_action(
-    snapshot: &RuntimeSnapshot,
-    panel_expanded: bool,
-    settings_active: bool,
+pub fn resolve_dynamic_island_source_gesture_effect<S>(
+    source: &S,
+    state: DynamicIslandViewState,
     gesture: DynamicIslandGesture,
-) -> Option<DynamicIslandRuntimeAction> {
-    dynamic_island_page(&build_dynamic_island_page_model(
-        snapshot,
-        panel_expanded,
-        settings_active,
-    ))
-    .action_for_gesture(gesture)
-    .cloned()
+) -> Option<S::Effect>
+where
+    S: DynamicIslandSource,
+{
+    let action = source.build(state).action_for_gesture(gesture).cloned()?;
+    source.resolve_effect(action, state)
 }
 
-pub fn resolve_dynamic_island_target_action(
-    snapshot: &RuntimeSnapshot,
-    panel_expanded: bool,
-    settings_active: bool,
+pub fn resolve_dynamic_island_source_target_effect<S>(
+    source: &S,
+    state: DynamicIslandViewState,
     target: &DynamicIslandTarget,
     gesture: DynamicIslandGesture,
-) -> Option<DynamicIslandRuntimeAction> {
-    dynamic_island_page(&build_dynamic_island_page_model(
-        snapshot,
-        panel_expanded,
-        settings_active,
-    ))
-    .action_for_target_gesture(target, gesture)
-    .cloned()
+) -> Option<S::Effect>
+where
+    S: DynamicIslandSource,
+{
+    let action = source
+        .build(state)
+        .action_for_target_gesture(target, gesture)
+        .cloned()?;
+    source.resolve_effect(action, state)
 }
 
 pub fn resolve_dynamic_island_effect(
@@ -148,63 +195,10 @@ pub fn resolve_dynamic_island_effect(
     }
 }
 
-pub fn resolve_dynamic_island_gesture_effect(
-    snapshot: &RuntimeSnapshot,
-    panel_expanded: bool,
-    settings_active: bool,
-    gesture: DynamicIslandGesture,
-) -> Option<DynamicIslandRuntimeEffect> {
-    let action = resolve_dynamic_island_action(snapshot, panel_expanded, settings_active, gesture)?;
-    resolve_dynamic_island_effect(snapshot, action)
-}
-
-pub fn resolve_dynamic_island_target_effect(
-    snapshot: &RuntimeSnapshot,
-    panel_expanded: bool,
-    settings_active: bool,
-    target: &DynamicIslandTarget,
-    gesture: DynamicIslandGesture,
-) -> Option<DynamicIslandRuntimeEffect> {
-    let action = resolve_dynamic_island_target_action(
-        snapshot,
-        panel_expanded,
-        settings_active,
-        target,
-        gesture,
-    )?;
-    resolve_dynamic_island_effect(snapshot, action)
-}
-
 pub fn dynamic_island_target_for_hit_target(
     _target: &PanelHitTarget,
 ) -> Option<DynamicIslandTarget> {
     None
-}
-
-pub fn resolve_dynamic_island_platform_event(
-    snapshot: &RuntimeSnapshot,
-    panel_expanded: bool,
-    settings_active: bool,
-    gesture: DynamicIslandGesture,
-) -> Option<NativePanelPlatformEvent> {
-    match resolve_dynamic_island_gesture_effect(snapshot, panel_expanded, settings_active, gesture)?
-    {
-        DynamicIslandRuntimeEffect::PlatformEvent(event) => Some(event),
-        DynamicIslandRuntimeEffect::Transition(_) => None,
-    }
-}
-
-pub fn resolve_dynamic_island_transition_request(
-    snapshot: &RuntimeSnapshot,
-    panel_expanded: bool,
-    settings_active: bool,
-    gesture: DynamicIslandGesture,
-) -> Option<NativePanelTransitionRequest> {
-    match resolve_dynamic_island_gesture_effect(snapshot, panel_expanded, settings_active, gesture)?
-    {
-        DynamicIslandRuntimeEffect::PlatformEvent(_) => None,
-        DynamicIslandRuntimeEffect::Transition(request) => Some(request),
-    }
 }
 
 #[cfg(test)]
@@ -229,7 +223,13 @@ mod tests {
 
     #[test]
     fn page_model_maps_runtime_snapshot_to_content() {
-        let model = build_dynamic_island_page_model(&empty_snapshot(), true, true);
+        let model = build_dynamic_island_page_model(
+            &empty_snapshot(),
+            DynamicIslandViewState {
+                panel_expanded: true,
+                settings_active: true,
+            },
+        );
 
         assert_eq!(model.content().mode, DisplayMode::Expanded);
         assert!(model.content().settings_active);
@@ -240,8 +240,11 @@ mod tests {
     #[test]
     fn page_render_matches_current_visual_behavior() {
         let snapshot = empty_snapshot();
-        let widget = dynamic_island_page(&build_dynamic_island_page_model(&snapshot, false, false))
-            .to_widget();
+        let widget = dynamic_island_page(&build_dynamic_island_page_model(
+            &snapshot,
+            DynamicIslandViewState::default(),
+        ))
+        .to_widget();
 
         assert_eq!(widget.mode, DisplayMode::Compact);
         assert_eq!(widget.compact_bar.headline, "Reef");
@@ -257,8 +260,10 @@ mod tests {
     fn page_interaction_is_driven_by_same_tree() {
         let island = dynamic_island_page(&build_dynamic_island_page_model(
             &empty_snapshot(),
-            true,
-            false,
+            DynamicIslandViewState {
+                panel_expanded: true,
+                settings_active: false,
+            },
         ));
 
         assert_eq!(island.bindings().len(), 1);
@@ -286,5 +291,33 @@ mod tests {
         let key = dynamic_island_target_for_hit_target(&PanelHitTarget::focus_session("session-1"));
 
         assert_eq!(key, None);
+    }
+
+    #[test]
+    fn snapshot_source_contract_stays_stable() {
+        let snapshot = empty_snapshot();
+        let source = RuntimeSnapshotDynamicIslandSource::new(&snapshot);
+        let state = DynamicIslandViewState {
+            panel_expanded: false,
+            settings_active: false,
+        };
+
+        let island = source.build(state);
+        let effect = resolve_dynamic_island_source_gesture_effect(
+            &source,
+            state,
+            DynamicIslandGesture::Swipe,
+        );
+
+        assert_eq!(
+            island.action_for_gesture(DynamicIslandGesture::Swipe),
+            Some(&DynamicIslandRuntimeAction::Dismiss)
+        );
+        assert_eq!(
+            effect,
+            Some(DynamicIslandRuntimeEffect::Transition(
+                NativePanelTransitionRequest::Close
+            ))
+        );
     }
 }

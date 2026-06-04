@@ -44,6 +44,3 @@ windows-sys = { workspace = true, features = [
 [dev-dependencies]
 insta = { version = "1.40", features = ["yaml"] }
 
-[lib]
-name = "dynamic_island"
-crate-type = ["lib"]

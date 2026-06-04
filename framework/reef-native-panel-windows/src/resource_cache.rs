@@ -35,4 +35,3 @@ impl WindowsDirect2DResourceCacheState {
         self.rebuild_count
     }
 }
-
