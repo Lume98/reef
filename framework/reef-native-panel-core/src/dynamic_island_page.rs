@@ -1,7 +1,4 @@
 use echoisland_runtime::RuntimeSnapshot;
-use reef_ui::native_panel_ui::{
-    descriptor::NativePanelPlatformEvent, render::NativePanelTransitionRequest,
-};
 use reef_widgets::island_widget::{
     build_cards_from_input, build_compact_bar_from_input, build_mascot_from_input,
     IslandPendingApprovalInput, IslandPendingQuestionInput, IslandSessionInput,
@@ -12,6 +9,9 @@ use reef_widgets::prelude::{
 };
 
 use crate::native_panel_core::PanelHitTarget;
+use crate::panel::ui::{
+    descriptor::NativePanelPlatformEvent, render::NativePanelTransitionRequest,
+};
 
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub struct DynamicIslandViewState {

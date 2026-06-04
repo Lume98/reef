@@ -6,11 +6,3 @@ edition = "2021"
 [[bin]]
 name = "hello-reef"
 path = "src/main.rs"
-
-[dependencies]
-reef-core = { path = "../../framework/reef-core" }
-reef-render = { path = "../../framework/reef-render" }
-reef-layout = { path = "../../framework/reef-layout" }
-reef-app = { path = "../../framework/reef-app" }
-reef-widgets = { path = "../../framework/reef-widgets" }
-reef-backend-d2d = { path = "../../framework/reef-backend-d2d" }

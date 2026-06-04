@@ -873,27 +873,12 @@ checksum = "d0881ea181b1df73ff77ffaaf9c7544ecc11e82fba9b5f27b262a3c73a332555"
 name = "dynamic_island"
 version = "0.1.0"
 dependencies = [
- "anyhow",
- "chrono",
- "dirs 5.0.1",
  "echoisland-runtime",
- "insta",
- "log",
- "once_cell",
  "reef-core",
  "reef-native-panel-core",
  "reef-native-panel-windows",
- "reef-render",
- "reef-ui",
  "reef-view",
  "reef-widgets",
- "serde",
- "serde_json",
- "thiserror 2.0.18",
- "tokio",
- "tracing",
- "windows 0.58.0",
- "windows-sys 0.59.0",
 ]
 
 [[package]]
@@ -1513,14 +1498,6 @@ checksum = "2304e00983f87ffb38b55b444b5e3b60a884b5d30c0fca7d82fe33449bbe55ea"
 [[package]]
 name = "hello-reef"
 version = "0.1.0"
-dependencies = [
- "reef-app",
- "reef-backend-d2d",
- "reef-core",
- "reef-layout",
- "reef-render",
- "reef-widgets",
-]
 
 [[package]]
 name = "hermit-abi"

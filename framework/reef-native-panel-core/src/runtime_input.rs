@@ -1,17 +1,17 @@
-use reef_ui::native_panel_ui::descriptor::{
-    NativePanelRuntimeInputContext, NativePanelRuntimeInputDescriptor,
+use crate::native_panel_core::PanelSettingsState;
+use crate::panel::{
+    scene::PanelInteractionProfile,
+    ui::descriptor::{NativePanelRuntimeInputContext, NativePanelRuntimeInputDescriptor},
 };
 
-use crate::{native_panel_core::PanelSettingsState, native_panel_scene::PanelInteractionProfile};
-
 pub fn panel_scene_build_input_from_parts(
-    display_options: Vec<reef_ui::native_panel_scene::PanelDisplayOptionState>,
+    display_options: Vec<crate::panel::scene::PanelDisplayOptionState>,
     settings: PanelSettingsState,
     app_version: String,
     update_status: crate::updater_service::AppUpdateStatus,
     interaction_profile: PanelInteractionProfile,
-) -> reef_ui::native_panel_scene::PanelSceneBuildInput {
-    reef_ui::native_panel_scene::PanelSceneBuildInput {
+) -> crate::panel::scene::PanelSceneBuildInput {
+    crate::panel::scene::PanelSceneBuildInput {
         display_options: sanitize_panel_display_options(display_options),
         settings,
         app_version,
@@ -21,7 +21,7 @@ pub fn panel_scene_build_input_from_parts(
 }
 
 pub fn native_panel_runtime_input_descriptor_from_parts(
-    display_options: Vec<reef_ui::native_panel_scene::PanelDisplayOptionState>,
+    display_options: Vec<crate::panel::scene::PanelDisplayOptionState>,
     settings: PanelSettingsState,
     screen_frame: Option<crate::native_panel_core::PanelRect>,
     app_version: String,
@@ -58,10 +58,10 @@ pub fn native_panel_runtime_input_descriptor_from_context(
 }
 
 fn sanitize_panel_display_options(
-    display_options: Vec<reef_ui::native_panel_scene::PanelDisplayOptionState>,
-) -> Vec<reef_ui::native_panel_scene::PanelDisplayOptionState> {
+    display_options: Vec<crate::panel::scene::PanelDisplayOptionState>,
+) -> Vec<crate::panel::scene::PanelDisplayOptionState> {
     if display_options.is_empty() {
-        vec![reef_ui::native_panel_scene::fallback_panel_display_option()]
+        vec![crate::panel::scene::fallback_panel_display_option()]
     } else {
         display_options
     }
@@ -75,11 +75,10 @@ mod tests {
     };
     use crate::{
         native_panel_core::{PanelIslandWidthPreset, PanelLanguage, PanelRect, PanelSettingsState},
-        native_panel_scene::PanelInteractionProfile,
+        panel::scene::{panel_display_option_state, PanelInteractionProfile},
+        panel::ui::descriptor::NativePanelRuntimeInputContext,
         updater_service::AppUpdateStatus,
     };
-    use reef_ui::native_panel_scene::panel_display_option_state;
-    use reef_ui::native_panel_ui::descriptor::NativePanelRuntimeInputContext;
 
     #[test]
     fn panel_scene_build_input_preserves_display_options_and_settings() {
@@ -124,7 +123,7 @@ mod tests {
         assert_eq!(input.display_options.len(), 1);
         assert_eq!(
             input.display_options[0],
-            reef_ui::native_panel_scene::fallback_panel_display_option()
+            crate::panel::scene::fallback_panel_display_option()
         );
     }
 

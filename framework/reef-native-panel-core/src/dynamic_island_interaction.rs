@@ -1,8 +1,6 @@
-use reef_ui::native_panel_core::PanelPoint;
-use reef_ui::native_panel_ui::descriptor::{
-    native_panel_pointer_state_at_point, NativePanelPointerRegion,
-};
-use reef_widgets::prelude::{DynamicIsland, DynamicIslandGesture};
+use crate::panel::core::PanelPoint;
+use crate::panel::ui::descriptor::{native_panel_pointer_state_at_point, NativePanelPointerRegion};
+use reef_widgets::prelude::DynamicIslandGesture;
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct DynamicIslandInteractionContext<'a, Snapshot> {
@@ -78,8 +76,9 @@ pub fn is_dynamic_island_horizontal_swipe(
 mod tests {
     use super::*;
     use crate::dynamic_island_page::{DynamicIslandSource, DynamicIslandViewState};
-    use reef_ui::native_panel_core::{PanelHitTarget, PanelRect};
-    use reef_ui::native_panel_ui::descriptor::NativePanelPointerRegionKind;
+    use crate::panel::core::{PanelHitTarget, PanelRect};
+    use crate::panel::ui::descriptor::NativePanelPointerRegionKind;
+    use reef_widgets::prelude::DynamicIsland;
     #[derive(Clone, Copy)]
     struct TestSource;
 

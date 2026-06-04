@@ -16,6 +16,12 @@ pub mod native_panel_ui {
     pub use reef_ui::panel::ui::*;
 }
 
+pub mod panel {
+    pub use crate::native_panel_core as core;
+    pub use crate::native_panel_scene as scene;
+    pub use crate::native_panel_ui as ui;
+}
+
 pub mod dynamic_island_interaction;
 pub mod dynamic_island_page;
 pub mod dynamic_island_source;
