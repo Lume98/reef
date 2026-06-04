@@ -2,7 +2,7 @@ use reef_core::geometry::{Rect, Size};
 use reef_layout::Constraints;
 use reef_view::widget_host::{PaintContext, Widget};
 
-use crate::{
+use crate::prelude::{
     Card, CardStyle, ChromeVisibility, CompactBar, CompactShoulder, CompletionGlow, DisplayMode,
     ExpandedShell, IslandRenderOverrides, IslandRevealSpec, IslandWidget, IslandWidgetLayout,
     IslandWidgetSpec, MascotWidget, ProgressBar,
@@ -383,7 +383,7 @@ mod tests {
 #[macro_export]
 macro_rules! dynamic_island {
     ($($child:expr),* $(,)?) => {{
-        let island = $crate::DynamicIsland::new()
+        let island = $crate::prelude::DynamicIsland::new()
             $(.child($child))*;
         island
     }};

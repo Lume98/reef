@@ -8,5 +8,3 @@ pub mod mascot;
 pub mod prelude;
 pub mod progress_bar;
 pub mod theme;
-
-pub use prelude::*;

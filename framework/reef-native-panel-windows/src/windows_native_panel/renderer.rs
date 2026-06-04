@@ -32,7 +32,7 @@ use crate::{
 };
 use reef_render::primitive::VisualPlan;
 use reef_view::create_root;
-use reef_widgets::{ChromeVisibility, DynamicIsland, IslandRenderOverrides};
+use reef_widgets::prelude::{ChromeVisibility, DynamicIsland, IslandRenderOverrides};
 
 use crate::page::{build_dynamic_island_page_model, dynamic_island_page};
 

@@ -2,6 +2,7 @@ use crate::{
     native_panel_core::{PanelPoint, PanelRect},
     native_panel_scene::SceneMascotPose,
 };
+use reef_theme::Rgb;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct NativePanelVisualColor {
@@ -13,6 +14,12 @@ pub struct NativePanelVisualColor {
 impl NativePanelVisualColor {
     pub const fn rgb(r: u8, g: u8, b: u8) -> Self {
         Self { r, g, b }
+    }
+}
+
+impl From<Rgb> for NativePanelVisualColor {
+    fn from(value: Rgb) -> Self {
+        Self::rgb(value.r, value.g, value.b)
     }
 }
 

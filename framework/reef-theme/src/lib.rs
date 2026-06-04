@@ -137,6 +137,19 @@ pub mod compact_bar {
     pub const COUNTS_RIGHT_INSET: f64 = 16.0;
 }
 
+pub mod panel {
+    use super::Rgb;
+
+    pub const SHELL_FILL: Rgb = Rgb::new(12, 12, 15);
+    pub const SHELL_BORDER: Rgb = Rgb::new(44, 44, 50);
+    pub const SHELL_SEPARATOR: Rgb = Rgb::new(62, 62, 70);
+    pub const TEXT_PRIMARY: Rgb = Rgb::new(245, 247, 252);
+    pub const TEXT_SECONDARY: Rgb = Rgb::new(230, 235, 245);
+    pub const ACTION_SETTINGS_DEBUG: Rgb = Rgb::new(102, 222, 145);
+    pub const ACTION_SETTINGS: Rgb = Rgb::new(245, 247, 252);
+    pub const ACTION_QUIT: Rgb = Rgb::new(255, 82, 82);
+}
+
 pub mod shell {
     use super::Rgb;
 

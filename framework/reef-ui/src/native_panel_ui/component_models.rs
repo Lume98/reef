@@ -7,6 +7,7 @@ use super::visual_plan::{
 };
 use super::visual_primitives::NativePanelVisualColor;
 use crate::native_panel_scene::SceneText;
+use reef_theme::panel as theme;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct NativePanelPanelColors {
@@ -20,11 +21,11 @@ pub struct NativePanelPanelColors {
 impl Default for NativePanelPanelColors {
     fn default() -> Self {
         Self {
-            shell_fill: NativePanelVisualColor::rgb(12, 12, 15),
-            shell_border: NativePanelVisualColor::rgb(44, 44, 50),
-            separator: NativePanelVisualColor::rgb(62, 62, 70),
-            text_primary: NativePanelVisualColor::rgb(245, 247, 252),
-            text_secondary: NativePanelVisualColor::rgb(230, 235, 245),
+            shell_fill: theme::SHELL_FILL.into(),
+            shell_border: theme::SHELL_BORDER.into(),
+            separator: theme::SHELL_SEPARATOR.into(),
+            text_primary: theme::TEXT_PRIMARY.into(),
+            text_secondary: theme::TEXT_SECONDARY.into(),
         }
     }
 }

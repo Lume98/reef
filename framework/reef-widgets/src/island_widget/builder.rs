@@ -3,7 +3,7 @@ use super::{
     cards_builder::build_cards_from_input, compact_bar_builder::build_compact_bar_from_input,
     mascot_builder::build_mascot_from_input, IslandWidgetContentInput,
 };
-use crate::IslandWidget;
+use crate::prelude::IslandWidget;
 
 pub(crate) fn build_island_widget_spec(input: &IslandWidgetContentInput) -> IslandWidgetSpec {
     let compact_bar = build_compact_bar_from_input(input);
@@ -32,7 +32,7 @@ pub fn build_island_widget(input: &IslandWidgetContentInput) -> IslandWidget {
 mod tests {
     use super::*;
     use crate::island_widget::{DisplayMode, IslandSessionInput};
-    use crate::ChromeVisibility;
+    use crate::prelude::ChromeVisibility;
 
     fn empty_input() -> IslandWidgetContentInput {
         IslandWidgetContentInput::default()

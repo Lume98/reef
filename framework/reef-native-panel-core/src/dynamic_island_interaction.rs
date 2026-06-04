@@ -2,7 +2,7 @@ use reef_ui::native_panel_core::PanelPoint;
 use reef_ui::native_panel_ui::descriptor::{
     native_panel_pointer_state_at_point, NativePanelPointerRegion,
 };
-use reef_widgets::DynamicIslandGesture;
+use reef_widgets::prelude::{DynamicIsland, DynamicIslandGesture};
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct DynamicIslandInteractionContext<'a, Snapshot> {
@@ -80,8 +80,6 @@ mod tests {
     use crate::dynamic_island_page::{DynamicIslandSource, DynamicIslandViewState};
     use reef_ui::native_panel_core::{PanelHitTarget, PanelRect};
     use reef_ui::native_panel_ui::descriptor::NativePanelPointerRegionKind;
-    use reef_widgets::DynamicIsland;
-
     #[derive(Clone, Copy)]
     struct TestSource;
 

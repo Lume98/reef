@@ -9,6 +9,7 @@ use super::{
     descriptors::NativePanelEdgeAction,
     visual_primitives::{NativePanelVisualColor, NativePanelVisualTextWeight},
 };
+use reef_theme::panel as theme;
 
 const SETTINGS_ACTION_ICON_TEXT: &str = "\u{E713}";
 const QUIT_ACTION_ICON_TEXT: &str = "\u{E7E8}";
@@ -68,7 +69,7 @@ fn action_button_visual_spec(
         NativePanelEdgeAction::Quit => (
             QUIT_ACTION_ICON_TEXT,
             NativePanelVisualTextWeight::Bold,
-            NativePanelVisualColor::rgb(255, 82, 82),
+            theme::ACTION_QUIT.into(),
         ),
     };
     ActionButtonVisualSpec {
@@ -83,9 +84,9 @@ fn action_button_visual_spec(
 
 fn settings_action_color(debug_mode_enabled: bool) -> NativePanelVisualColor {
     if debug_mode_enabled {
-        NativePanelVisualColor::rgb(102, 222, 145)
+        theme::ACTION_SETTINGS_DEBUG.into()
     } else {
-        NativePanelVisualColor::rgb(245, 247, 252)
+        theme::ACTION_SETTINGS.into()
     }
 }
 

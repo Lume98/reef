@@ -1,4 +1,4 @@
-use crate::{BodyLine, Card, CardStyle};
+use crate::prelude::{BodyLine, Card, CardStyle};
 
 pub(super) fn build_empty_sessions_card() -> Card {
     Card::new(CardStyle::Empty)

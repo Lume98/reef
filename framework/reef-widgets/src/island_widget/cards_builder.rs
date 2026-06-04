@@ -1,4 +1,4 @@
-use crate::Card;
+use crate::prelude::Card;
 
 use super::{
     approval_card::build_pending_approval_card, empty_card::build_empty_sessions_card,

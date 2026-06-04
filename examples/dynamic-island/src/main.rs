@@ -1,7 +1,7 @@
 use reef_core::geometry::Size;
 use reef_native_panel_core::{DynamicIslandSource, DynamicIslandViewState};
 use reef_view::create_root;
-use reef_widgets::{
+use reef_widgets::prelude::{
     Card, CardStyle, CompactBar, DisplayMode, DynamicIsland, MascotPose, MascotWidget,
 };
 
@@ -103,7 +103,7 @@ fn main() -> Result<(), String> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use reef_widgets::DynamicIslandGesture;
+    use reef_widgets::prelude::DynamicIslandGesture;
 
     #[test]
     fn demo_source_builds_visible_island() {

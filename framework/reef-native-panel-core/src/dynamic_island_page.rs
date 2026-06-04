@@ -3,11 +3,13 @@ use reef_ui::native_panel_ui::{
     descriptor::NativePanelPlatformEvent, render::NativePanelTransitionRequest,
 };
 use reef_widgets::island_widget::{
-    build_cards_from_input, build_compact_bar_from_input, build_mascot_from_input, DisplayMode,
+    build_cards_from_input, build_compact_bar_from_input, build_mascot_from_input,
     IslandPendingApprovalInput, IslandPendingQuestionInput, IslandSessionInput,
     IslandWidgetContentInput,
 };
-use reef_widgets::{DynamicIsland, DynamicIslandGesture, DynamicIslandTarget};
+use reef_widgets::prelude::{
+    DisplayMode, DynamicIsland, DynamicIslandGesture, DynamicIslandTarget,
+};
 
 use crate::native_panel_core::PanelHitTarget;
 

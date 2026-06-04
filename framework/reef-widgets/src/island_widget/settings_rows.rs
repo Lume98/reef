@@ -1,4 +1,4 @@
-use crate::SettingsRow;
+use crate::prelude::SettingsRow;
 
 pub(super) fn default_settings_rows() -> Vec<SettingsRow> {
     vec![

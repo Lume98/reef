@@ -2,11 +2,9 @@ use reef_core::geometry::{Rect, Size};
 use reef_layout::Constraints;
 use reef_view::widget_host::{PaintContext, Widget};
 
-use crate::{
-    card::Card,
-    compact_bar::{ChromeVisibility, CompactBar, CompactShoulder, CompletionGlow},
-    island::ExpandedShell,
-    mascot::MascotWidget,
+use crate::island::ExpandedShell;
+use crate::prelude::{
+    Card, ChromeVisibility, CompactBar, CompactShoulder, CompletionGlow, MascotWidget,
 };
 
 use super::render::paint_island_widget;

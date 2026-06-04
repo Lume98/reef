@@ -1,4 +1,4 @@
-use crate::{ChromeVisibility, CompactBar};
+use crate::prelude::{ChromeVisibility, CompactBar};
 
 use super::{DisplayMode, IslandWidgetContentInput};
 

@@ -1,4 +1,4 @@
-use crate::{Badge, BodyLine, Card, CardStyle};
+use crate::prelude::{Badge, BodyLine, Card, CardStyle};
 
 use super::{short_id::short_id, IslandPendingApprovalInput};
 

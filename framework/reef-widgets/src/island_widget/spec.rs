@@ -1,8 +1,6 @@
-use crate::{
-    card::Card,
-    compact_bar::{ChromeVisibility, CompactBar, CompactShoulder, CompletionGlow},
-    island::ExpandedShell,
-    mascot::MascotWidget,
+use crate::island::ExpandedShell;
+use crate::prelude::{
+    Card, ChromeVisibility, CompactBar, CompactShoulder, CompletionGlow, MascotWidget,
 };
 
 use super::DisplayMode;
