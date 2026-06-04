@@ -3,7 +3,8 @@ use serde::Serialize;
 use echoisland_runtime::{PendingPermissionView, PendingQuestionView, SessionSnapshotView};
 
 use crate::native_panel_core::{
-    ExpandedSurface, PanelHitAction, PanelHitTarget, PanelMascotBaseState, StatusQueueItem,
+    ExpandedSurface, PanelHitAction, PanelHitTarget, PanelMascotBaseState, PanelSemanticTarget,
+    StatusQueueItem,
 };
 use crate::native_panel_scene::{
     SessionSurfaceScene, SettingsSurfaceScene, StatusCardScene, SurfaceScene,
@@ -259,6 +260,7 @@ pub fn scene_mascot_pose_from_panel_state(state: PanelMascotBaseState) -> SceneM
 pub struct SceneHitTarget {
     pub action: PanelHitAction,
     pub value: String,
+    pub semantic_target: Option<PanelSemanticTarget>,
 }
 
 impl From<SceneHitTarget> for PanelHitTarget {
@@ -266,6 +268,7 @@ impl From<SceneHitTarget> for PanelHitTarget {
         Self {
             action: value.action,
             value: value.value,
+            semantic_target: value.semantic_target,
         }
     }
 }

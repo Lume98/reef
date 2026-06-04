@@ -819,10 +819,7 @@ fn windows_runtime_host_polling_interaction_resolves_hit_target_click() {
         },
         ..Default::default()
     };
-    let target = PanelHitTarget {
-        action: PanelHitAction::FocusSession,
-        value: "session-1".to_string(),
-    };
+    let target = PanelHitTarget::focus_session("session-1");
     runtime.host.presenter.present(shell_draw_frame(
         vec![NativePanelPointerRegion {
             frame: PanelRect {

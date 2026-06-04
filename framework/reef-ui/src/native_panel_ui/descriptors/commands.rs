@@ -263,9 +263,9 @@ pub fn native_panel_platform_event_for_hit_target(
     target: &PanelHitTarget,
 ) -> NativePanelPlatformEvent {
     match target.action {
-        PanelHitAction::FocusSession => {
-            NativePanelPlatformEvent::FocusSession(target.value.clone())
-        }
+        PanelHitAction::FocusSession => NativePanelPlatformEvent::FocusSession(
+            target.session_id().unwrap_or(target.value.as_str()).to_string(),
+        ),
         PanelHitAction::CycleDisplay => NativePanelPlatformEvent::CycleDisplay,
         PanelHitAction::CycleIslandWidth => NativePanelPlatformEvent::CycleIslandWidth,
         PanelHitAction::CycleLanguage => NativePanelPlatformEvent::CycleLanguage,

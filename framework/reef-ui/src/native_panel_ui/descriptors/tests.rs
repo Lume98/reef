@@ -93,10 +93,7 @@ fn pointer_test_scene() -> crate::native_panel_scene::PanelScene {
 fn interaction_command_maps_to_platform_event() {
     assert_eq!(
         native_panel_platform_event_for_interaction_command(&PanelInteractionCommand::HitTarget(
-            PanelHitTarget {
-                action: PanelHitAction::FocusSession,
-                value: "session-1".to_string(),
-            }
+            PanelHitTarget::focus_session("session-1")
         )),
         Some(NativePanelPlatformEvent::FocusSession(
             "session-1".to_string()
@@ -206,10 +203,9 @@ fn point_hit_testing_prefers_topmost_pointer_region() {
                 width: 40.0,
                 height: 40.0,
             },
-            kind: NativePanelPointerRegionKind::HitTarget(PanelHitTarget {
-                action: PanelHitAction::FocusSession,
-                value: "session-1".to_string(),
-            }),
+            kind: NativePanelPointerRegionKind::HitTarget(PanelHitTarget::focus_session(
+                "session-1",
+            )),
         },
     ];
     let point = PanelPoint { x: 20.0, y: 20.0 };
@@ -249,10 +245,7 @@ fn queue_pointer_region_platform_event_pushes_focus_event() {
             width: 40.0,
             height: 40.0,
         },
-        kind: NativePanelPointerRegionKind::HitTarget(PanelHitTarget {
-            action: PanelHitAction::FocusSession,
-            value: "session-1".to_string(),
-        }),
+        kind: NativePanelPointerRegionKind::HitTarget(PanelHitTarget::focus_session("session-1")),
     };
 
     let event = queue_native_panel_platform_event_for_pointer_region(&mut events, &region);
@@ -280,10 +273,7 @@ fn queue_platform_event_at_point_pushes_hit_target_event() {
             width: 40.0,
             height: 40.0,
         },
-        kind: NativePanelPointerRegionKind::HitTarget(PanelHitTarget {
-            action: PanelHitAction::FocusSession,
-            value: "session-1".to_string(),
-        }),
+        kind: NativePanelPointerRegionKind::HitTarget(PanelHitTarget::focus_session("session-1")),
     }];
     let mut events = Vec::new();
 
@@ -316,10 +306,7 @@ fn pointer_input_resolves_hover_and_click_semantics() {
             width: 40.0,
             height: 40.0,
         },
-        kind: NativePanelPointerRegionKind::HitTarget(PanelHitTarget {
-            action: PanelHitAction::FocusSession,
-            value: "session-1".to_string(),
-        }),
+        kind: NativePanelPointerRegionKind::HitTarget(PanelHitTarget::focus_session("session-1")),
     }];
 
     assert_eq!(
@@ -358,10 +345,7 @@ fn pointer_input_resolves_hover_and_click_semantics() {
     );
     assert_eq!(
         native_panel_hit_target_at_point(&regions, PanelPoint { x: 20.0, y: 20.0 }),
-        Some(PanelHitTarget {
-            action: crate::native_panel_core::PanelHitAction::FocusSession,
-            value: "session-1".to_string(),
-        })
+        Some(PanelHitTarget::focus_session("session-1"))
     );
     assert_eq!(
         native_panel_pointer_input_outcome(
@@ -394,10 +378,7 @@ fn pointer_state_at_point_collects_inside_event_and_hit_target() {
             width: 40.0,
             height: 40.0,
         },
-        kind: NativePanelPointerRegionKind::HitTarget(PanelHitTarget {
-            action: PanelHitAction::FocusSession,
-            value: "session-1".to_string(),
-        }),
+        kind: NativePanelPointerRegionKind::HitTarget(PanelHitTarget::focus_session("session-1")),
     }];
 
     let state = native_panel_pointer_state_at_point(&regions, PanelPoint { x: 20.0, y: 20.0 });
@@ -411,10 +392,7 @@ fn pointer_state_at_point_collects_inside_event_and_hit_target() {
     );
     assert_eq!(
         state.hit_target,
-        Some(PanelHitTarget {
-            action: PanelHitAction::FocusSession,
-            value: "session-1".to_string(),
-        })
+        Some(PanelHitTarget::focus_session("session-1"))
     );
 }
 

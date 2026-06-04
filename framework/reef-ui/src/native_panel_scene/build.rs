@@ -1,8 +1,8 @@
 use crate::native_panel_core::{
     displayed_default_pending_permissions, displayed_default_pending_questions,
     displayed_prompt_assist_sessions, displayed_sessions, format_status, normalize_status,
-    session_title, sync_panel_snapshot_state, ExpandedSurface, PanelHitAction, PanelSettingsState,
-    PanelState, StatusQueuePayload,
+    session_title, sync_panel_snapshot_state, ExpandedSurface, PanelHitAction,
+    PanelSemanticTarget, PanelSettingsState, PanelState, StatusQueuePayload,
 };
 use chrono::{DateTime, Utc};
 use echoisland_runtime::RuntimeSnapshot;
@@ -79,6 +79,7 @@ pub fn build_panel_scene(
                 hit_targets.push(SceneHitTarget {
                     action: row.action,
                     value: String::new(),
+                    semantic_target: None,
                 });
             }
             cards.push(settings);
@@ -91,6 +92,9 @@ pub fn build_panel_scene(
                         hit_targets.push(SceneHitTarget {
                             action: PanelHitAction::FocusSession,
                             value: item.session_id.clone(),
+                            semantic_target: Some(PanelSemanticTarget::Session(
+                                item.session_id.clone(),
+                            )),
                         });
                     }
                     StatusQueuePayload::Question(_) => {
@@ -98,6 +102,9 @@ pub fn build_panel_scene(
                         hit_targets.push(SceneHitTarget {
                             action: PanelHitAction::FocusSession,
                             value: item.session_id.clone(),
+                            semantic_target: Some(PanelSemanticTarget::Session(
+                                item.session_id.clone(),
+                            )),
                         });
                     }
                     StatusQueuePayload::Completion(_) => {
@@ -105,6 +112,9 @@ pub fn build_panel_scene(
                         hit_targets.push(SceneHitTarget {
                             action: PanelHitAction::FocusSession,
                             value: item.session_id.clone(),
+                            semantic_target: Some(PanelSemanticTarget::Session(
+                                item.session_id.clone(),
+                            )),
                         });
                     }
                 }
@@ -124,6 +134,9 @@ pub fn build_panel_scene(
                 hit_targets.push(SceneHitTarget {
                     action: PanelHitAction::FocusSession,
                     value: pending.session_id.clone(),
+                    semantic_target: Some(PanelSemanticTarget::Session(
+                        pending.session_id.clone(),
+                    )),
                 });
             }
 
@@ -135,6 +148,9 @@ pub fn build_panel_scene(
                 hit_targets.push(SceneHitTarget {
                     action: PanelHitAction::FocusSession,
                     value: pending.session_id.clone(),
+                    semantic_target: Some(PanelSemanticTarget::Session(
+                        pending.session_id.clone(),
+                    )),
                 });
             }
 
@@ -145,6 +161,9 @@ pub fn build_panel_scene(
                 hit_targets.push(SceneHitTarget {
                     action: PanelHitAction::FocusSession,
                     value: session.session_id.clone(),
+                    semantic_target: Some(PanelSemanticTarget::Session(
+                        session.session_id.clone(),
+                    )),
                 });
             }
 
@@ -164,6 +183,9 @@ pub fn build_panel_scene(
                 hit_targets.push(SceneHitTarget {
                     action: PanelHitAction::FocusSession,
                     value: session.session_id.clone(),
+                    semantic_target: Some(PanelSemanticTarget::Session(
+                        session.session_id.clone(),
+                    )),
                 });
             }
 

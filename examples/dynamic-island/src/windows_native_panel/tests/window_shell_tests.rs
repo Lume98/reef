@@ -57,10 +57,7 @@ fn windows_runtime_window_message_click_dispatches_hit_target_event() {
             width: 80.0,
             height: 40.0,
         },
-        kind: NativePanelPointerRegionKind::HitTarget(PanelHitTarget {
-            action: PanelHitAction::FocusSession,
-            value: "session-1".to_string(),
-        }),
+        kind: NativePanelPointerRegionKind::HitTarget(PanelHitTarget::focus_session("session-1")),
     }];
     let mut handler = RecordingEventHandler::default();
 
@@ -406,10 +403,7 @@ fn windows_runtime_window_message_helper_decodes_and_dispatches_click() {
             width: 80.0,
             height: 40.0,
         },
-        kind: NativePanelPointerRegionKind::HitTarget(PanelHitTarget {
-            action: PanelHitAction::FocusSession,
-            value: "session-1".to_string(),
-        }),
+        kind: NativePanelPointerRegionKind::HitTarget(PanelHitTarget::focus_session("session-1")),
     }];
     let mut handler = RecordingEventHandler::default();
 
@@ -618,10 +612,9 @@ fn windows_runtime_pump_window_messages_queues_click_event() {
                 width: 80.0,
                 height: 40.0,
             },
-            kind: NativePanelPointerRegionKind::HitTarget(PanelHitTarget {
-                action: PanelHitAction::FocusSession,
-                value: "session-1".to_string(),
-            }),
+            kind: NativePanelPointerRegionKind::HitTarget(PanelHitTarget::focus_session(
+                "session-1",
+            )),
         }],
     );
 
@@ -840,10 +833,9 @@ fn windows_runtime_pump_window_messages_debounces_focus_clicks() {
                 width: 80.0,
                 height: 40.0,
             },
-            kind: NativePanelPointerRegionKind::HitTarget(PanelHitTarget {
-                action: PanelHitAction::FocusSession,
-                value: "session-1".to_string(),
-            }),
+            kind: NativePanelPointerRegionKind::HitTarget(PanelHitTarget::focus_session(
+                "session-1",
+            )),
         }],
     );
 

@@ -487,10 +487,7 @@ mod tests {
             platform_event: Some(NativePanelPlatformEvent::FocusSession(
                 "session-1".to_string(),
             )),
-            hit_target: Some(PanelHitTarget {
-                action: PanelHitAction::FocusSession,
-                value: "session-1".to_string(),
-            }),
+            hit_target: Some(PanelHitTarget::focus_session("session-1")),
         };
         let mut state = TestClickState {
             expanded: true,
@@ -518,10 +515,7 @@ mod tests {
 
         assert_eq!(
             first,
-            PanelInteractionCommand::HitTarget(PanelHitTarget {
-                action: PanelHitAction::FocusSession,
-                value: "session-1".to_string(),
-            })
+            PanelInteractionCommand::HitTarget(PanelHitTarget::focus_session("session-1"))
         );
         assert_eq!(duplicate, PanelInteractionCommand::None);
     }
@@ -638,10 +632,7 @@ mod tests {
 
         let event = dispatch_native_panel_click_command_with_handler(
             &mut handler,
-            PanelInteractionCommand::HitTarget(PanelHitTarget {
-                action: PanelHitAction::FocusSession,
-                value: "session-1".to_string(),
-            }),
+            PanelInteractionCommand::HitTarget(PanelHitTarget::focus_session("session-1")),
         )
         .expect("dispatch click command");
 
@@ -674,10 +665,7 @@ mod tests {
                 platform_event: Some(NativePanelPlatformEvent::FocusSession(
                     "session-1".to_string(),
                 )),
-                hit_target: Some(PanelHitTarget {
-                    action: PanelHitAction::FocusSession,
-                    value: "session-1".to_string(),
-                }),
+                hit_target: Some(PanelHitTarget::focus_session("session-1")),
             },
             cards_visible: false,
             ..TestInteractionHost::default()
@@ -983,10 +971,9 @@ mod tests {
                     width: 80.0,
                     height: 24.0,
                 },
-                kind: NativePanelPointerRegionKind::HitTarget(PanelHitTarget {
-                    action: PanelHitAction::FocusSession,
-                    value: "session-1".to_string(),
-                }),
+                kind: NativePanelPointerRegionKind::HitTarget(PanelHitTarget::focus_session(
+                    "session-1",
+                )),
             }],
             cards_visible: true,
         };
@@ -998,10 +985,7 @@ mod tests {
                 platform_event: Some(NativePanelPlatformEvent::FocusSession(
                     "session-1".to_string()
                 )),
-                hit_target: Some(PanelHitTarget {
-                    action: PanelHitAction::FocusSession,
-                    value: "session-1".to_string(),
-                }),
+                hit_target: Some(PanelHitTarget::focus_session("session-1")),
             }
         );
         assert!(host.click_cards_visible());
@@ -1065,10 +1049,9 @@ mod tests {
                         width: 80.0,
                         height: 40.0,
                     },
-                    kind: NativePanelPointerRegionKind::HitTarget(PanelHitTarget {
-                        action: PanelHitAction::FocusSession,
-                        value: "session-1".to_string(),
-                    }),
+                    kind: NativePanelPointerRegionKind::HitTarget(
+                        PanelHitTarget::focus_session("session-1"),
+                    ),
                 },
                 NativePanelPointerRegion {
                     frame: PanelRect {
@@ -1212,10 +1195,9 @@ mod tests {
                         width: 120.0,
                         height: 40.0,
                     },
-                    kind: NativePanelPointerRegionKind::HitTarget(PanelHitTarget {
-                        action: PanelHitAction::FocusSession,
-                        value: "session-1".to_string(),
-                    }),
+                    kind: NativePanelPointerRegionKind::HitTarget(
+                        PanelHitTarget::focus_session("session-1"),
+                    ),
                 }],
                 hover_frames: NativePanelHoverFallbackFrames {
                     interactive_pill_frame: PanelRect {
@@ -1246,10 +1228,7 @@ mod tests {
         );
         assert_eq!(
             input.pointer_state.hit_target,
-            Some(PanelHitTarget {
-                action: PanelHitAction::FocusSession,
-                value: "session-1".to_string(),
-            })
+            Some(PanelHitTarget::focus_session("session-1"))
         );
         assert!(input.pointer_regions_available);
         assert_eq!(

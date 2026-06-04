@@ -171,10 +171,7 @@ fn click_action_prioritizes_settings_before_quit_and_cards() {
         settings_button_hit: true,
         quit_button_hit: true,
         cards_visible: true,
-        card_target: Some(PanelHitTarget {
-            action: PanelHitAction::FocusSession,
-            value: "session-1".to_string(),
-        }),
+        card_target: Some(PanelHitTarget::focus_session("session-1")),
         last_focus_click: None,
         now,
         focus_debounce_ms: 600,
@@ -197,10 +194,7 @@ fn click_action_allows_edge_actions_during_open_transition() {
         settings_button_hit: true,
         quit_button_hit: false,
         cards_visible: true,
-        card_target: Some(PanelHitTarget {
-            action: PanelHitAction::FocusSession,
-            value: "session-1".to_string(),
-        }),
+        card_target: Some(PanelHitTarget::focus_session("session-1")),
         last_focus_click: None,
         now,
         focus_debounce_ms: 600,
@@ -212,10 +206,7 @@ fn click_action_allows_edge_actions_during_open_transition() {
         settings_button_hit: false,
         quit_button_hit: false,
         cards_visible: true,
-        card_target: Some(PanelHitTarget {
-            action: PanelHitAction::FocusSession,
-            value: "session-1".to_string(),
-        }),
+        card_target: Some(PanelHitTarget::focus_session("session-1")),
         last_focus_click: None,
         now,
         focus_debounce_ms: 600,
@@ -233,10 +224,7 @@ fn click_action_allows_edge_actions_during_open_transition() {
 #[test]
 fn click_action_records_focus_session_and_suppresses_duplicates() {
     let now = Instant::now();
-    let target = PanelHitTarget {
-        action: PanelHitAction::FocusSession,
-        value: "session-1".to_string(),
-    };
+    let target = PanelHitTarget::focus_session("session-1");
     let first = resolve_panel_click_action(PanelClickInput {
         primary_click_started: true,
         expanded: true,

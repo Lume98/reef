@@ -2,7 +2,7 @@
 //!
 //! 这里不再构造专用的 `IslandWidgetContentInput`，而是直接组合已有组件，并绑定业务动作。
 
-use crate::native_panel_core::{PanelHitAction, PanelHitTarget};
+use crate::native_panel_core::{PanelHitAction, PanelHitTarget, PanelSemanticTarget};
 use crate::native_panel_renderer::facade::{
     command::NativePanelPlatformEvent, transition::NativePanelTransitionRequest,
 };
@@ -145,8 +145,11 @@ pub fn resolve_dynamic_island_target_effect(
 pub fn dynamic_island_target_for_hit_target(
     target: &PanelHitTarget,
 ) -> Option<DynamicIslandTarget> {
-    match target.action {
-        PanelHitAction::FocusSession if !target.value.is_empty() => {
+    match target.semantic_target.as_ref() {
+        Some(PanelSemanticTarget::Session(session_id)) => {
+            Some(DynamicIslandTarget::Session(session_id.clone()))
+        }
+        None if target.action == PanelHitAction::FocusSession && !target.value.is_empty() => {
             Some(DynamicIslandTarget::Session(target.value.clone()))
         }
         _ => None,
@@ -450,10 +453,7 @@ mod tests {
 
     #[test]
     fn bridge_maps_hit_target_to_dynamic_island_target() {
-        let key = dynamic_island_target_for_hit_target(&PanelHitTarget {
-            action: PanelHitAction::FocusSession,
-            value: "session-1".to_string(),
-        });
+        let key = dynamic_island_target_for_hit_target(&PanelHitTarget::focus_session("session-1"));
 
         assert_eq!(
             key,

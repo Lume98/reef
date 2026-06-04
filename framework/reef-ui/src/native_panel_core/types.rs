@@ -80,6 +80,11 @@ pub enum PanelHitAction {
     OpenReleasePage,
 }
 
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub enum PanelSemanticTarget {
+    Session(String),
+}
+
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Default)]
 pub enum ExpandedSurface {
     #[default]

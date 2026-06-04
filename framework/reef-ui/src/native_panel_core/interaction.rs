@@ -2,13 +2,43 @@ use std::time::Instant;
 
 use super::{
     mark_completion_reminders_viewed, CompletionReminderEvent, ExpandedSurface, HoverTransition,
-    PanelHitAction, PanelState,
+    PanelHitAction, PanelSemanticTarget, PanelState,
 };
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct PanelHitTarget {
     pub action: PanelHitAction,
     pub value: String,
+    pub semantic_target: Option<PanelSemanticTarget>,
+}
+
+impl PanelHitTarget {
+    pub fn focus_session(session_id: impl Into<String>) -> Self {
+        let session_id = session_id.into();
+        Self {
+            action: PanelHitAction::FocusSession,
+            value: session_id.clone(),
+            semantic_target: Some(PanelSemanticTarget::Session(session_id)),
+        }
+    }
+
+    pub fn action(action: PanelHitAction) -> Self {
+        Self {
+            action,
+            value: String::new(),
+            semantic_target: None,
+        }
+    }
+
+    pub fn session_id(&self) -> Option<&str> {
+        match self.semantic_target.as_ref() {
+            Some(PanelSemanticTarget::Session(session_id)) => Some(session_id.as_str()),
+            None if self.action == PanelHitAction::FocusSession && !self.value.is_empty() => {
+                Some(self.value.as_str())
+            }
+            None => None,
+        }
+    }
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -83,17 +113,20 @@ pub fn resolve_panel_click_action(input: PanelClickInput<'_>) -> PanelClickResol
         };
     }
 
-    if focus_click_suppressed(
-        &target.value,
-        input.last_focus_click,
-        input.now,
-        input.focus_debounce_ms,
-    ) {
+    let Some(session_id) = target.session_id() else {
+        return PanelClickResolution {
+            command: PanelInteractionCommand::HitTarget(target),
+            focus_click_to_record: None,
+        };
+    };
+
+    if focus_click_suppressed(session_id, input.last_focus_click, input.now, input.focus_debounce_ms)
+    {
         return PanelClickResolution::none();
     }
 
     PanelClickResolution {
-        focus_click_to_record: Some(target.value.clone()),
+        focus_click_to_record: Some(session_id.to_string()),
         command: PanelInteractionCommand::HitTarget(target),
     }
 }

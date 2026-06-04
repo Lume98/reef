@@ -580,10 +580,7 @@ fn windows_host_queues_platform_events_from_pointer_regions() {
     });
     host.queue_platform_event_for_pointer_region(&NativePanelPointerRegion {
         frame,
-        kind: NativePanelPointerRegionKind::HitTarget(PanelHitTarget {
-            action: PanelHitAction::FocusSession,
-            value: "session-1".to_string(),
-        }),
+        kind: NativePanelPointerRegionKind::HitTarget(PanelHitTarget::focus_session("session-1")),
     });
     host.queue_platform_event_for_pointer_region(&NativePanelPointerRegion {
         frame,
@@ -625,10 +622,9 @@ fn windows_host_queues_platform_event_by_point_from_cached_regions() {
                 width: 80.0,
                 height: 40.0,
             },
-            kind: NativePanelPointerRegionKind::HitTarget(PanelHitTarget {
-                action: PanelHitAction::FocusSession,
-                value: "session-1".to_string(),
-            }),
+            kind: NativePanelPointerRegionKind::HitTarget(PanelHitTarget::focus_session(
+                "session-1",
+            )),
         },
         NativePanelPointerRegion {
             frame: PanelRect {
@@ -1303,10 +1299,9 @@ fn windows_runtime_dispatches_click_command_at_point_through_handler() {
                 width: 80.0,
                 height: 40.0,
             },
-            kind: NativePanelPointerRegionKind::HitTarget(PanelHitTarget {
-                action: PanelHitAction::FocusSession,
-                value: "session-1".to_string(),
-            }),
+            kind: NativePanelPointerRegionKind::HitTarget(PanelHitTarget::focus_session(
+                "session-1",
+            )),
         },
     ];
     let mut handler = RecordingEventHandler::default();
@@ -1485,10 +1480,7 @@ fn windows_runtime_focus_click_dispatch_is_debounced() {
             width: 80.0,
             height: 40.0,
         },
-        kind: NativePanelPointerRegionKind::HitTarget(PanelHitTarget {
-            action: PanelHitAction::FocusSession,
-            value: "session-1".to_string(),
-        }),
+        kind: NativePanelPointerRegionKind::HitTarget(PanelHitTarget::focus_session("session-1")),
     }];
     let mut handler = RecordingEventHandler::default();
 
