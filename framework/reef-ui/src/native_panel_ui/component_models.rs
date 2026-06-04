@@ -149,8 +149,8 @@ pub fn build_native_panel_component_tree_from_presentation_and_cards(
             } else {
                 crate::native_panel_core::COMPACT_PILL_RADIUS
             },
-            fill: NativePanelVisualColor::rgb(12, 12, 15),
-            border: Some(NativePanelVisualColor::rgb(44, 44, 50)),
+            fill: theme::SHELL_FILL.into(),
+            border: Some(theme::SHELL_BORDER.into()),
             separator: (presentation.shell.separator_visibility > 0.01).then_some(PanelRect {
                 x: presentation.shell.frame.x + 20.0,
                 y: presentation.compact_bar.frame.y + presentation.compact_bar.frame.height + 8.0,

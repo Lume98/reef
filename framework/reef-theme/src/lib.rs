@@ -123,6 +123,11 @@ pub mod compact_bar {
     pub const BORDER: Rgb = Rgb::new(44, 48, 58);
     pub const TEXT: Rgb = Rgb::new(200, 210, 225);
     pub const DIM_TEXT: Rgb = Rgb::new(100, 108, 125);
+    pub const HEADLINE: Rgb = Rgb::new(230, 235, 245);
+    pub const HEADLINE_EMPHASIZED: Rgb = Rgb::new(245, 247, 252);
+    pub const COUNT_ACTIVE: Rgb = Rgb::new(102, 222, 145);
+    pub const COUNT_INACTIVE: Rgb = Rgb::new(156, 166, 184);
+    pub const COUNT_TOTAL: Rgb = Rgb::new(245, 247, 252);
     pub const ACTION_DEBUG: Rgb = Rgb::new(102, 222, 145);
     pub const ACTION_QUIT: Rgb = Rgb::new(255, 82, 82);
 

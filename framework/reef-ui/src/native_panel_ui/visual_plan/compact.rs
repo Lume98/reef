@@ -15,9 +15,9 @@ use super::super::completion_glow_visual_spec::{
 };
 use super::super::descriptors::NativePanelEdgeAction;
 use super::super::visual_primitives::{
-    native_panel_visual_text_box_height, NativePanelVisualColor, NativePanelVisualPlan,
-    NativePanelVisualPrimitive, NativePanelVisualShoulderSide, NativePanelVisualTextAlignment,
-    NativePanelVisualTextRole, NativePanelVisualTextWeight,
+    native_panel_visual_text_box_height, NativePanelVisualPlan, NativePanelVisualPrimitive,
+    NativePanelVisualShoulderSide, NativePanelVisualTextAlignment, NativePanelVisualTextRole,
+    NativePanelVisualTextWeight,
 };
 
 use super::input::{NativePanelVisualDisplayMode, NativePanelVisualPlanInput};
@@ -26,6 +26,7 @@ use super::utils::{
     compact_collapsed_alpha, compact_digit_y, compact_headline_y, fit_text_to_width, non_zero_rect,
     visual_panel_frame,
 };
+use reef_theme::{compact_bar as compact_theme, panel as theme};
 
 pub fn resolve_native_panel_compact_bar_visual_plan(
     input: &NativePanelVisualPlanInput,
@@ -129,7 +130,7 @@ pub(super) fn push_compact_island_background(
     primitives.push(NativePanelVisualPrimitive::RoundRect {
         frame: compact_frame,
         radius: COMPACT_PILL_RADIUS,
-        color: NativePanelVisualColor::rgb(12, 12, 15),
+        color: theme::SHELL_FILL.into(),
     });
 }
 
@@ -165,9 +166,9 @@ pub(super) fn push_compact_headline_primitive(
         max_width: headline_width,
         text: headline_text,
         color: if input.headline_emphasized {
-            NativePanelVisualColor::rgb(255, 255, 255)
+            compact_theme::HEADLINE_EMPHASIZED.into()
         } else {
-            NativePanelVisualColor::rgb(230, 235, 245)
+            compact_theme::HEADLINE.into()
         },
         size: 13,
         weight: NativePanelVisualTextWeight::Semibold,
@@ -197,9 +198,9 @@ pub(super) fn push_compact_metrics_primitives(
     let active_count_y = compact_frame.y + compact_digit_y(compact_frame.height);
     let active_count_x = compact_frame.x + compact_content.active_x + ACTIVE_COUNT_TEXT_OFFSET_X;
     let active_count_color = if input.active_count.parse::<usize>().unwrap_or_default() > 0 {
-        NativePanelVisualColor::rgb(102, 222, 145)
+        compact_theme::COUNT_ACTIVE.into()
     } else {
-        NativePanelVisualColor::rgb(156, 166, 184)
+        compact_theme::COUNT_INACTIVE.into()
     };
     primitives.push(NativePanelVisualPrimitive::Text {
         role: NativePanelVisualTextRole::CompactActiveCount,
@@ -224,7 +225,7 @@ pub(super) fn push_compact_metrics_primitives(
             },
             max_width: ACTIVE_COUNT_TEXT_WIDTH,
             text: active_count_marquee.next.clone(),
-            color: NativePanelVisualColor::rgb(102, 222, 145),
+            color: compact_theme::COUNT_ACTIVE.into(),
             size: 15,
             weight: NativePanelVisualTextWeight::Semibold,
             alignment: NativePanelVisualTextAlignment::Right,
@@ -240,7 +241,7 @@ pub(super) fn push_compact_metrics_primitives(
             },
             max_width: 10.0,
             text: "/".to_string(),
-            color: NativePanelVisualColor::rgb(245, 247, 252),
+            color: compact_theme::COUNT_TOTAL.into(),
             size: 15,
             weight: NativePanelVisualTextWeight::Semibold,
             alignment: NativePanelVisualTextAlignment::Center,
@@ -254,7 +255,7 @@ pub(super) fn push_compact_metrics_primitives(
             },
             max_width: 24.0,
             text: input.total_count.clone(),
-            color: NativePanelVisualColor::rgb(245, 247, 252),
+            color: compact_theme::COUNT_TOTAL.into(),
             size: 15,
             weight: NativePanelVisualTextWeight::Semibold,
             alignment: NativePanelVisualTextAlignment::Left,
@@ -369,7 +370,7 @@ fn push_compact_shoulder_primitive(
         frame,
         side,
         progress,
-        fill: NativePanelVisualColor::rgb(12, 12, 15),
-        border: NativePanelVisualColor::rgb(44, 44, 50),
+        fill: theme::SHELL_FILL.into(),
+        border: theme::SHELL_BORDER.into(),
     });
 }

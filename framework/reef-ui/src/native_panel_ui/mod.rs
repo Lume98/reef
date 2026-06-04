@@ -44,6 +44,12 @@ pub mod presentation {
 }
 
 pub mod components {
+    pub use super::component_models::{
+        build_native_panel_component_tree, build_native_panel_component_tree_from_presentation,
+        build_native_panel_component_tree_from_presentation_and_cards,
+        build_native_panel_component_tree_from_visual_plan, NativePanelLayoutSpacing,
+    };
+
     pub mod base {
         pub use super::super::component_models::{
             NativePanelComponent, NativePanelComponentTree, NativePanelPanelColors,

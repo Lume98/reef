@@ -8,10 +8,9 @@ mod utils;
 use crate::native_panel_core::{
     PanelChromeVisibilitySpec, PanelPoint, PanelRect, EXPANDED_PANEL_RADIUS,
 };
+use reef_theme::panel as theme;
 
-use super::visual_primitives::{
-    NativePanelVisualColor, NativePanelVisualPlan, NativePanelVisualPrimitive,
-};
+use super::visual_primitives::{NativePanelVisualPlan, NativePanelVisualPrimitive};
 
 pub use card_input::{
     native_panel_visual_card_input_from_scene_card,
@@ -62,7 +61,7 @@ pub fn resolve_native_panel_visual_plan(
         primitives.push(NativePanelVisualPrimitive::RoundRect {
             frame: shell_frame,
             radius: EXPANDED_PANEL_RADIUS,
-            color: NativePanelVisualColor::rgb(12, 12, 15),
+            color: theme::SHELL_FILL.into(),
         });
 
         if input.separator_visibility > 0.01 {
@@ -73,7 +72,7 @@ pub fn resolve_native_panel_visual_plan(
                     width: (shell_frame.width - 40.0).max(0.0),
                     height: 1.0,
                 },
-                color: NativePanelVisualColor::rgb(62, 62, 70),
+                color: theme::SHELL_SEPARATOR.into(),
             });
         }
 
@@ -140,7 +139,8 @@ pub fn resolve_native_panel_visual_plan(
 
 pub use compact::resolve_native_panel_compact_bar_visual_plan;
 
-// Re-export utils items needed by tests
+// Re-export utils items needed by tests.
+#[allow(unused_imports)]
 pub(crate) use utils::{compact_digit_y, extend_visible_content_primitives};
 
 pub(super) fn native_panel_visual_expanded_display_mode(
