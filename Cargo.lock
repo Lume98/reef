@@ -2856,6 +2856,7 @@ dependencies = [
  "echoisland-runtime",
  "log",
  "reef-ui",
+ "reef-widgets",
  "tauri",
  "tauri-plugin-opener",
 ]

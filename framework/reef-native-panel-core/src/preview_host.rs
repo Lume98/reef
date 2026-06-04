@@ -146,4 +146,3 @@ fn preview_session(
         last_activity: now,
     }
 }
-

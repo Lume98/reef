@@ -28,4 +28,3 @@ pub fn hide() -> Result<(), String> {
 pub fn snap() -> Result<(), String> {
     Ok(())
 }
-

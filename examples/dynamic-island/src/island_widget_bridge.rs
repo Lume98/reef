@@ -1,99 +1,246 @@
-//! 桥接模块：将 `RuntimeSnapshot` 转换为 `reef-widgets` 的 `IslandWidget`。
+//! 桥接模块：将 `RuntimeSnapshot` 转换为声明式 `DynamicIsland`，再下沉为 `IslandWidget`。
 //!
-//! 这里只做运行时数据到组件树的映射，以及渲染期 override 的集中封装。
+//! 这里不再构造专用的 `IslandWidgetContentInput`，而是直接组合已有组件，并绑定业务动作。
 
 use echoisland_runtime::RuntimeSnapshot;
+use crate::native_panel_renderer::facade::{
+    command::NativePanelPlatformEvent, transition::NativePanelTransitionRequest,
+};
 use reef_widgets::{
-    build_island_widget as build_framework_island_widget, island_widget::DisplayMode,
-    island_widget::IslandRenderOverrides,
-    island_widget::IslandPendingApprovalInput, island_widget::IslandPendingQuestionInput,
-    island_widget::IslandSessionInput, island_widget::IslandWidgetContentInput, IslandWidget,
-    ChromeVisibility,
+    Badge, BodyLine, Card, CardStyle, CompactBar, DynamicIsland, DynamicIslandGesture,
+    IslandWidget,
+    MascotPose, MascotWidget, SettingsRow, ChromeVisibility,
 };
 
-/// 将运行时快照转换为可复用的岛屿输入模型。
-pub fn build_island_widget_input(
+pub use reef_native_panel_core::island_render_overrides;
+
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub enum DynamicIslandRuntimeAction {
+    OpenPrimarySession,
+    ToggleSettings,
+    Dismiss,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub enum DynamicIslandRuntimeEffect {
+    PlatformEvent(NativePanelPlatformEvent),
+    Transition(NativePanelTransitionRequest),
+}
+
+pub fn build_dynamic_island(
     snapshot: &RuntimeSnapshot,
     panel_expanded: bool,
     settings_active: bool,
-) -> IslandWidgetContentInput {
-    IslandWidgetContentInput {
-        mode: if panel_expanded {
-            DisplayMode::Expanded
-        } else {
-            DisplayMode::Compact
-        },
-        layout: Default::default(),
-        settings_active,
-        active_session_count: snapshot.active_session_count,
-        total_session_count: snapshot.total_session_count,
-        pending_permissions: snapshot
-            .pending_permissions
-            .iter()
-            .map(|pending| IslandPendingApprovalInput {
-                session_id: pending.session_id.clone(),
-                source: pending.source.clone(),
-                tool_description: pending.tool_description.clone(),
-            })
-            .collect(),
-        pending_questions: snapshot
-            .pending_questions
-            .iter()
-            .map(|pending| IslandPendingQuestionInput {
-                session_id: pending.session_id.clone(),
-                source: pending.source.clone(),
-                header: pending.header.clone(),
-                text: pending.text.clone(),
-            })
-            .collect(),
-        sessions: snapshot
-            .sessions
-            .iter()
-            .map(|session| IslandSessionInput {
-                status: session.status.clone(),
-                source: session.source.clone(),
-                model: session.model.clone(),
-                last_user_prompt: session.last_user_prompt.clone(),
-                last_assistant_message: session.last_assistant_message.clone(),
-                current_tool: session.current_tool.clone(),
-                tool_description: session.tool_description.clone(),
-            })
-            .collect(),
+) -> DynamicIsland<DynamicIslandRuntimeAction> {
+    let mut island = DynamicIsland::new()
+        .child(build_compact_bar(snapshot, panel_expanded, settings_active))
+        .on_click(DynamicIslandRuntimeAction::OpenPrimarySession)
+        .on_swipe(DynamicIslandRuntimeAction::Dismiss);
+
+    if settings_active {
+        island = island.child(build_settings_card());
+    } else {
+        for card in build_runtime_cards(snapshot) {
+            island = island.child(card);
+        }
     }
+
+    if let Some(mascot) = build_mascot(snapshot, panel_expanded, settings_active) {
+        island = island.child(mascot);
+    }
+
+    island
 }
 
-/// 将运行时快照转换为顶层 `IslandWidget`。
-///
-/// `panel_expanded` 控制展示模式（Compact / Expanded）。
-/// `settings_active` 控制是否展示设置卡片。
 pub fn build_island_widget(
     snapshot: &RuntimeSnapshot,
     panel_expanded: bool,
     settings_active: bool,
 ) -> IslandWidget {
-    build_framework_island_widget(&build_island_widget_input(
-        snapshot,
-        panel_expanded,
-        settings_active,
-    ))
+    build_dynamic_island(snapshot, panel_expanded, settings_active).into_widget()
 }
 
-pub fn island_render_overrides(
-    width: f64,
-    compact_height: f64,
-    expanded_height: f64,
-    chrome: ChromeVisibility,
-    reveal_progress: f64,
-    entering: bool,
-) -> IslandRenderOverrides {
-    IslandRenderOverrides::new(
-        width,
-        compact_height,
-        expanded_height,
-        chrome,
-        reveal_progress,
-        entering,
-    )
+pub fn resolve_dynamic_island_action(
+    snapshot: &RuntimeSnapshot,
+    panel_expanded: bool,
+    settings_active: bool,
+    gesture: DynamicIslandGesture,
+) -> Option<DynamicIslandRuntimeAction> {
+    build_dynamic_island(snapshot, panel_expanded, settings_active)
+        .action_for_gesture(gesture)
+        .cloned()
+}
+
+pub fn resolve_dynamic_island_effect(
+    snapshot: &RuntimeSnapshot,
+    action: DynamicIslandRuntimeAction,
+) -> Option<DynamicIslandRuntimeEffect> {
+    match action {
+        DynamicIslandRuntimeAction::OpenPrimarySession => {
+            resolve_primary_session_id(snapshot).map(|session_id| {
+                DynamicIslandRuntimeEffect::PlatformEvent(
+                    NativePanelPlatformEvent::FocusSession(session_id),
+                )
+            })
+        }
+        DynamicIslandRuntimeAction::ToggleSettings => Some(
+            DynamicIslandRuntimeEffect::PlatformEvent(
+                NativePanelPlatformEvent::ToggleSettingsSurface,
+            ),
+        ),
+        DynamicIslandRuntimeAction::Dismiss => Some(DynamicIslandRuntimeEffect::Transition(
+            NativePanelTransitionRequest::Close,
+        )),
+    }
+}
+
+fn build_compact_bar(
+    snapshot: &RuntimeSnapshot,
+    panel_expanded: bool,
+    settings_active: bool,
+) -> CompactBar {
+    let chrome = if panel_expanded {
+        ChromeVisibility::expanded()
+    } else {
+        ChromeVisibility::compact()
+    };
+
+    CompactBar::new()
+        .headline("Reef")
+        .headline_emphasized(panel_expanded)
+        .counts(
+            snapshot.active_session_count.to_string(),
+            snapshot.total_session_count.to_string(),
+        )
+        .show_actions(panel_expanded || settings_active)
+        .chrome(chrome)
+}
+
+fn build_settings_card() -> Card {
+    Card::new(CardStyle::Settings)
+        .title("Settings")
+        .subtitle("Dynamic Island")
+        .settings_rows(vec![
+            SettingsRow {
+                title: "Display".to_string(),
+                value: "Cycle".to_string(),
+                active: true,
+            },
+            SettingsRow {
+                title: "Width".to_string(),
+                value: "Adaptive".to_string(),
+                active: false,
+            },
+            SettingsRow {
+                title: "Language".to_string(),
+                value: "EN/ZH/JA".to_string(),
+                active: false,
+            },
+        ])
+        .height(146.0)
+}
+
+fn resolve_primary_session_id(snapshot: &RuntimeSnapshot) -> Option<String> {
+    snapshot
+        .sessions
+        .first()
+        .map(|session| session.session_id.clone())
+        .or_else(|| {
+            snapshot
+                .pending_permissions
+                .first()
+                .map(|pending| pending.session_id.clone())
+        })
+        .or_else(|| {
+            snapshot
+                .pending_questions
+                .first()
+                .map(|pending| pending.session_id.clone())
+        })
+}
+
+fn build_runtime_cards(snapshot: &RuntimeSnapshot) -> Vec<Card> {
+    let mut cards = Vec::new();
+
+    for pending in &snapshot.pending_permissions {
+        let mut card = Card::new(CardStyle::PendingApproval)
+            .title(format!("{} wants permission", pending.source))
+            .badge(Badge::status("Approval", true))
+            .badge(Badge::source(pending.source.clone()));
+        if let Some(tool) = &pending.tool_description {
+            card = card.body_line(BodyLine::plain(Some("$"), tool.clone()));
+        }
+        cards.push(card.height(104.0));
+    }
+
+    for pending in &snapshot.pending_questions {
+        let title = pending
+            .header
+            .clone()
+            .unwrap_or_else(|| format!("{} asks a question", pending.source));
+        cards.push(
+            Card::new(CardStyle::PendingQuestion)
+                .title(title)
+                .badge(Badge::status("Question", true))
+                .badge(Badge::source(pending.source.clone()))
+                .body_line(BodyLine::plain(None, pending.text.clone()))
+                .height(112.0),
+        );
+    }
+
+    for session in &snapshot.sessions {
+        let mut card = Card::new(CardStyle::Default)
+            .title(session.source.clone())
+            .badge(Badge::status(session.status.clone(), session.status.eq_ignore_ascii_case("running")))
+            .badge(Badge::source(session.source.clone()));
+
+        if let Some(message) = session
+            .last_assistant_message
+            .clone()
+            .or(session.last_user_prompt.clone())
+        {
+            card = card.body_line(BodyLine::plain(None, message));
+        }
+        if let Some(tool) = &session.current_tool {
+            card = card.tool(tool.clone(), session.tool_description.clone());
+        }
+        cards.push(card.height(96.0));
+    }
+
+    if cards.is_empty() {
+        cards.push(
+            Card::new(CardStyle::Empty)
+                .title("No active sessions")
+                .body_line(BodyLine::plain(None, "Reef is waiting for the next event."))
+                .height(88.0),
+        );
+    }
+
+    cards
+}
+
+fn build_mascot(
+    snapshot: &RuntimeSnapshot,
+    panel_expanded: bool,
+    settings_active: bool,
+) -> Option<MascotWidget> {
+    if !panel_expanded && snapshot.active_session_count == 0 && !settings_active {
+        return None;
+    }
+
+    let pose = if settings_active {
+        MascotPose::Idle
+    } else if !snapshot.pending_permissions.is_empty() {
+        MascotPose::Approval
+    } else if !snapshot.pending_questions.is_empty() {
+        MascotPose::Question
+    } else if snapshot.active_session_count > 0 {
+        MascotPose::Running
+    } else {
+        MascotPose::Idle
+    };
+
+    Some(MascotWidget::new(200.0, 24.0, 14.0).pose(pose))
 }
 
 #[cfg(test)]
@@ -117,42 +264,90 @@ mod tests {
     }
 
     #[test]
-    fn bridge_maps_runtime_snapshot_to_input_model() {
-        let snapshot = empty_snapshot();
-        let input = build_island_widget_input(&snapshot, true, true);
+    fn bridge_builds_declarative_dynamic_island() {
+        let island = build_dynamic_island(&empty_snapshot(), true, false);
 
-        assert_eq!(input.mode, DisplayMode::Expanded);
-        assert!(input.settings_active);
-        assert_eq!(input.layout, Default::default());
-        assert_eq!(input.active_session_count, 0);
-        assert_eq!(input.total_session_count, 0);
+        assert_eq!(island.bindings().len(), 2);
+        assert_eq!(
+            island.action_for_gesture(DynamicIslandGesture::Click),
+            Some(&DynamicIslandRuntimeAction::OpenPrimarySession)
+        );
     }
 
     #[test]
-    fn bridge_builds_widget_from_snapshot() {
-        let snapshot = empty_snapshot();
-        let widget = build_island_widget(&snapshot, false, false);
-        let default_layout: reef_widgets::island_widget::IslandWidgetLayout = Default::default();
-
-        assert_eq!(widget.mode, DisplayMode::Compact);
-        assert_eq!(widget.width, default_layout.width);
-    }
-
-    #[test]
-    fn bridge_builds_render_overrides() {
-        let overrides = island_render_overrides(
-            320.0,
-            48.0,
-            180.0,
-            ChromeVisibility::expanded(),
-            0.5,
+    fn bridge_resolves_runtime_action_from_gesture() {
+        let action = resolve_dynamic_island_action(
+            &empty_snapshot(),
             true,
+            false,
+            DynamicIslandGesture::Swipe,
         );
 
-        assert_eq!(overrides.width, 320.0);
-        assert_eq!(overrides.compact_height, 48.0);
-        assert_eq!(overrides.expanded_height, 180.0);
-        assert_eq!(overrides.reveal_progress, 0.5);
-        assert!(overrides.entering);
+        assert_eq!(action, Some(DynamicIslandRuntimeAction::Dismiss));
+    }
+
+    #[test]
+    fn bridge_builds_widget_from_dynamic_island() {
+        let widget = build_island_widget(&empty_snapshot(), false, false);
+
+        assert_eq!(widget.compact_bar.headline, "Reef");
+        assert_eq!(widget.cards.len(), 1);
+    }
+
+    #[test]
+    fn bridge_resolves_runtime_effect_for_primary_session() {
+        let mut snapshot = empty_snapshot();
+        snapshot.sessions.push(echoisland_runtime::SessionSnapshotView {
+            session_id: "session-1".to_string(),
+            source: "reef".to_string(),
+            project_name: None,
+            cwd: None,
+            model: None,
+            terminal_app: None,
+            terminal_bundle: None,
+            host_app: None,
+            window_title: None,
+            tty: None,
+            terminal_pid: None,
+            cli_pid: None,
+            iterm_session_id: None,
+            kitty_window_id: None,
+            tmux_env: None,
+            tmux_pane: None,
+            tmux_client_tty: None,
+            status: "running".to_string(),
+            current_tool: None,
+            tool_description: None,
+            last_user_prompt: None,
+            last_assistant_message: None,
+            tool_history_count: 0,
+            tool_history: vec![],
+            last_activity: chrono::Utc::now(),
+        });
+
+        let effect =
+            resolve_dynamic_island_effect(&snapshot, DynamicIslandRuntimeAction::OpenPrimarySession);
+
+        assert_eq!(
+            effect,
+            Some(DynamicIslandRuntimeEffect::PlatformEvent(
+                NativePanelPlatformEvent::FocusSession("session-1".to_string())
+            ))
+        );
+    }
+
+    #[test]
+    fn bridge_resolves_runtime_effect_for_dismiss() {
+        let effect = resolve_dynamic_island_effect(
+            &empty_snapshot(),
+            DynamicIslandRuntimeAction::Dismiss,
+        );
+
+        assert_eq!(
+            effect,
+            Some(DynamicIslandRuntimeEffect::Transition(
+                NativePanelTransitionRequest::Close
+            ))
+        );
     }
 }

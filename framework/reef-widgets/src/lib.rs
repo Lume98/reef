@@ -1,9 +1,11 @@
 pub mod base;
 pub mod card;
 pub mod compact_bar;
+pub mod dynamic_island;
 pub mod island;
 pub mod island_widget;
 pub mod mascot;
+pub mod progress_bar;
 
 pub use base::{
     build_card_pointer_regions, build_compact_pointer_regions, card_content_visibility,
@@ -20,6 +22,10 @@ pub use compact_bar::{
     ChromeVisibility, CompactBar, CompactBarActions, CompactBarBackground, CompactBarCounts,
     CompactBarHeadline, CompactShoulder, CompletionGlow, ShoulderPath, ShoulderSide,
 };
+pub use dynamic_island::{
+    DynamicIsland, DynamicIslandActionBinding, DynamicIslandActions, DynamicIslandChild,
+    DynamicIslandGesture,
+};
 pub use island::{ExpandedCardStack, ExpandedShell};
 pub use island_widget::{build_island_widget, IslandWidget};
 pub use mascot::{
@@ -27,3 +33,4 @@ pub use mascot::{
     MascotExpression, MascotEye, MascotEyes, MascotPose, MascotShadow, MascotSprite, MascotWidget,
     MessageBubble, MessageBubbleBackground, MessageBubbleDots,
 };
+pub use progress_bar::ProgressBar;

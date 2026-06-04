@@ -17,6 +17,7 @@ pub mod native_panel_ui {
 }
 
 pub mod host_platform;
+pub mod island_widget_bridge;
 pub mod native_window;
 pub mod notification_sound;
 pub mod preview_host;
@@ -24,6 +25,9 @@ pub mod runtime_input;
 pub mod updater_service;
 
 pub use host_platform::NativePanelHostPlatform;
+pub use island_widget_bridge::{
+    build_island_widget, build_island_widget_input, island_render_overrides,
+};
 pub use native_panel_core::{
     panel_display_key, PanelDisplayGeometry, PanelIslandWidthPreset, PanelLanguage, PanelRect,
 };

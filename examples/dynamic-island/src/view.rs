@@ -4,11 +4,16 @@
 
 pub use reef_view::{create_root, WidgetRoot};
 pub use reef_widgets::{
-    BodyLine, Card, CardStyle, CompactBar, IslandWidget, MascotPose, MascotWidget,
+    dynamic_island, BodyLine, Card, CardStyle, CompactBar, DynamicIsland, IslandWidget,
+    MascotPose, MascotWidget, ProgressBar,
 };
 pub use reef_widgets::island_widget::DisplayMode;
 
-pub use crate::island_widget_bridge::{build_island_widget, island_render_overrides};
+pub use crate::island_widget_bridge::{
+    build_dynamic_island, build_island_widget, island_render_overrides,
+    resolve_dynamic_island_action, resolve_dynamic_island_effect, DynamicIslandRuntimeAction,
+    DynamicIslandRuntimeEffect,
+};
 pub use crate::native_window::{hide, show_without_app, snap};
 #[cfg(feature = "tauri-host")]
 pub use crate::preview_host::{

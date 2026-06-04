@@ -7,6 +7,7 @@ description = "Reef native panel shared contracts and preview helpers"
 [dependencies]
 echoisland-runtime = { path = "../../echoisland-runtime" }
 reef-ui = { path = "../reef-ui" }
+reef-widgets = { path = "../reef-widgets" }
 chrono = { version = "0.4", features = ["serde"] }
 log = { workspace = true }
 tauri = { workspace = true, optional = true }
