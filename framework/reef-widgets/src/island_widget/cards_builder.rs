@@ -6,7 +6,7 @@ use super::{
     settings_cards::build_settings_cards, IslandWidgetContentInput,
 };
 
-pub(super) fn build_cards(input: &IslandWidgetContentInput) -> Vec<Card> {
+pub fn build_cards_from_input(input: &IslandWidgetContentInput) -> Vec<Card> {
     if input.settings_active {
         return build_settings_cards();
     }

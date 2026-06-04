@@ -77,7 +77,7 @@ pub fn is_dynamic_island_horizontal_swipe(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use reef_ui::native_panel_core::{PanelHitAction, PanelHitTarget, PanelRect};
+    use reef_ui::native_panel_core::{PanelHitTarget, PanelRect};
     use reef_ui::native_panel_ui::descriptor::NativePanelPointerRegionKind;
 
     #[test]
@@ -124,10 +124,9 @@ mod tests {
                 width: 120.0,
                 height: 60.0,
             },
-            kind: NativePanelPointerRegionKind::HitTarget(PanelHitTarget {
-                action: PanelHitAction::FocusSession,
-                value: "session-1".to_string(),
-            }),
+            kind: NativePanelPointerRegionKind::HitTarget(PanelHitTarget::focus_session(
+                "session-1",
+            )),
         }];
         let snapshot = "snapshot";
 

@@ -4,10 +4,10 @@
 
 use echoisland_runtime::RuntimeSnapshot;
 use reef_widgets::{
-    build_island_widget as build_framework_island_widget, island_widget::DisplayMode,
-    island_widget::IslandPendingApprovalInput, island_widget::IslandPendingQuestionInput,
-    island_widget::IslandRenderOverrides, island_widget::IslandSessionInput,
-    island_widget::IslandWidgetContentInput, ChromeVisibility, IslandWidget,
+    island_widget::DisplayMode, island_widget::IslandPendingApprovalInput,
+    island_widget::IslandPendingQuestionInput, island_widget::IslandRenderOverrides,
+    island_widget::IslandSessionInput, island_widget::IslandWidgetContentInput, ChromeVisibility,
+    IslandWidget,
 };
 
 /// 将运行时快照转换为可复用的岛屿输入模型。
@@ -70,11 +70,13 @@ pub fn build_island_widget(
     panel_expanded: bool,
     settings_active: bool,
 ) -> IslandWidget {
-    build_framework_island_widget(&build_island_widget_input(
-        snapshot,
-        panel_expanded,
-        settings_active,
-    ))
+    crate::dynamic_island_page::render_dynamic_island_page(
+        &crate::dynamic_island_page::build_dynamic_island_page_state(
+            snapshot,
+            panel_expanded,
+            settings_active,
+        ),
+    )
 }
 
 pub fn island_render_overrides(

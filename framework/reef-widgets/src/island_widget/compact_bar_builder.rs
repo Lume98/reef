@@ -4,7 +4,7 @@ use super::{DisplayMode, IslandWidgetContentInput};
 
 const DEFAULT_HEADLINE: &str = "Reef";
 
-pub(super) fn build_compact_bar(input: &IslandWidgetContentInput) -> CompactBar {
+pub fn build_compact_bar_from_input(input: &IslandWidgetContentInput) -> CompactBar {
     let mut bar = CompactBar::new();
     bar.headline = DEFAULT_HEADLINE.to_string();
     bar.headline_emphasized = input.mode == DisplayMode::Expanded;

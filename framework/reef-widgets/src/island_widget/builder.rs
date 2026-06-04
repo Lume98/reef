@@ -1,12 +1,12 @@
 use super::spec::{IslandRevealSpec, IslandWidgetSpec};
 use super::{
-    cards_builder::build_cards, compact_bar_builder::build_compact_bar,
-    mascot_builder::build_mascot, IslandWidgetContentInput,
+    cards_builder::build_cards_from_input, compact_bar_builder::build_compact_bar_from_input,
+    mascot_builder::build_mascot_from_input, IslandWidgetContentInput,
 };
 use crate::IslandWidget;
 
 pub(crate) fn build_island_widget_spec(input: &IslandWidgetContentInput) -> IslandWidgetSpec {
-    let compact_bar = build_compact_bar(input);
+    let compact_bar = build_compact_bar_from_input(input);
     let chrome = compact_bar.chrome;
 
     IslandWidgetSpec {
@@ -14,8 +14,8 @@ pub(crate) fn build_island_widget_spec(input: &IslandWidgetContentInput) -> Isla
         layout: input.layout,
         compact_bar,
         expanded_shell: crate::island::ExpandedShell::new(),
-        cards: build_cards(input),
-        mascot: build_mascot(input),
+        cards: build_cards_from_input(input),
+        mascot: build_mascot_from_input(input),
         glow: None,
         shoulder_left: None,
         shoulder_right: None,
@@ -77,5 +77,28 @@ mod tests {
         assert_eq!(spec.compact_bar.active_count, "2");
         assert_eq!(spec.compact_bar.total_count, "5");
         assert!(spec.mascot.is_none());
+    }
+
+    #[test]
+    fn island_widget_spec_reuses_public_fragment_builders() {
+        let mut input = empty_input();
+        input.mode = DisplayMode::Expanded;
+        input.active_session_count = 1;
+        input.total_session_count = 2;
+
+        let spec = build_island_widget_spec(&input);
+        let compact_bar = build_compact_bar_from_input(&input);
+        let cards = build_cards_from_input(&input);
+        let mascot = build_mascot_from_input(&input);
+
+        assert_eq!(spec.compact_bar.headline, compact_bar.headline);
+        assert_eq!(spec.compact_bar.active_count, compact_bar.active_count);
+        assert_eq!(spec.compact_bar.total_count, compact_bar.total_count);
+        assert_eq!(spec.compact_bar.show_actions, compact_bar.show_actions);
+        assert_eq!(spec.compact_bar.chrome, compact_bar.chrome);
+        assert_eq!(spec.cards.len(), cards.len());
+        assert_eq!(spec.cards[0].title, cards[0].title);
+        assert_eq!(spec.cards[0].style, cards[0].style);
+        assert_eq!(spec.mascot.is_some(), mascot.is_some());
     }
 }

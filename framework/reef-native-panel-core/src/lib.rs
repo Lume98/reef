@@ -17,6 +17,7 @@ pub mod native_panel_ui {
 }
 
 pub mod dynamic_island_interaction;
+pub mod dynamic_island_page;
 pub mod host_platform;
 pub mod island_widget_bridge;
 pub mod native_window;
@@ -29,6 +30,14 @@ pub use dynamic_island_interaction::{
     is_dynamic_island_horizontal_swipe, resolve_dynamic_island_gesture,
     resolve_dynamic_island_root_gesture_at_point, DynamicIslandInteractionContext,
     DynamicIslandInteractionEffect, DynamicIslandSwipeSpec,
+};
+pub use dynamic_island_page::{
+    build_dynamic_island, build_dynamic_island_page_state, dynamic_island_target_for_hit_target,
+    render_dynamic_island_page, resolve_dynamic_island_action, resolve_dynamic_island_effect,
+    resolve_dynamic_island_gesture_effect, resolve_dynamic_island_platform_event,
+    resolve_dynamic_island_target_action, resolve_dynamic_island_target_effect,
+    resolve_dynamic_island_transition_request, DynamicIslandPageState, DynamicIslandRuntimeAction,
+    DynamicIslandRuntimeEffect,
 };
 pub use host_platform::NativePanelHostPlatform;
 pub use island_widget_bridge::{
