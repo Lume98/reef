@@ -1,0 +1,13 @@
+[package]
+name = "reef-dom"
+version.workspace = true
+edition.workspace = true
+description = "Reef DOM renderer — HostConfig implementation mapping VNode → DrawPrimitive"
+
+[dependencies]
+reef-core = { path = "../reef-core" }
+reef-draw = { path = "../reef-draw" }
+reef-layout = { path = "../reef-layout" }
+reef-vnode = { path = "../reef-vnode" }
+reef-reconciler = { path = "../reef-reconciler" }
+reef-hooks = { path = "../reef-hooks" }

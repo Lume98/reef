@@ -10,6 +10,7 @@ members = [
     "framework/reef-native-panel-windows",
     "framework/reef-reconciler",
     "framework/reef-draw",
+    "framework/reef-dom",
     "framework/reef-hooks",
     "framework/reef-theme",
     "framework/reef-view",

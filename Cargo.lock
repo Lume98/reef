@@ -2786,6 +2786,18 @@ name = "reef-core"
 version = "0.1.0"
 
 [[package]]
+name = "reef-dom"
+version = "0.1.0"
+dependencies = [
+ "reef-core",
+ "reef-draw",
+ "reef-hooks",
+ "reef-layout",
+ "reef-reconciler",
+ "reef-vnode",
+]
+
+[[package]]
 name = "reef-draw"
 version = "0.1.0"
 dependencies = [
