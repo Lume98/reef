@@ -17,19 +17,23 @@ pub mod panel;
 
 // 稳定 facade：保留根级入口，兼容旧调用方，同时让对外 API 更清晰。
 pub mod components {
-    pub use crate::native_panel_ui::components::*;
+    pub use crate::render::components::*;
 }
 
 pub mod presentation {
-    pub use crate::native_panel_ui::presentation::*;
+    pub use crate::render::presentation::*;
 }
 
 pub mod rendering {
-    pub use crate::native_panel_ui::rendering::*;
+    pub use crate::render::rendering::*;
 }
 
 pub mod visual {
-    pub use crate::native_panel_ui::visual::*;
+    pub use crate::render::visual::*;
+}
+
+pub mod render {
+    pub use crate::native_panel_ui::render::*;
 }
 
 // 更新状态：为设置面板和状态卡片提供应用更新阶段的共享模型。

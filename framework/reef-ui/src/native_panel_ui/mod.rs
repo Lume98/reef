@@ -20,83 +20,24 @@ mod transition_controller;
 mod visual_plan;
 mod visual_primitives;
 
+pub mod render;
+
 pub mod descriptor {
-    pub use super::descriptors::*;
+    pub use super::render::descriptor::*;
 }
 
 pub mod presentation {
-    pub use super::action_button_visual_spec::*;
-    pub use super::card_visual_spec::*;
-    pub use super::completion_glow_visual_spec::*;
-    pub use super::mascot_sprite_spec::*;
-    pub use super::mascot_visual_spec::*;
-    pub use super::presentation_model::*;
-    pub use super::render_bundle::{
-        NativePanelActionButtonCommand, NativePanelCardStackCommand, NativePanelCompactBarCommand,
-    };
-    pub use super::visual_plan::{
-        native_panel_visual_card_input_from_scene_card, NativePanelVisualActionButtonInput,
-        NativePanelVisualCardBadgeInput, NativePanelVisualCardBodyLineInput,
-        NativePanelVisualCardBodyRole, NativePanelVisualCardInput, NativePanelVisualCardRowInput,
-        NativePanelVisualCardStyle, NativePanelVisualDisplayMode, NativePanelVisualPlanInput,
-    };
-    pub use super::visual_primitives::NativePanelVisualColor;
+    pub use super::render::presentation::*;
 }
 
 pub mod components {
-    pub use super::component_models::{
-        build_native_panel_component_tree, build_native_panel_component_tree_from_presentation,
-        build_native_panel_component_tree_from_presentation_and_cards,
-        build_native_panel_component_tree_from_visual_plan, NativePanelLayoutSpacing,
-    };
-
-    pub mod base {
-        pub use super::super::component_models::{
-            NativePanelComponent, NativePanelComponentTree, NativePanelPanelColors,
-        };
-    }
-
-    pub mod container {
-        pub use super::super::component_models::NativePanelContainerComponent;
-    }
-
-    pub mod content {
-        pub use super::super::component_models::{
-            NativePanelCompactBarComponent, NativePanelSessionCardComponent,
-            NativePanelSettingRowComponent, NativePanelStackComponent,
-        };
-    }
-
-    pub mod decoration {
-        pub use super::super::component_models::NativePanelMastheadComponent;
-    }
-
-    pub use base::*;
-    pub use container::*;
-    pub use content::*;
-    pub use decoration::*;
-}
-
-pub mod render {
-    pub use super::animation_plan::*;
-    pub use super::animation_scheduler::*;
-    pub use super::render_bundle::*;
-    pub use super::transition_controller::*;
+    pub use super::render::components::*;
 }
 
 pub mod rendering {
-    pub use super::rendering_backend::*;
+    pub use super::render::rendering::*;
 }
 
 pub mod visual {
-    pub use super::visual_plan::{
-        native_panel_visual_card_input_from_scene_card,
-        native_panel_visual_card_input_from_scene_card_with_height,
-        resolve_native_panel_compact_bar_visual_plan, resolve_native_panel_visual_plan,
-        NativePanelVisualActionButtonInput, NativePanelVisualCardBadgeInput,
-        NativePanelVisualCardBodyLineInput, NativePanelVisualCardBodyRole,
-        NativePanelVisualCardInput, NativePanelVisualCardRowInput, NativePanelVisualCardStyle,
-        NativePanelVisualDisplayMode, NativePanelVisualPlanInput,
-    };
-    pub use super::visual_primitives::*;
+    pub use super::render::visual::*;
 }
