@@ -15,14 +15,8 @@ pub(super) fn present_window_into_presenter(
     window_state: NativePanelHostWindowState,
     pointer_regions: &[NativePanelPointerRegion],
     presentation_model: Option<NativePanelPresentationModel>,
-    widget_plan: Option<reef_render::primitive::VisualPlan>,
 ) {
-    window.present(
-        window_state,
-        pointer_regions,
-        presentation_model,
-        widget_plan,
-    );
+    window.present(window_state, pointer_regions, presentation_model);
     sync_draw_presenter(window, presenter);
 }
 

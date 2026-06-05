@@ -36,7 +36,6 @@ pub(super) struct WindowsNativePanelHostWindow {
     pub(super) presented_window_state: Option<NativePanelHostWindowState>,
     pub(super) presented_pointer_regions: Vec<NativePanelPointerRegion>,
     pub(super) presented_presentation_model: Option<NativePanelPresentationModel>,
-    pub(super) presented_widget_plan: Option<reef_render::primitive::VisualPlan>,
     pub(super) pending_redraw: bool,
 }
 
@@ -45,7 +44,6 @@ pub(crate) struct WindowsNativePanelDrawFrame {
     pub(super) window_state: NativePanelHostWindowState,
     pub(super) pointer_regions: Vec<NativePanelPointerRegion>,
     pub(super) presentation_model: Option<NativePanelPresentationModel>,
-    pub(super) widget_plan: Option<reef_render::primitive::VisualPlan>,
 }
 
 impl WindowsNativePanelHostWindow {
@@ -90,7 +88,6 @@ impl WindowsNativePanelHostWindow {
         window_state: NativePanelHostWindowState,
         pointer_regions: &[NativePanelPointerRegion],
         presentation_model: Option<NativePanelPresentationModel>,
-        widget_plan: Option<reef_render::primitive::VisualPlan>,
     ) {
         self.presented_window_state = Some(window_state);
         self.presented_pointer_regions = windows_client_pointer_regions_for_window(
@@ -99,7 +96,6 @@ impl WindowsNativePanelHostWindow {
             pointer_regions,
         );
         self.presented_presentation_model = presentation_model;
-        self.presented_widget_plan = widget_plan;
         self.pending_redraw = true;
     }
 
@@ -113,7 +109,6 @@ impl WindowsNativePanelHostWindow {
                 window_state,
                 pointer_regions: self.presented_pointer_regions.clone(),
                 presentation_model: self.presented_presentation_model.clone(),
-                widget_plan: self.presented_widget_plan.clone(),
             })
     }
 
@@ -252,7 +247,7 @@ mod tests {
             kind: NativePanelPointerRegionKind::CompactBar,
         }];
 
-        host.present(Default::default(), &regions, None, None);
+        host.present(Default::default(), &regions, None);
 
         assert_eq!(host.pointer_regions(&[]), regions.as_slice());
         let frame = host.take_pending_draw_frame().expect("pending draw frame");
@@ -285,7 +280,7 @@ mod tests {
             kind: NativePanelPointerRegionKind::CompactBar,
         }];
 
-        host.present(window_state, &regions, None, None);
+        host.present(window_state, &regions, None);
 
         let frame = host.take_pending_draw_frame().expect("pending draw frame");
         assert_eq!(
@@ -336,7 +331,7 @@ mod tests {
             kind: NativePanelPointerRegionKind::CompactBar,
         }];
 
-        host.present(window_state, &regions, None, None);
+        host.present(window_state, &regions, None);
 
         let frame = host.take_pending_draw_frame().expect("pending draw frame");
         assert_eq!(

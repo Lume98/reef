@@ -218,7 +218,6 @@ fn shell_draw_frame(
                 expanded_body_height: 70.0,
             },
         }),
-        widget_plan: None,
     }
 }
 

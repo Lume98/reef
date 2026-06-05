@@ -83,9 +83,7 @@ pub(super) struct WindowsNativePanelWindowShell {
     handle: WindowsNativePanelWindowHandle,
     last_frame: Option<WindowsNativePanelDrawFrame>,
     pending_paint_job: Option<WindowsNativePanelShellPaintJob>,
-    pending_widget_plan: Option<reef_render::primitive::VisualPlan>,
     last_painted_job: Option<WindowsNativePanelShellPaintJob>,
-    last_widget_plan: Option<reef_render::primitive::VisualPlan>,
     paint_pass_count: usize,
     display_snapshot: Option<WindowsNativePanelShellDisplaySnapshot>,
     last_pointer_input: Option<NativePanelPointerInput>,
@@ -136,12 +134,6 @@ impl WindowsNativePanelWindowShell {
 
     pub(super) fn last_painted_job(&self) -> Option<&WindowsNativePanelShellPaintJob> {
         self.last_painted_job.as_ref()
-    }
-
-    pub(super) fn take_pending_widget_plan(
-        &mut self,
-    ) -> Option<reef_render::primitive::VisualPlan> {
-        self.pending_widget_plan.take()
     }
 
     pub(super) fn paint_pass_count(&self) -> usize {
@@ -354,7 +346,6 @@ impl WindowsNativePanelWindowShell {
         let Some(frame) = presenter.take_redraw_frame() else {
             return WindowsNativePanelShellPresentResult::default();
         };
-        let widget_plan = frame.widget_plan.clone();
         self.sync_window_state(frame.window_state);
         let mut display_snapshot = build_display_snapshot(&frame);
         let previous_mascot_elapsed_ms = self
@@ -374,8 +365,6 @@ impl WindowsNativePanelWindowShell {
         self.last_frame = Some(frame);
         self.display_snapshot = Some(display_snapshot);
         self.pending_paint_job = Some(paint_job);
-        self.pending_widget_plan = widget_plan.clone();
-        self.last_widget_plan = widget_plan;
         self.request_redraw();
 
         WindowsNativePanelShellPresentResult {

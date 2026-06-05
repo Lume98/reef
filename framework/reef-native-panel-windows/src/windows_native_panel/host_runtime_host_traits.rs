@@ -80,7 +80,6 @@ impl NativePanelHost for WindowsNativePanelHost {
             window_state,
             &self.renderer.last_pointer_regions,
             self.renderer.latest_scene_presentation_model(),
-            self.renderer.last_widget_plan.clone(),
         );
         Ok(())
     }

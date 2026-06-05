@@ -223,7 +223,6 @@ fn shell_consumes_presenter_redraw_frame() {
         },
         pointer_regions: Vec::new(),
         presentation_model: None,
-        widget_plan: None,
     });
 
     let result = shell.consume_presenter(&mut presenter);
@@ -441,7 +440,6 @@ fn shell_builds_display_snapshot_from_presenter_frame() {
                 expanded_body_height: 70.0,
             },
         }),
-        widget_plan: None,
     });
 
     let result = shell.consume_presenter(&mut presenter);
@@ -486,7 +484,6 @@ fn shell_refreshes_idle_mascot_into_sleepy_after_shared_delay() {
         window_state: visible_window_state(),
         pointer_regions: Vec::new(),
         presentation_model: None,
-        widget_plan: None,
     });
     shell.consume_presenter(&mut presenter);
 
@@ -510,7 +507,6 @@ fn shell_plays_wake_angry_after_sleepy_when_mascot_becomes_active() {
         window_state: visible_window_state(),
         pointer_regions: Vec::new(),
         presentation_model: None,
-        widget_plan: None,
     });
     shell.consume_presenter(&mut presenter);
     shell.refresh_mascot_animation(0);
@@ -525,7 +521,6 @@ fn shell_plays_wake_angry_after_sleepy_when_mascot_becomes_active() {
             crate::native_panel_scene::SceneMascotPose::Running,
             false,
         )),
-        widget_plan: None,
     });
     shell.consume_presenter(&mut presenter);
 
@@ -561,7 +556,6 @@ fn shell_keeps_sleepy_when_idle_compact_presenter_refreshes() {
         window_state: visible_window_state(),
         pointer_regions: Vec::new(),
         presentation_model: None,
-        widget_plan: None,
     });
     shell.consume_presenter(&mut presenter);
     shell.refresh_mascot_animation(0);
@@ -573,7 +567,6 @@ fn shell_keeps_sleepy_when_idle_compact_presenter_refreshes() {
         window_state: visible_window_state(),
         pointer_regions: Vec::new(),
         presentation_model: None,
-        widget_plan: None,
     });
     shell.consume_presenter(&mut presenter);
 
@@ -597,7 +590,6 @@ fn shell_preserves_mascot_elapsed_time_when_expanding_same_pose() {
             crate::native_panel_scene::SceneMascotPose::MessageBubble,
             false,
         )),
-        widget_plan: None,
     });
     shell.consume_presenter(&mut presenter);
     assert!(shell.refresh_mascot_animation(500));
@@ -609,7 +601,6 @@ fn shell_preserves_mascot_elapsed_time_when_expanding_same_pose() {
             crate::native_panel_scene::SceneMascotPose::MessageBubble,
             true,
         )),
-        widget_plan: None,
     });
     shell.consume_presenter(&mut presenter);
 
@@ -648,7 +639,6 @@ fn shell_pointer_and_hover_facts_follow_cached_frame() {
             kind: NativePanelPointerRegionKind::CompactBar,
         }],
         presentation_model: None,
-        widget_plan: None,
     });
 
     shell.consume_presenter(&mut presenter);

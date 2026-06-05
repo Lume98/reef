@@ -7,10 +7,6 @@ use super::{
     window_shell::WindowsNativePanelShellPaintJob,
 };
 use crate::native_panel_core::{PanelPoint, PanelRect};
-use reef_core::color::Color as ReefColor;
-use reef_render::primitive::{
-    PathSegment, VisualPlan as ReefVisualPlan, VisualPrimitive as ReefVisualPrimitive,
-};
 use reef_ui::native_panel_ui::rendering::{
     native_panel_submit_visual_plan, NativePanelFrameSubmission, NativePanelRenderBackend,
 };
@@ -56,21 +52,6 @@ pub(super) fn directwrite_text_requests_from_paint_plan(
     requests
 }
 
-pub(super) fn directwrite_text_requests_from_visual_plan(
-    plan: &ReefVisualPlan,
-) -> Vec<WindowsDirectWriteTextLayoutRequest> {
-    if plan.hidden {
-        return Vec::new();
-    }
-    let mut requests = Vec::new();
-    for primitive in &plan.primitives {
-        if let Some(request) = directwrite_text_request_from_visual_primitive(primitive) {
-            requests.push(request);
-        }
-    }
-    requests
-}
-
 fn directwrite_text_request_from_legacy_primitive(
     primitive: &reef_ui::native_panel_ui::visual::NativePanelVisualPrimitive,
 ) -> Option<WindowsDirectWriteTextLayoutRequest> {
@@ -101,65 +82,10 @@ fn directwrite_text_request_from_legacy_primitive(
     }
 }
 
-fn directwrite_text_request_from_visual_primitive(
-    primitive: &ReefVisualPrimitive,
-) -> Option<WindowsDirectWriteTextLayoutRequest> {
-    match primitive {
-        ReefVisualPrimitive::Text {
-            text,
-            max_width,
-            size,
-            weight,
-            alignment,
-            ..
-        } => Some(WindowsDirectWriteTextLayoutRequest::new(
-            text.clone(),
-            *max_width,
-            *size,
-            native_text_weight_from_reef(*weight),
-            native_text_alignment_from_reef(*alignment),
-        )),
-        _ => None,
-    }
-}
-
-fn native_text_weight_from_reef(
-    weight: reef_render::primitive::FontWeight,
-) -> reef_ui::native_panel_ui::visual::NativePanelVisualTextWeight {
-    match weight {
-        reef_render::primitive::FontWeight::Normal => {
-            reef_ui::native_panel_ui::visual::NativePanelVisualTextWeight::Normal
-        }
-        reef_render::primitive::FontWeight::Semibold => {
-            reef_ui::native_panel_ui::visual::NativePanelVisualTextWeight::Semibold
-        }
-        reef_render::primitive::FontWeight::Bold => {
-            reef_ui::native_panel_ui::visual::NativePanelVisualTextWeight::Bold
-        }
-    }
-}
-
-fn native_text_alignment_from_reef(
-    alignment: reef_render::primitive::TextAlignment,
-) -> reef_ui::native_panel_ui::visual::NativePanelVisualTextAlignment {
-    match alignment {
-        reef_render::primitive::TextAlignment::Left => {
-            reef_ui::native_panel_ui::visual::NativePanelVisualTextAlignment::Left
-        }
-        reef_render::primitive::TextAlignment::Center => {
-            reef_ui::native_panel_ui::visual::NativePanelVisualTextAlignment::Center
-        }
-        reef_render::primitive::TextAlignment::Right => {
-            reef_ui::native_panel_ui::visual::NativePanelVisualTextAlignment::Right
-        }
-    }
-}
-
 pub(super) trait WindowsNativePanelPainter {
     fn paint(
         &mut self,
         job: &WindowsNativePanelShellPaintJob,
-        widget_plan: Option<&ReefVisualPlan>,
     ) -> Result<WindowsNativePanelPaintPlan, String>;
 }
 
@@ -431,13 +357,12 @@ impl WindowsNativePanelPainter for Direct2DWindowsNativePanelPainter {
     fn paint(
         &mut self,
         job: &WindowsNativePanelShellPaintJob,
-        widget_plan: Option<&ReefVisualPlan>,
     ) -> Result<WindowsNativePanelPaintPlan, String> {
         let plan = resolve_windows_native_panel_paint_plan(job);
         let mut recorder = NativePanelPlanSubmissionRecorder::default();
         let _ = native_panel_submit_visual_plan(&mut recorder, &plan);
         #[cfg(all(windows, not(test)))]
-        self.paint_plan_to_layered_window(job, &plan, widget_plan)?;
+        self.paint_plan_to_layered_window(job, &plan)?;
         #[cfg(any(not(windows), test))]
         let _ = (self.raw_window_handle, job);
         Ok(plan)
@@ -450,7 +375,6 @@ impl Direct2DWindowsNativePanelPainter {
         &mut self,
         job: &WindowsNativePanelShellPaintJob,
         plan: &WindowsNativePanelPaintPlan,
-        widget_plan: Option<&ReefVisualPlan>,
     ) -> Result<(), String> {
         use windows::Win32::Foundation::RECT;
         use windows::Win32::Graphics::{
@@ -506,10 +430,6 @@ impl Direct2DWindowsNativePanelPainter {
             }));
 
             let mut operations = resolve_windows_native_panel_hit_test_blocker_operations(job);
-            // The source-derived widget plan is not visually parity-safe on the migrated
-            // Windows host yet. Keep runtime painting on the stable native-panel plan so the
-            // standalone example renders real content instead of a blank shell.
-            let _ = widget_plan;
             operations.extend(resolve_windows_native_panel_paint_operations(plan));
             for operation in operations {
                 match operation {
@@ -649,52 +569,6 @@ impl Direct2DWindowsNativePanelPainter {
                             d2d_point(coordinate_space.point(to)),
                             &brush,
                             width.max(1) as f32,
-                            None,
-                        );
-                    }
-                    WindowsNativePanelPaintOperation::FillBezierPath {
-                        segments,
-                        color,
-                        alpha,
-                    } => {
-                        let brush = surface
-                            .target
-                            .CreateSolidColorBrush(&d2d_color_with_alpha_reef(color, alpha), None)
-                            .map_err(|error| error.to_string())?;
-                        let geometry = d2d_path_geometry_from_segments(
-                            self.direct2d
-                                .factory()
-                                .ok_or_else(|| "Direct2D factory is not initialized".to_string())?,
-                            &segments,
-                        )?;
-                        surface.target.FillGeometry(&geometry, &brush, None);
-                    }
-                    WindowsNativePanelPaintOperation::FillStrokedRoundRect {
-                        frame,
-                        radius,
-                        fill,
-                        stroke,
-                        stroke_width,
-                        alpha,
-                    } => {
-                        let fill_brush = surface
-                            .target
-                            .CreateSolidColorBrush(&d2d_color_with_alpha_reef(fill, alpha), None)
-                            .map_err(|error| error.to_string())?;
-                        let stroke_brush = surface
-                            .target
-                            .CreateSolidColorBrush(&d2d_color_with_alpha_reef(stroke, alpha), None)
-                            .map_err(|error| error.to_string())?;
-                        let rounded = D2D1_ROUNDED_RECT {
-                            rect: d2d_rect(coordinate_space.rect(frame)),
-                            radiusX: radius as f32,
-                            radiusY: radius as f32,
-                        };
-                        surface.target.FillRoundedRectangle(&rounded, &fill_brush);
-                        surface.target.DrawRoundedRectangle(
-                            &rounded,
-                            &stroke_brush,
-                            stroke_width.max(1.0) as f32,
                             None,
                         );
                     }
@@ -978,51 +852,6 @@ fn draw_mascot_sprite_image(
 }
 
 #[cfg(all(windows, not(test)))]
-fn d2d_path_geometry_from_segments(
-    factory: &windows::Win32::Graphics::Direct2D::ID2D1Factory,
-    segments: &[PathSegment],
-) -> Result<windows::Win32::Graphics::Direct2D::ID2D1PathGeometry, String> {
-    use windows::Win32::Graphics::Direct2D::Common::{
-        D2D1_BEZIER_SEGMENT, D2D1_FIGURE_BEGIN_FILLED, D2D1_FIGURE_END_CLOSED,
-    };
-
-    let Some((first, rest)) = segments.split_first() else {
-        return Err("path geometry requires at least one segment".to_string());
-    };
-    let start_point = match first {
-        PathSegment::LineTo(point) => panel_point_from_reef_point(*point),
-        PathSegment::CubicBezier { end, .. } => panel_point_from_reef_point(*end),
-    };
-
-    let geometry = unsafe { factory.CreatePathGeometry() }.map_err(|error| error.to_string())?;
-    let sink = unsafe { geometry.Open() }.map_err(|error| error.to_string())?;
-    unsafe {
-        sink.BeginFigure(d2d_point(start_point), D2D1_FIGURE_BEGIN_FILLED);
-        for segment in rest {
-            match segment {
-                PathSegment::LineTo(point) => {
-                    sink.AddLine(d2d_point(panel_point_from_reef_point(*point)));
-                }
-                PathSegment::CubicBezier {
-                    control1,
-                    control2,
-                    end,
-                } => {
-                    sink.AddBezier(&D2D1_BEZIER_SEGMENT {
-                        point1: d2d_point(panel_point_from_reef_point(*control1)),
-                        point2: d2d_point(panel_point_from_reef_point(*control2)),
-                        point3: d2d_point(panel_point_from_reef_point(*end)),
-                    });
-                }
-            }
-        }
-        sink.EndFigure(D2D1_FIGURE_END_CLOSED);
-        sink.Close().map_err(|error| error.to_string())?;
-    }
-    Ok(geometry)
-}
-
-#[cfg(all(windows, not(test)))]
 fn d2d_color(
     color: WindowsNativePanelPaintColor,
 ) -> windows::Win32::Graphics::Direct2D::Common::D2D1_COLOR_F {
@@ -1039,27 +868,6 @@ fn d2d_color_with_alpha(
         g: color.g as f32 / 255.0,
         b: color.b as f32 / 255.0,
         a: alpha.clamp(0.0, 1.0) as f32,
-    }
-}
-
-#[cfg(all(windows, not(test)))]
-fn d2d_color_with_alpha_reef(
-    color: ReefColor,
-    alpha: f64,
-) -> windows::Win32::Graphics::Direct2D::Common::D2D1_COLOR_F {
-    windows::Win32::Graphics::Direct2D::Common::D2D1_COLOR_F {
-        r: color.r as f32 / 255.0,
-        g: color.g as f32 / 255.0,
-        b: color.b as f32 / 255.0,
-        a: alpha.clamp(0.0, 1.0) as f32,
-    }
-}
-
-#[cfg(all(windows, not(test)))]
-fn panel_point_from_reef_point(point: reef_core::geometry::Point) -> PanelPoint {
-    PanelPoint {
-        x: point.x,
-        y: point.y,
     }
 }
 
@@ -1341,7 +1149,6 @@ impl WindowsNativePanelPainter for PlanOnlyWindowsNativePanelPainter {
     fn paint(
         &mut self,
         job: &WindowsNativePanelShellPaintJob,
-        _widget_plan: Option<&ReefVisualPlan>,
     ) -> Result<WindowsNativePanelPaintPlan, String> {
         Ok(resolve_windows_native_panel_paint_plan(job))
     }
@@ -1365,13 +1172,8 @@ impl WindowsNativePanelPainter for GdiWindowsNativePanelPainter {
     fn paint(
         &mut self,
         job: &WindowsNativePanelShellPaintJob,
-        widget_plan: Option<&ReefVisualPlan>,
     ) -> Result<WindowsNativePanelPaintPlan, String> {
-        super::paint_backend::paint_windows_native_panel_job_with_gdi(
-            self.raw_window_handle,
-            job,
-            widget_plan,
-        )
+        super::paint_backend::paint_windows_native_panel_job_with_gdi(self.raw_window_handle, job)
     }
 }
 

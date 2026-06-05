@@ -1,7 +1,3 @@
-use reef_core::color::Color as ReefColor;
-use reef_render::primitive::{
-    PathSegment, VisualPlan as ReefVisualPlan, VisualPrimitive as ReefVisualPrimitive,
-};
 use reef_ui::native_panel_ui::rendering::{
     native_panel_submit_visual_plan, NativePanelFrameSubmission,
 };
@@ -108,19 +104,6 @@ pub(super) enum WindowsNativePanelPaintOperation {
         alignment: NativePanelVisualTextAlignment,
         alpha: f64,
     },
-    FillBezierPath {
-        segments: Vec<PathSegment>,
-        color: ReefColor,
-        alpha: f64,
-    },
-    FillStrokedRoundRect {
-        frame: PanelRect,
-        radius: f64,
-        fill: ReefColor,
-        stroke: ReefColor,
-        stroke_width: f64,
-        alpha: f64,
-    },
     FillMascotDot {
         frame: PanelRect,
         radius: f64,
@@ -177,19 +160,6 @@ pub(super) fn resolve_windows_native_panel_paint_operations(
     plan.primitives
         .iter()
         .map(windows_native_panel_paint_operation_from_primitive)
-        .collect()
-}
-
-pub(super) fn resolve_windows_native_panel_widget_paint_operations(
-    plan: &ReefVisualPlan,
-) -> Vec<WindowsNativePanelPaintOperation> {
-    if plan.hidden {
-        return Vec::new();
-    }
-
-    plan.primitives
-        .iter()
-        .flat_map(windows_native_panel_paint_operations_from_visual_primitive)
         .collect()
 }
 
@@ -396,128 +366,20 @@ fn windows_native_panel_paint_operation_from_primitive(
     }
 }
 
-fn windows_native_panel_paint_operations_from_visual_primitive(
-    primitive: &ReefVisualPrimitive,
-) -> Vec<WindowsNativePanelPaintOperation> {
-    match primitive {
-        ReefVisualPrimitive::ClipStart { frame } => {
-            vec![WindowsNativePanelPaintOperation::PushClip {
-                frame: panel_rect_from_rect(*frame),
-            }]
-        }
-        ReefVisualPrimitive::ClipEnd => vec![WindowsNativePanelPaintOperation::PopClip],
-        ReefVisualPrimitive::RoundRect {
-            frame,
-            radius,
-            color,
-            alpha,
-        } => vec![WindowsNativePanelPaintOperation::FillRoundRect {
-            frame: panel_rect_from_rect(*frame),
-            radius: *radius,
-            color: reef_color_to_native_color(*color),
-            alpha: *alpha,
-        }],
-        ReefVisualPrimitive::Rect {
-            frame,
-            color,
-            alpha,
-        } => vec![WindowsNativePanelPaintOperation::FillRect {
-            frame: panel_rect_from_rect(*frame),
-            color: reef_color_to_native_color(*color),
-            alpha: *alpha,
-        }],
-        ReefVisualPrimitive::Ellipse {
-            frame,
-            color,
-            alpha,
-        } => vec![WindowsNativePanelPaintOperation::FillEllipse {
-            frame: panel_rect_from_rect(*frame),
-            color: reef_color_to_native_color(*color),
-            alpha: *alpha,
-        }],
-        ReefVisualPrimitive::StrokeLine {
-            from,
-            to,
-            color,
-            width,
-            alpha,
-        } => vec![WindowsNativePanelPaintOperation::StrokeLine {
-            from: panel_point_from_point(*from),
-            to: panel_point_from_point(*to),
-            color: reef_color_to_native_color(*color),
-            width: *width as i32,
-            alpha: *alpha,
-        }],
-        ReefVisualPrimitive::Text {
-            origin,
-            max_width,
-            text,
-            color,
-            size,
-            weight,
-            alignment,
-            alpha,
-        } => vec![WindowsNativePanelPaintOperation::DrawText {
-            role: NativePanelVisualTextRole::Unspecified,
-            origin: panel_point_from_point(*origin),
-            max_width: *max_width,
-            text: text.clone(),
-            color: reef_color_to_native_color(*color),
-            size: *size,
-            weight: native_text_weight_from_reef(*weight),
-            alignment: native_text_alignment_from_reef(*alignment),
-            alpha: *alpha,
-        }],
-        ReefVisualPrimitive::NineSliceImage { frame, opacity, .. } => {
-            vec![WindowsNativePanelPaintOperation::DrawCompletionGlowImage {
-                frame: panel_rect_from_rect(*frame),
-                opacity: *opacity,
-            }]
-        }
-        ReefVisualPrimitive::SpriteImage { .. } => Vec::new(),
-        ReefVisualPrimitive::BezierPath {
-            segments,
-            fill,
-            alpha,
-        } => vec![WindowsNativePanelPaintOperation::FillBezierPath {
-            segments: segments.clone(),
-            color: *fill,
-            alpha: *alpha,
-        }],
-        ReefVisualPrimitive::StrokedRoundRect {
-            frame,
-            radius,
-            fill,
-            stroke,
-            stroke_width,
-            alpha,
-        } => vec![WindowsNativePanelPaintOperation::FillStrokedRoundRect {
-            frame: panel_rect_from_rect(*frame),
-            radius: *radius,
-            fill: *fill,
-            stroke: *stroke,
-            stroke_width: *stroke_width,
-            alpha: *alpha,
-        }],
-        ReefVisualPrimitive::Image { .. } => Vec::new(),
-    }
-}
-
 pub(super) fn paint_windows_native_panel_job(
     raw_window_handle: Option<isize>,
     job: &WindowsNativePanelShellPaintJob,
-    widget_plan: Option<&ReefVisualPlan>,
 ) -> Result<WindowsNativePanelPaintPlan, String> {
     #[cfg(all(windows, not(test)))]
     {
         match windows_native_panel_preferred_painter_backend() {
             WindowsNativePanelPainterBackend::Direct2D => {
-                paint_windows_native_panel_job_with_direct2d(raw_window_handle, job, widget_plan)
+                paint_windows_native_panel_job_with_direct2d(raw_window_handle, job)
             }
             WindowsNativePanelPainterBackend::GdiFallback => {
                 let mut painter =
                     super::d2d_painter::GdiWindowsNativePanelPainter::new(raw_window_handle);
-                painter.paint(job, widget_plan)
+                painter.paint(job)
             }
         }
     }
@@ -526,7 +388,7 @@ pub(super) fn paint_windows_native_panel_job(
     {
         let _ = raw_window_handle;
         let mut painter = super::d2d_painter::PlanOnlyWindowsNativePanelPainter;
-        let plan = painter.paint(job, None)?;
+        let plan = painter.paint(job)?;
         let mut recorder = WindowsNativePanelFrameSubmissionRecorder::default();
         let _ = native_panel_submit_visual_plan(&mut recorder, &plan);
         Ok(plan)
@@ -537,7 +399,6 @@ pub(super) fn paint_windows_native_panel_job(
 fn paint_windows_native_panel_job_with_direct2d(
     raw_window_handle: Option<isize>,
     job: &WindowsNativePanelShellPaintJob,
-    widget_plan: Option<&ReefVisualPlan>,
 ) -> Result<WindowsNativePanelPaintPlan, String> {
     DIRECT2D_WINDOWS_NATIVE_PANEL_PAINTER.with(|slot| {
         let mut slot = slot.borrow_mut();
@@ -550,7 +411,7 @@ fn paint_windows_native_panel_job_with_direct2d(
             .as_mut()
             .expect("Direct2D painter initialized when slot is Some");
         painter.set_raw_window_handle(raw_window_handle);
-        painter.paint(job, widget_plan)
+        painter.paint(job)
     })
 }
 
@@ -558,7 +419,6 @@ fn paint_windows_native_panel_job_with_direct2d(
 pub(super) fn paint_windows_native_panel_job_with_gdi(
     raw_window_handle: Option<isize>,
     job: &WindowsNativePanelShellPaintJob,
-    widget_plan: Option<&ReefVisualPlan>,
 ) -> Result<WindowsNativePanelPaintPlan, String> {
     use std::iter;
     use windows_sys::Win32::{
@@ -575,11 +435,7 @@ pub(super) fn paint_windows_native_panel_job_with_gdi(
     let plan = resolve_windows_native_panel_paint_plan(job);
     let mut recorder = WindowsNativePanelFrameSubmissionRecorder::default();
     let _ = native_panel_submit_visual_plan(&mut recorder, &plan);
-    let operations = if let Some(widget_plan) = widget_plan {
-        resolve_windows_native_panel_widget_paint_operations(widget_plan)
-    } else {
-        resolve_windows_native_panel_paint_operations(&plan)
-    };
+    let operations = resolve_windows_native_panel_paint_operations(&plan);
     let Some(hwnd) = raw_window_handle else {
         return Ok(plan);
     };
@@ -679,38 +535,6 @@ pub(super) fn paint_windows_native_panel_job_with_gdi(
                     let _ = SelectObject(hdc, previous);
                     let _ = DeleteObject(pen as _);
                 }
-                WindowsNativePanelPaintOperation::FillBezierPath { .. } => {}
-                WindowsNativePanelPaintOperation::FillStrokedRoundRect {
-                    frame,
-                    radius,
-                    fill,
-                    stroke,
-                    stroke_width,
-                    alpha,
-                } => {
-                    let brush = CreateSolidBrush(color_ref(reef_color_to_native_color(*fill)));
-                    let pen = CreatePen(
-                        PS_SOLID,
-                        stroke_width.round().max(1.0) as i32,
-                        color_ref(reef_color_to_native_color(*stroke)),
-                    );
-                    let previous = SelectObject(hdc, brush as _);
-                    let previous_pen = SelectObject(hdc, pen as _);
-                    let _ = RoundRect(
-                        hdc,
-                        frame.x.round() as i32,
-                        frame.y.round() as i32,
-                        (frame.x + frame.width).round() as i32,
-                        (frame.y + frame.height).round() as i32,
-                        (radius * 2.0).round() as i32,
-                        (radius * 2.0).round() as i32,
-                    );
-                    let _ = SelectObject(hdc, previous_pen);
-                    let _ = SelectObject(hdc, previous);
-                    let _ = DeleteObject(pen as _);
-                    let _ = DeleteObject(brush as _);
-                    let _ = alpha;
-                }
                 WindowsNativePanelPaintOperation::DrawText {
                     role,
                     origin,
@@ -793,46 +617,6 @@ pub(super) fn paint_windows_native_panel_job_with_gdi(
 #[cfg(all(windows, not(test)))]
 fn color_ref(color: WindowsNativePanelPaintColor) -> u32 {
     color.r as u32 | ((color.g as u32) << 8) | ((color.b as u32) << 16)
-}
-
-fn reef_color_to_native_color(color: ReefColor) -> WindowsNativePanelPaintColor {
-    WindowsNativePanelPaintColor::rgb(color.r, color.g, color.b)
-}
-
-fn panel_rect_from_rect(rect: reef_core::geometry::Rect) -> PanelRect {
-    PanelRect {
-        x: rect.x,
-        y: rect.y,
-        width: rect.width,
-        height: rect.height,
-    }
-}
-
-fn panel_point_from_point(point: reef_core::geometry::Point) -> PanelPoint {
-    PanelPoint {
-        x: point.x,
-        y: point.y,
-    }
-}
-
-fn native_text_weight_from_reef(
-    weight: reef_render::primitive::FontWeight,
-) -> NativePanelVisualTextWeight {
-    match weight {
-        reef_render::primitive::FontWeight::Normal => NativePanelVisualTextWeight::Normal,
-        reef_render::primitive::FontWeight::Semibold => NativePanelVisualTextWeight::Semibold,
-        reef_render::primitive::FontWeight::Bold => NativePanelVisualTextWeight::Bold,
-    }
-}
-
-fn native_text_alignment_from_reef(
-    alignment: reef_render::primitive::TextAlignment,
-) -> NativePanelVisualTextAlignment {
-    match alignment {
-        reef_render::primitive::TextAlignment::Left => NativePanelVisualTextAlignment::Left,
-        reef_render::primitive::TextAlignment::Center => NativePanelVisualTextAlignment::Center,
-        reef_render::primitive::TextAlignment::Right => NativePanelVisualTextAlignment::Right,
-    }
 }
 
 #[cfg(test)]

@@ -487,7 +487,6 @@ fn windows_host_shell_can_consume_presenter_frame() {
         },
         pointer_regions: Vec::new(),
         presentation_model: None,
-        widget_plan: None,
     });
 
     assert!(host.consume_presenter_into_shell());
@@ -519,7 +518,6 @@ fn windows_host_shell_paints_pending_presenter_frame() {
         },
         pointer_regions: Vec::new(),
         presentation_model: None,
-        widget_plan: None,
     });
 
     let result = host.consume_presenter_into_shell_result();

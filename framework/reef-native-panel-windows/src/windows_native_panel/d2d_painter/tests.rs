@@ -237,9 +237,7 @@ fn expanded_paint_job() -> WindowsNativePanelShellPaintJob {
 #[test]
 fn plan_only_painter_preserves_text_primitives_for_tests() {
     let mut painter = PlanOnlyWindowsNativePanelPainter;
-    let plan = painter
-        .paint(&compact_paint_job(), None)
-        .expect("paint plan");
+    let plan = painter.paint(&compact_paint_job()).expect("paint plan");
 
     assert!(!plan.hidden);
     assert!(
@@ -256,9 +254,7 @@ fn plan_only_painter_preserves_text_primitives_for_tests() {
 #[test]
 fn direct2d_painter_skeleton_consumes_shared_visual_plan() {
     let mut painter = Direct2DWindowsNativePanelPainter::default();
-    let plan = painter
-        .paint(&compact_paint_job(), None)
-        .expect("paint plan");
+    let plan = painter.paint(&compact_paint_job()).expect("paint plan");
 
     assert!(!plan.hidden);
     assert!(!plan.primitives.is_empty());
@@ -283,7 +279,7 @@ fn direct2d_painter_skeleton_routes_compact_text_to_directwrite_requests() {
     let mut job = compact_paint_job();
     job.completion_count = 0;
     let mut painter = Direct2DWindowsNativePanelPainter::default();
-    let plan = painter.paint(&job, None).expect("paint plan");
+    let plan = painter.paint(&job).expect("paint plan");
 
     let requests = super::directwrite_text_requests_from_paint_plan(&plan);
 
@@ -321,9 +317,7 @@ fn direct2d_painter_skeleton_routes_compact_text_to_directwrite_requests() {
 #[test]
 fn direct2d_painter_skeleton_routes_expanded_cards_to_directwrite_requests() {
     let mut painter = Direct2DWindowsNativePanelPainter::default();
-    let plan = painter
-        .paint(&expanded_paint_job(), None)
-        .expect("paint plan");
+    let plan = painter.paint(&expanded_paint_job()).expect("paint plan");
     let requests = super::directwrite_text_requests_from_paint_plan(&plan);
 
     assert!(plan.primitives.iter().any(|primitive| matches!(
