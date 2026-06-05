@@ -2918,6 +2918,7 @@ name = "reef-vnode"
 version = "0.1.0"
 dependencies = [
  "reef-core",
+ "reef-view-macros",
 ]
 
 [[package]]
