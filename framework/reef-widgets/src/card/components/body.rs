@@ -1,6 +1,6 @@
 use reef_core::{
     color::Color,
-    geometry::{Point, Rect, Size},
+    geometry::{Rect, Size},
 };
 use reef_draw::primitive::{DrawPrimitive, TextAlignment, TextWeight};
 use reef_layout::Constraints;
@@ -50,8 +50,12 @@ impl Widget for CardBody {
             if let Some(prefix) = &line.prefix {
                 let pw = prefix.chars().count() as f64 * 6.0;
                 ctx.primitives.push(DrawPrimitive::Text {
-                    origin: Point { x, y },
-                    max_width: pw + 4.0,
+                    frame: Rect {
+                        x,
+                        y,
+                        width: pw + 4.0,
+                        height: 16.0,
+                    },
                     text: prefix.clone(),
                     color: prefix_color,
                     size: 10,
@@ -62,8 +66,12 @@ impl Widget for CardBody {
                 x += 24.0;
             }
             ctx.primitives.push(DrawPrimitive::Text {
-                origin: Point { x, y },
-                max_width: rect.width - x + rect.x - self.pad_x,
+                frame: Rect {
+                    x,
+                    y,
+                    width: rect.width - x + rect.x - self.pad_x,
+                    height: 16.0,
+                },
                 text: line.text.clone(),
                 color: text_color,
                 size: 10,
@@ -111,11 +119,12 @@ impl Widget for CardBody {
                 alpha: 0.4 * self.content_alpha,
             });
             ctx.primitives.push(DrawPrimitive::Text {
-                origin: Point {
+                frame: Rect {
                     x: px + 7.0,
                     y: py + 5.0,
+                    width: name_w,
+                    height: 14.0,
                 },
-                max_width: name_w,
                 text: tool.name.clone(),
                 color: tool_tone_color(&tool.name),
                 size: 9,
@@ -127,11 +136,12 @@ impl Widget for CardBody {
                 if !desc.trim().is_empty() {
                     let desc_x = px + 7.0 + name_w + 6.0;
                     ctx.primitives.push(DrawPrimitive::Text {
-                        origin: Point {
+                        frame: Rect {
                             x: desc_x,
                             y: py + 5.0,
+                            width: desc_w,
+                            height: 14.0,
                         },
-                        max_width: desc_w,
                         text: desc.clone(),
                         color: Color::from(theme::TEXT_DETAIL),
                         size: 9,
@@ -164,11 +174,12 @@ impl Widget for CardBody {
                     alpha: self.content_alpha,
                 });
                 ctx.primitives.push(DrawPrimitive::Text {
-                    origin: Point {
+                    frame: Rect {
                         x: hx + 9.0,
                         y: hy + 4.0,
+                        width: hint_w - 18.0,
+                        height: 14.0,
                     },
-                    max_width: hint_w - 18.0,
                     text: hint_text,
                     color: Color::from(theme::ACTION_HINT_FG),
                     size: 10,

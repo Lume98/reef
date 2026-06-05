@@ -7,7 +7,7 @@ use crate::{
 
 use super::{
     presentation_model::NativePanelPresentationModel,
-    render_bundle::NativePanelRenderCommandBundle,
+    render_bundle::NativePanelRenderBundle,
     runtime_scene_cache::NativePanelRuntimeSceneCache,
 };
 
@@ -63,7 +63,7 @@ pub fn native_panel_runtime_render_state_from_preserved_scene(
 pub fn apply_native_panel_preserved_close_presentation_slots(
     preserved: &NativePanelPresentationModel,
     scene: Option<&mut PanelScene>,
-    bundle: Option<&mut NativePanelRenderCommandBundle>,
+    bundle: Option<&mut NativePanelRenderBundle>,
     presentation: Option<&mut NativePanelPresentationModel>,
 ) {
     if let Some(scene) = scene {
@@ -222,3 +222,4 @@ mod tests {
         }
     }
 }
+

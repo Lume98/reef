@@ -1,7 +1,7 @@
 //! Reef 原生面板 Windows 适配层。
 //!
 //! 当前对外提供 snapshot preview standalone facade；Win32 host 的绘制入口只接受
-//! `NativePanelDrawPlan` 协议，旧 widget `DrawPlan` 仍保留在 core/source facade 边界之外。
+//! `NativePanelPaintPlan` 协议，旧 widget `DrawPlan` 仍保留在 core/source facade 边界之外。
 
 extern crate self as reef_native_panel_windows;
 

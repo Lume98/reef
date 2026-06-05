@@ -1,6 +1,6 @@
 use reef_core::{
     color::Color,
-    geometry::{Point, Rect, Size},
+    geometry::{Rect, Size},
 };
 use reef_draw::primitive::{DrawPrimitive, TextAlignment, TextWeight};
 use reef_layout::Constraints;
@@ -35,11 +35,12 @@ impl Widget for CardHeader {
                 rect.y + rect.height - 24.0
             };
             ctx.primitives.push(DrawPrimitive::Text {
-                origin: Point {
+                frame: Rect {
                     x: rect.x + self.pad_x,
                     y: base_y + self.content_translate_y,
+                    width: rect.width - self.pad_x * 2.0,
+                    height: 20.0,
                 },
-                max_width: rect.width - self.pad_x * 2.0,
                 text: self.title.clone(),
                 color: self.title_color,
                 size: 12,
@@ -51,11 +52,12 @@ impl Widget for CardHeader {
 
         if let Some(sub) = &self.subtitle {
             ctx.primitives.push(DrawPrimitive::Text {
-                origin: Point {
+                frame: Rect {
                     x: rect.x + self.pad_x,
                     y: rect.y + rect.height - 40.0 + self.content_translate_y,
+                    width: rect.width - self.pad_x * 2.0,
+                    height: 16.0,
                 },
-                max_width: rect.width - self.pad_x * 2.0,
                 text: sub.clone(),
                 color: Color::from(theme::TEXT_SUBTITLE),
                 size: 9,

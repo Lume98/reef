@@ -1,6 +1,6 @@
 use reef_core::{
     color::Color,
-    geometry::{Point, Rect, Size},
+    geometry::{Rect, Size},
 };
 use reef_draw::primitive::{DrawPrimitive, TextAlignment, TextWeight};
 use reef_layout::Constraints;
@@ -45,11 +45,12 @@ impl Widget for CompactBarCounts {
             let tw = estimate_text_width(&self.total_count);
             right_x -= tw;
             ctx.primitives.push(DrawPrimitive::Text {
-                origin: Point {
+                frame: Rect {
                     x: right_x,
                     y: cy - 8.0,
+                    width: tw + 4.0,
+                    height: 20.0,
                 },
-                max_width: tw + 4.0,
                 text: self.total_count.clone(),
                 color: self.dim_text_color,
                 size: 14,
@@ -62,11 +63,12 @@ impl Widget for CompactBarCounts {
         if !self.active_count.is_empty() && !self.total_count.is_empty() {
             right_x -= 8.0;
             ctx.primitives.push(DrawPrimitive::Text {
-                origin: Point {
+                frame: Rect {
                     x: right_x - 4.0,
                     y: cy - 8.0,
+                    width: 12.0,
+                    height: 20.0,
                 },
-                max_width: 12.0,
                 text: "/".to_string(),
                 color: self.dim_text_color,
                 size: 14,
@@ -93,11 +95,12 @@ impl Widget for CompactBarCounts {
 
         let scroll_offset = self.active_count_scroll * 20.0;
         ctx.primitives.push(DrawPrimitive::Text {
-            origin: Point {
+            frame: Rect {
                 x: right_x,
                 y: cy - 8.0 - scroll_offset,
+                width: aw + 4.0,
+                height: 20.0,
             },
-            max_width: aw + 4.0,
             text: self.active_count.clone(),
             color: active_color,
             size: 14,
@@ -108,11 +111,12 @@ impl Widget for CompactBarCounts {
 
         if let Some(next) = &self.active_count_next {
             ctx.primitives.push(DrawPrimitive::Text {
-                origin: Point {
+                frame: Rect {
                     x: right_x,
                     y: cy - 8.0 + 20.0 - scroll_offset,
+                    width: aw + 4.0,
+                    height: 20.0,
                 },
-                max_width: aw + 4.0,
                 text: next.clone(),
                 color: active_color,
                 size: 14,

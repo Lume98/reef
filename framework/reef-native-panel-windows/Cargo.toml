@@ -13,6 +13,7 @@ serde_json = { workspace = true }
 tokio = { workspace = true }
 tracing = { workspace = true }
 reef-core = { path = "../reef-core" }
+reef-draw = { path = "../reef-draw" }
 reef-native-panel-core = { path = "../reef-native-panel-core" }
 reef-ui = { path = "../reef-ui" }
 echoisland-runtime = { path = "../../echoisland-runtime" }

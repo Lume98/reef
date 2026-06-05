@@ -167,10 +167,10 @@ pub(crate) mod presentation {
         native_panel_visual_card_input_from_scene_card,
         native_panel_visual_card_input_from_scene_card_with_height,
         resolve_native_panel_compact_bar_visual_plan, resolve_native_panel_visual_plan,
-        NativePanelDrawPlanInput, NativePanelVisualActionButtonInput,
-        NativePanelVisualCardBadgeInput, NativePanelVisualCardBodyLineInput,
-        NativePanelVisualCardBodyRole, NativePanelVisualCardInput, NativePanelVisualCardRowInput,
-        NativePanelVisualCardStyle, NativePanelVisualDisplayMode,
+        NativePanelPaintInput, NativePanelVisualActionButtonInput, NativePanelVisualCardBadgeInput,
+        NativePanelVisualCardBodyLineInput, NativePanelVisualCardBodyRole,
+        NativePanelVisualCardInput, NativePanelVisualCardRowInput, NativePanelVisualCardStyle,
+        NativePanelVisualDisplayMode,
     };
 }
 
@@ -196,7 +196,7 @@ pub(crate) mod renderer {
         resolve_native_panel_preserved_status_close_scene_for_snapshot,
     };
     pub(crate) use super::super::render_commands::{
-        resolve_native_panel_render_command_bundle, NativePanelRenderCommandBundle,
+        resolve_native_panel_render_command_bundle, NativePanelRenderBundle,
     };
     pub(crate) use super::super::renderer_backend::{
         cache_host_window_descriptor_on_renderer, cache_host_window_state_on_renderer,
@@ -289,22 +289,11 @@ pub(crate) mod transition {
 
 // 视觉计划和底层 primitive 工具。
 pub(crate) mod visual {
-    pub(crate) use super::super::visual_primitives::{
-        native_panel_visual_compact_shoulder_primitive,
-        native_panel_visual_completion_glow_primitive, native_panel_visual_mascot_body_primitive,
-        native_panel_visual_mascot_ellipse_primitive,
-        native_panel_visual_mascot_ellipse_primitives_by_role,
-        native_panel_visual_mascot_round_rect_primitive,
-        native_panel_visual_mascot_sprite_primitive, native_panel_visual_mascot_text_primitive,
-        native_panel_visual_text_box_height, native_panel_visual_text_box_height_for_role,
-        native_panel_visual_text_primitive_by_role, native_panel_visual_text_primitive_by_text,
-        NativePanelDrawPlan, NativePanelDrawPrimitive, NativePanelVisualColor,
-        NativePanelVisualMascotEllipseRole, NativePanelVisualMascotRoundRectRole,
-        NativePanelVisualMascotTextRole, NativePanelVisualShoulderSide,
-        NativePanelVisualTextAlignment, NativePanelVisualTextRole, NativePanelVisualTextWeight,
-    };
     pub(crate) use reef_ui::native_panel_ui::visual::{
+        native_panel_visual_text_box_height, native_panel_visual_text_box_height_for_role,
         resolve_native_panel_compact_bar_visual_plan, resolve_native_panel_visual_plan,
+        NativePanelVisualColor, NativePanelVisualShoulderSide, NativePanelVisualTextAlignment,
+        NativePanelVisualTextRole, NativePanelVisualTextWeight,
     };
 }
 

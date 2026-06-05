@@ -5,9 +5,7 @@
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
 
-use crate::native_panel_renderer::visual_primitives::{
-    NativePanelDrawPlan, NativePanelDrawPrimitive,
-};
+use reef_draw::primitive::{DrawPlan, DrawPrimitive};
 
 /// 可序列化的渲染快照
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
@@ -42,11 +40,7 @@ pub struct SnapshotMetadata {
 
 impl RenderSnapshot {
     /// 从渲染计划创建快照
-    pub fn from_visual_plan(
-        scenario: &str,
-        plan: &NativePanelDrawPlan,
-        metadata: SnapshotMetadata,
-    ) -> Self {
+    pub fn from_visual_plan(scenario: &str, plan: &DrawPlan, metadata: SnapshotMetadata) -> Self {
         let primitives = plan
             .primitives
             .iter()
@@ -121,12 +115,13 @@ pub enum SnapshotDiff {
 }
 
 impl SerializablePrimitive {
-    fn from_primitive(p: &NativePanelDrawPrimitive) -> Self {
+    fn from_primitive(p: &DrawPrimitive) -> Self {
         match p {
-            NativePanelDrawPrimitive::RoundRect {
+            DrawPrimitive::RoundRect {
                 frame,
                 radius,
                 color,
+                alpha,
             } => Self {
                 primitive_type: "RoundRect".to_string(),
                 data: serde_json::json!({
@@ -138,13 +133,12 @@ impl SerializablePrimitive {
                     },
                     "radius": radius,
                     "color": format!("rgb({}, {}, {})", color.r, color.g, color.b),
+                    "alpha": alpha,
                 }),
             },
 
-            NativePanelDrawPrimitive::Text {
-                role,
-                origin,
-                max_width,
+            DrawPrimitive::Text {
+                frame,
                 text,
                 color,
                 size,
@@ -154,12 +148,12 @@ impl SerializablePrimitive {
             } => Self {
                 primitive_type: "Text".to_string(),
                 data: serde_json::json!({
-                    "role": format!("{:?}", role),
-                    "origin": {
-                        "x": origin.x,
-                        "y": origin.y,
+                    "frame": {
+                        "x": frame.x,
+                        "y": frame.y,
+                        "width": frame.width,
+                        "height": frame.height,
                     },
-                    "max_width": max_width,
                     "text": text,
                     "color": format!("rgb({}, {}, {})", color.r, color.g, color.b),
                     "size": size,
@@ -169,7 +163,11 @@ impl SerializablePrimitive {
                 }),
             },
 
-            NativePanelDrawPrimitive::Rect { frame, color } => Self {
+            DrawPrimitive::Rect {
+                frame,
+                color,
+                alpha,
+            } => Self {
                 primitive_type: "Rect".to_string(),
                 data: serde_json::json!({
                     "frame": {
@@ -179,28 +177,20 @@ impl SerializablePrimitive {
                         "height": frame.height,
                     },
                     "color": format!("rgb({}, {}, {})", color.r, color.g, color.b),
+                    "alpha": alpha,
                 }),
             },
 
-            NativePanelDrawPrimitive::CompactShoulder {
-                side,
-                frame,
-                progress,
+            DrawPrimitive::Path {
+                segments,
                 fill,
-                border,
+                alpha,
             } => Self {
-                primitive_type: "CompactShoulder".to_string(),
+                primitive_type: "Path".to_string(),
                 data: serde_json::json!({
-                    "side": format!("{:?}", side),
-                    "frame": {
-                        "x": frame.x,
-                        "y": frame.y,
-                        "width": frame.width,
-                        "height": frame.height,
-                    },
-                    "progress": progress,
                     "fill": format!("rgb({}, {}, {})", fill.r, fill.g, fill.b),
-                    "border": format!("rgb({}, {}, {})", border.r, border.g, border.b),
+                    "alpha": alpha,
+                    "segments": segments.len(),
                 }),
             },
 
@@ -249,36 +239,44 @@ macro_rules! assert_snapshot {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::native_panel_core::{PanelPoint, PanelRect};
-    use crate::native_panel_renderer::visual_primitives::{
-        NativePanelVisualColor, NativePanelVisualTextAlignment, NativePanelVisualTextRole,
-        NativePanelVisualTextWeight,
+    use reef_core::{
+        color::Color,
+        geometry::{Rect, Size},
     };
+    use reef_draw::primitive::{TextAlignment, TextWeight};
 
     #[test]
     fn test_snapshot_serialization() {
-        let plan = NativePanelDrawPlan {
+        let plan = DrawPlan {
             hidden: false,
+            viewport: Size {
+                width: 208.0,
+                height: 44.0,
+            },
             primitives: vec![
-                NativePanelDrawPrimitive::RoundRect {
-                    frame: PanelRect {
+                DrawPrimitive::RoundRect {
+                    frame: Rect {
                         x: 0.0,
                         y: 0.0,
                         width: 208.0,
                         height: 44.0,
                     },
                     radius: 22.0,
-                    color: NativePanelVisualColor::rgb(18, 18, 22),
+                    color: Color::rgb(18, 18, 22),
+                    alpha: 1.0,
                 },
-                NativePanelDrawPrimitive::Text {
-                    role: NativePanelVisualTextRole::CompactHeadline,
-                    origin: PanelPoint { x: 52.0, y: 15.0 },
-                    max_width: 156.0,
+                DrawPrimitive::Text {
+                    frame: Rect {
+                        x: 52.0,
+                        y: 15.0,
+                        width: 156.0,
+                        height: 24.0,
+                    },
                     text: "AI Gateway".to_string(),
-                    color: NativePanelVisualColor::rgb(255, 255, 255),
+                    color: Color::rgb(255, 255, 255),
                     size: 13,
-                    weight: NativePanelVisualTextWeight::Semibold,
-                    alignment: NativePanelVisualTextAlignment::Center,
+                    weight: TextWeight::Semibold,
+                    alignment: TextAlignment::Center,
                     alpha: 1.0,
                 },
             ],

@@ -2,7 +2,7 @@ use crate::native_panel_core::{PanelPoint, PanelRect};
 
 use super::presentation_model::NativePanelPresentationModel;
 use super::visual_plan::{
-    NativePanelDrawPlanInput, NativePanelVisualCardInput, NativePanelVisualCardStyle,
+    NativePanelPaintInput, NativePanelVisualCardInput, NativePanelVisualCardStyle,
     NativePanelVisualDisplayMode,
 };
 use super::visual_primitives::NativePanelVisualColor;
@@ -116,7 +116,7 @@ impl Default for NativePanelLayoutSpacing {
 }
 
 pub fn build_native_panel_component_tree(
-    input: &NativePanelDrawPlanInput,
+    input: &NativePanelPaintInput,
 ) -> NativePanelComponentTree {
     let presentation = build_native_panel_presentation_model_from_visual_plan_input(input);
     build_native_panel_component_tree_from_presentation_and_cards(
@@ -214,7 +214,7 @@ pub fn build_native_panel_component_tree_from_presentation_and_cards(
 }
 
 fn build_native_panel_presentation_model_from_visual_plan_input(
-    input: &NativePanelDrawPlanInput,
+    input: &NativePanelPaintInput,
 ) -> NativePanelPresentationModel {
     NativePanelPresentationModel {
         panel_frame: input.panel_frame,
@@ -337,7 +337,7 @@ fn push_setting_row_components(
 }
 
 pub fn build_native_panel_component_tree_from_visual_plan(
-    input: &NativePanelDrawPlanInput,
+    input: &NativePanelPaintInput,
 ) -> NativePanelComponentTree {
     build_native_panel_component_tree(input)
 }
@@ -350,8 +350,8 @@ mod tests {
         native_panel_scene::SceneMascotPose,
     };
 
-    fn plan_input() -> NativePanelDrawPlanInput {
-        NativePanelDrawPlanInput {
+    fn plan_input() -> NativePanelPaintInput {
+        NativePanelPaintInput {
             window_state: super::super::descriptors::NativePanelHostWindowState {
                 frame: Some(PanelRect {
                     x: 0.0,

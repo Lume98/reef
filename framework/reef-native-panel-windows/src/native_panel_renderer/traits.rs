@@ -14,7 +14,7 @@ use super::host_runtime_facade::{
     native_panel_host_display_reposition, sync_native_panel_host_display_reposition,
     NativePanelHostDisplayReposition,
 };
-use super::render_commands::NativePanelRenderCommandBundle;
+use super::render_commands::NativePanelRenderBundle;
 
 pub(crate) trait NativePanelRenderer {
     type Error;
@@ -88,14 +88,14 @@ pub(crate) trait NativePanelRenderer {
 
     fn record_render_command_bundle(
         &mut self,
-        _bundle: &NativePanelRenderCommandBundle,
+        _bundle: &NativePanelRenderBundle,
     ) -> Result<(), Self::Error> {
         Ok(())
     }
 
     fn apply_render_command_bundle(
         &mut self,
-        bundle: &NativePanelRenderCommandBundle,
+        bundle: &NativePanelRenderBundle,
     ) -> Result<(), Self::Error> {
         self.render_scene(&bundle.scene, bundle.runtime)?;
         self.record_render_command_bundle(bundle)?;

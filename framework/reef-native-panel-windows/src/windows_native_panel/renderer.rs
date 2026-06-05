@@ -22,14 +22,12 @@ use crate::{
             resolve_and_cache_presentation_from_scene_cache_on_renderer,
             resolve_cached_presentation_model, resolve_native_panel_animation_plan,
             NativePanelCachedRendererBackend, NativePanelClosePresentationPlan,
-            NativePanelRenderCommandBundle, NativePanelRenderer, NativePanelRuntimeSceneCache,
+            NativePanelRenderBundle, NativePanelRenderer, NativePanelRuntimeSceneCache,
         },
-    },
-    native_panel_renderer::rendering_backend::{
-        NativePanelDrawBackend, NativePanelDrawFrameSubmission,
     },
     native_panel_scene::{PanelRuntimeRenderState, PanelScene},
 };
+use reef_draw::draw_backend::{DrawBackend, FrameSubmission};
 
 use super::{host_runtime::WindowsNativePanelHost, WINDOWS_FALLBACK_PANEL_SCREEN_FRAME};
 
@@ -44,7 +42,7 @@ pub(crate) struct WindowsNativePanelRenderer {
     pub(super) last_window_state: Option<NativePanelHostWindowState>,
     pub(super) last_pointer_regions: Vec<NativePanelPointerRegion>,
     pub(super) last_presentation_model: Option<NativePanelPresentationModel>,
-    pub(super) last_frame_submission: Option<NativePanelDrawFrameSubmission>,
+    pub(super) last_frame_submission: Option<FrameSubmission>,
     pub(super) active_close_presentation_plan: Option<NativePanelClosePresentationPlan>,
 }
 
@@ -123,7 +121,7 @@ impl NativePanelCachedRendererBackend for WindowsNativePanelRenderer {
 
     fn after_render_command_bundle_cached(
         &mut self,
-        bundle: &NativePanelRenderCommandBundle,
+        bundle: &NativePanelRenderBundle,
     ) -> Result<(), Self::Error> {
         self.last_layout = Some(bundle.layout);
         self.last_render_state = Some(bundle.render_state);
@@ -193,7 +191,7 @@ impl NativePanelRenderer for WindowsNativePanelRenderer {
 
     fn apply_render_command_bundle(
         &mut self,
-        bundle: &NativePanelRenderCommandBundle,
+        bundle: &NativePanelRenderBundle,
     ) -> Result<(), Self::Error> {
         cache_render_command_bundle_on_renderer(self, bundle)
     }
@@ -203,13 +201,10 @@ impl NativePanelRenderer for WindowsNativePanelRenderer {
     }
 }
 
-impl NativePanelDrawBackend for WindowsNativePanelRenderer {
+impl DrawBackend for WindowsNativePanelRenderer {
     type Error = String;
 
-    fn submit_frame(
-        &mut self,
-        submission: &NativePanelDrawFrameSubmission,
-    ) -> Result<(), Self::Error> {
+    fn submit_frame(&mut self, submission: &FrameSubmission) -> Result<(), Self::Error> {
         self.last_frame_submission = Some(submission.clone());
         Ok(())
     }

@@ -1,6 +1,6 @@
 use reef_core::{
     color::Color,
-    geometry::{Point, Rect, Size},
+    geometry::{Rect, Size},
 };
 use reef_draw::primitive::{DrawPrimitive, TextAlignment, TextWeight};
 use reef_layout::Constraints;
@@ -70,11 +70,12 @@ impl Widget for MascotExpression {
 
         if self.pose == MascotPose::Sleepy {
             ctx.primitives.push(DrawPrimitive::Text {
-                origin: Point {
+                frame: Rect {
                     x: cx - 3.0 * self.scale_x,
                     y: cy - r * self.scale_y - 14.0,
+                    width: 20.0,
+                    height: 18.0,
                 },
-                max_width: 20.0,
                 text: "Z".to_string(),
                 color: Color::from(theme::EYE_LID),
                 size: 12,

@@ -11,7 +11,7 @@ use super::presentation_model::{
     resolve_native_panel_presentation, resolve_native_panel_presentation_model,
     NativePanelPresentationModel, NativePanelResolvedPresentation,
 };
-use super::render_commands::NativePanelRenderCommandBundle;
+use super::render_commands::NativePanelRenderBundle;
 use super::runtime_scene_cache::{
     cache_render_command_bundle, cache_scene_runtime, cached_presentation_model,
     cached_runtime_render_state, cached_scene, NativePanelRuntimeSceneCache,
@@ -49,7 +49,7 @@ pub(crate) trait NativePanelCachedRendererBackend {
 
     fn after_render_command_bundle_cached(
         &mut self,
-        _bundle: &NativePanelRenderCommandBundle,
+        _bundle: &NativePanelRenderBundle,
     ) -> Result<(), Self::Error> {
         Ok(())
     }
@@ -116,7 +116,7 @@ where
 
 pub(crate) fn cache_render_command_bundle_on_renderer<R>(
     renderer: &mut R,
-    bundle: &NativePanelRenderCommandBundle,
+    bundle: &NativePanelRenderBundle,
 ) -> Result<(), R::Error>
 where
     R: NativePanelCachedRendererBackend,

@@ -1,6 +1,7 @@
 use std::sync::OnceLock;
 
 use crate::{native_panel_core::PanelPoint, native_panel_scene::SceneMascotPose};
+use reef_draw::primitive::DrawPrimitive;
 
 use super::super::{
     env_flags::native_panel_enabled_from_env_value,
@@ -13,9 +14,7 @@ use super::super::{
         MascotTextVisualSpec, MascotVisualSpec,
     },
     visual_primitives::{
-        NativePanelDrawPrimitive, NativePanelVisualMascotEllipseRole,
-        NativePanelVisualMascotRoundRectRole, NativePanelVisualMascotTextRole,
-        NativePanelVisualTextAlignment,
+        draw_rect, native_panel_visual_plain_text_frame, NativePanelVisualTextAlignment,
     },
 };
 
@@ -27,55 +26,47 @@ const DEFAULT_MASCOT_SPRITE_PATH: &str = "mascot/default/spritesheet.png";
 static DEFAULT_MASCOT_SPRITE_MANIFEST_CACHE: OnceLock<Option<MascotSpriteManifest>> =
     OnceLock::new();
 
-pub(super) fn apply_mascot_chrome_alpha(primitives: &mut [NativePanelDrawPrimitive], alpha: f64) {
+pub(super) fn apply_mascot_chrome_alpha(primitives: &mut [DrawPrimitive], alpha: f64) {
     let alpha = alpha.clamp(0.0, 1.0);
     for primitive in primitives {
         match primitive {
-            NativePanelDrawPrimitive::MascotDot {
-                alpha: dot_alpha,
-                shadow_opacity,
-                ..
-            } => {
-                *dot_alpha *= alpha;
-                *shadow_opacity *= alpha;
-            }
-            NativePanelDrawPrimitive::MascotRoundRect {
+            DrawPrimitive::RoundRect {
                 alpha: primitive_alpha,
                 ..
             }
-            | NativePanelDrawPrimitive::MascotEllipse {
+            | DrawPrimitive::Ellipse {
                 alpha: primitive_alpha,
                 ..
             }
-            | NativePanelDrawPrimitive::MascotText {
+            | DrawPrimitive::StrokedRoundRect {
                 alpha: primitive_alpha,
                 ..
             }
-            | NativePanelDrawPrimitive::MascotSprite {
-                opacity: primitive_alpha,
+            | DrawPrimitive::Text {
+                alpha: primitive_alpha,
                 ..
             } => {
                 *primitive_alpha *= alpha;
+            }
+            DrawPrimitive::SpriteImage { opacity, .. } => {
+                *opacity *= alpha;
             }
             _ => {}
         }
     }
 }
 
-pub(super) fn push_mascot_primitives(
-    primitives: &mut Vec<NativePanelDrawPrimitive>,
-    spec: &MascotVisualSpec,
-) {
+pub(super) fn push_mascot_primitives(primitives: &mut Vec<DrawPrimitive>, spec: &MascotVisualSpec) {
     if spec.pose == SceneMascotPose::Hidden {
         return;
     }
 
     if mascot_sprite_enabled() {
         if let Some(sprite) = resolve_default_mascot_sprite(spec) {
-            primitives.push(NativePanelDrawPrimitive::MascotSprite {
-                sprite_path: DEFAULT_MASCOT_SPRITE_PATH.to_string(),
-                source_rect: sprite.source_rect,
-                frame: sprite.frame,
+            primitives.push(DrawPrimitive::SpriteImage {
+                key: DEFAULT_MASCOT_SPRITE_PATH.to_string(),
+                source_rect: draw_rect(sprite.source_rect),
+                frame: draw_rect(sprite.frame),
                 opacity: sprite.opacity,
             });
             if let Some(badge) = &spec.completion_badge {
@@ -85,50 +76,28 @@ pub(super) fn push_mascot_primitives(
         }
     }
 
-    primitives.push(NativePanelDrawPrimitive::MascotDot {
-        center: spec.body.center,
-        frame: spec.body.frame,
-        radius: spec.body.radius,
-        corner_radius: spec.body.corner_radius,
-        scale_x: spec.body.scale_x,
-        scale_y: spec.body.scale_y,
-        pose: spec.pose,
-        debug_mode_enabled: false,
-        fill: spec.body.fill_color,
-        stroke: spec.body.stroke_color,
+    primitives.push(DrawPrimitive::StrokedRoundRect {
+        frame: draw_rect(spec.body.frame),
+        radius: spec.body.corner_radius.max(spec.body.radius),
+        fill: spec.body.fill_color.into(),
+        stroke: spec.body.stroke_color.into(),
         stroke_width: spec.body.stroke_width,
-        shadow_opacity: spec.body.shadow_opacity,
-        shadow_radius: spec.body.shadow_radius,
         alpha: spec.motion.shell_alpha,
     });
     if let Some(message_bubble) = &spec.message_bubble {
         push_mascot_message_bubble(primitives, message_bubble);
     }
     if let Some(sleep_label) = &spec.sleep_label {
-        push_mascot_text(
-            primitives,
-            NativePanelVisualMascotTextRole::SleepLabel,
-            sleep_label,
-        );
+        push_mascot_text(primitives, sleep_label);
     }
-    for (index, eye) in spec.eyes.iter().enumerate() {
-        primitives.push(NativePanelDrawPrimitive::MascotEllipse {
-            role: if index == 0 {
-                NativePanelVisualMascotEllipseRole::LeftEye
-            } else {
-                NativePanelVisualMascotEllipseRole::RightEye
-            },
-            frame: eye.frame,
-            color: eye.color,
+    for eye in &spec.eyes {
+        primitives.push(DrawPrimitive::Ellipse {
+            frame: draw_rect(eye.frame),
+            color: eye.color.into(),
             alpha: 1.0,
         });
     }
-    push_mascot_round_rect(
-        primitives,
-        NativePanelVisualMascotRoundRectRole::Mouth,
-        spec.mouth,
-        1.0,
-    );
+    push_mascot_round_rect(primitives, spec.mouth, 1.0);
     if let Some(badge) = &spec.completion_badge {
         push_mascot_completion_badge(primitives, badge);
     }
@@ -164,77 +133,54 @@ fn default_mascot_sprite_manifest() -> Option<&'static MascotSpriteManifest> {
 }
 
 fn push_mascot_message_bubble(
-    primitives: &mut Vec<NativePanelDrawPrimitive>,
+    primitives: &mut Vec<DrawPrimitive>,
     bubble: &MascotMessageBubbleVisualSpec,
 ) {
-    push_mascot_round_rect(
-        primitives,
-        NativePanelVisualMascotRoundRectRole::MessageBubble,
-        bubble.bubble,
-        bubble.alpha,
-    );
+    push_mascot_round_rect(primitives, bubble.bubble, bubble.alpha);
     for dot in &bubble.dots {
-        primitives.push(NativePanelDrawPrimitive::MascotEllipse {
-            role: NativePanelVisualMascotEllipseRole::MessageBubbleDot,
-            frame: dot.frame,
-            color: dot.color,
+        primitives.push(DrawPrimitive::Ellipse {
+            frame: draw_rect(dot.frame),
+            color: dot.color.into(),
             alpha: bubble.alpha,
         });
     }
 }
 
 fn push_mascot_completion_badge(
-    primitives: &mut Vec<NativePanelDrawPrimitive>,
+    primitives: &mut Vec<DrawPrimitive>,
     badge: &MascotCompletionBadgeVisualSpec,
 ) {
-    push_mascot_round_rect(
-        primitives,
-        NativePanelVisualMascotRoundRectRole::CompletionBadgeOutline,
-        badge.outline,
-        1.0,
-    );
-    push_mascot_round_rect(
-        primitives,
-        NativePanelVisualMascotRoundRectRole::CompletionBadgeFill,
-        badge.fill,
-        1.0,
-    );
-    push_mascot_text(
-        primitives,
-        NativePanelVisualMascotTextRole::CompletionBadgeLabel,
-        &badge.label,
-    );
+    push_mascot_round_rect(primitives, badge.outline, 1.0);
+    push_mascot_round_rect(primitives, badge.fill, 1.0);
+    push_mascot_text(primitives, &badge.label);
 }
 
 fn push_mascot_round_rect(
-    primitives: &mut Vec<NativePanelDrawPrimitive>,
-    role: NativePanelVisualMascotRoundRectRole,
+    primitives: &mut Vec<DrawPrimitive>,
     spec: MascotRoundRectVisualSpec,
     alpha: f64,
 ) {
-    primitives.push(NativePanelDrawPrimitive::MascotRoundRect {
-        role,
-        frame: spec.frame,
+    primitives.push(DrawPrimitive::RoundRect {
+        frame: draw_rect(spec.frame),
         radius: spec.radius,
-        color: spec.color,
+        color: spec.color.into(),
         alpha,
     });
 }
 
-fn push_mascot_text(
-    primitives: &mut Vec<NativePanelDrawPrimitive>,
-    role: NativePanelVisualMascotTextRole,
-    spec: &MascotTextVisualSpec,
-) {
-    primitives.push(NativePanelDrawPrimitive::MascotText {
-        role,
-        origin: spec.origin,
-        max_width: spec.max_width,
+fn push_mascot_text(primitives: &mut Vec<DrawPrimitive>, spec: &MascotTextVisualSpec) {
+    primitives.push(DrawPrimitive::Text {
+        frame: native_panel_visual_plain_text_frame(
+            spec.origin,
+            spec.max_width,
+            &spec.text,
+            spec.size,
+        ),
         text: spec.text.clone(),
-        color: spec.color,
+        color: spec.color.into(),
         size: spec.size,
-        weight: spec.weight,
-        alignment: NativePanelVisualTextAlignment::Center,
+        weight: spec.weight.into(),
+        alignment: NativePanelVisualTextAlignment::Center.into(),
         alpha: spec.alpha,
     });
 }

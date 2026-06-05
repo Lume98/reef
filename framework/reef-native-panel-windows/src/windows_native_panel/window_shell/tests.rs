@@ -13,10 +13,10 @@ use crate::{
         },
         presentation::{
             NativePanelActionButtonsPresentation, NativePanelCardStackPresentation,
-            NativePanelCompactBarPresentation, NativePanelDrawPlanInput,
-            NativePanelGlowPresentation, NativePanelMascotPresentation,
-            NativePanelPresentationMetrics, NativePanelPresentationModel,
-            NativePanelShellPresentation, NativePanelVisualDisplayMode,
+            NativePanelCompactBarPresentation, NativePanelGlowPresentation,
+            NativePanelMascotPresentation, NativePanelPaintInput, NativePanelPresentationMetrics,
+            NativePanelPresentationModel, NativePanelShellPresentation,
+            NativePanelVisualDisplayMode,
         },
         shell::NativePanelHostShellLifecycle,
     },
@@ -675,7 +675,7 @@ fn shell_hover_frames_use_windows_client_coordinates_and_stable_bubble_hover() {
         width: 0.0,
         height: 0.0,
     };
-    let input = NativePanelDrawPlanInput {
+    let input = NativePanelPaintInput {
         window_state: NativePanelHostWindowState {
             frame: Some(PanelRect {
                 x: 510.0,

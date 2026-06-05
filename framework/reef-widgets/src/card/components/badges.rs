@@ -1,4 +1,4 @@
-use reef_core::geometry::{Point, Rect, Size};
+use reef_core::geometry::{Rect, Size};
 use reef_draw::primitive::{DrawPrimitive, TextAlignment, TextWeight};
 use reef_layout::Constraints;
 use reef_view::widget_host::{PaintContext, Widget};
@@ -49,11 +49,12 @@ impl Widget for CardBadges {
                 alpha: self.content_alpha,
             });
             ctx.primitives.push(DrawPrimitive::Text {
-                origin: Point {
+                frame: Rect {
                     x: bx + 7.0,
                     y: by + 2.0,
+                    width: w - 14.0,
+                    height: 16.0,
                 },
-                max_width: w - 14.0,
                 text: badge.text.clone(),
                 color: fg,
                 size: 10,

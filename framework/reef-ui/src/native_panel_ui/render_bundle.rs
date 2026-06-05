@@ -10,9 +10,7 @@ use super::descriptors::{
     NativePanelPointerRegionInput, NativePanelPointerRegionKind,
 };
 use super::presentation_model::estimated_scene_content_height_for_card_width;
-use super::rendering_backend::{
-    native_panel_frame_submission_from_visual_plan, NativePanelDrawFrameSubmission,
-};
+use super::rendering_backend::native_panel_frame_submission_from_visual_plan;
 use super::{
     presentation_model::native_panel_visual_plan_input_from_presentation,
     presentation_model::resolve_native_panel_presentation_model,
@@ -20,7 +18,7 @@ use super::{
 };
 
 #[derive(Clone, Debug)]
-pub struct NativePanelRenderCommandBundle {
+pub struct NativePanelRenderBundle {
     pub scene: PanelScene,
     pub runtime: PanelRuntimeRenderState,
     pub layout: PanelLayout,
@@ -92,12 +90,12 @@ pub fn resolve_native_panel_render_command_bundle(
     runtime: PanelRuntimeRenderState,
     render_state: PanelRenderState,
     pointer_region_input: Option<NativePanelPointerRegionInput>,
-) -> NativePanelRenderCommandBundle {
+) -> NativePanelRenderBundle {
     let interaction_plan =
         resolve_native_panel_interaction_plan(layout, scene, pointer_region_input);
     let pointer_regions = interaction_plan.pointer_regions;
 
-    NativePanelRenderCommandBundle {
+    NativePanelRenderBundle {
         scene: scene.clone(),
         runtime,
         layout,
@@ -130,8 +128,8 @@ pub fn resolve_native_panel_render_command_bundle(
 }
 
 pub fn resolve_native_panel_frame_submission_for_render_command_bundle(
-    bundle: &NativePanelRenderCommandBundle,
-) -> NativePanelDrawFrameSubmission {
+    bundle: &NativePanelRenderBundle,
+) -> reef_draw::draw_backend::FrameSubmission {
     let presentation = resolve_native_panel_presentation_model(bundle);
     let window_state = super::descriptors::NativePanelHostWindowState {
         frame: Some(bundle.layout.panel_frame),
@@ -490,6 +488,7 @@ mod tests {
         let submission = resolve_native_panel_frame_submission_for_render_command_bundle(&bundle);
 
         assert!(!submission.hidden);
-        assert!(!submission.commands.is_empty());
+        assert!(!submission.plans.is_empty());
+        assert!(!submission.plans[0].primitives.is_empty());
     }
 }

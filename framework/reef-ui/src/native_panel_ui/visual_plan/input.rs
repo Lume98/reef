@@ -13,7 +13,7 @@ pub enum NativePanelVisualDisplayMode {
 }
 
 #[derive(Clone, Debug, PartialEq)]
-pub struct NativePanelDrawPlanInput {
+pub struct NativePanelPaintInput {
     pub window_state: NativePanelHostWindowState,
     pub display_mode: NativePanelVisualDisplayMode,
     pub surface: ExpandedSurface,

@@ -14,10 +14,10 @@ use super::render_bundle::{
     native_panel_glow_command, native_panel_mascot_command,
     resolve_native_panel_render_command_bundle, NativePanelActionButtonCommand,
     NativePanelCardStackCommand, NativePanelCompactBarCommand, NativePanelGlowCommand,
-    NativePanelMascotCommand, NativePanelRenderCommandBundle, NativePanelShellCommand,
+    NativePanelMascotCommand, NativePanelRenderBundle, NativePanelShellCommand,
 };
 use super::visual_plan::{
-    native_panel_visual_card_input_from_scene_card_with_height, NativePanelDrawPlanInput,
+    native_panel_visual_card_input_from_scene_card_with_height, NativePanelPaintInput,
     NativePanelVisualActionButtonInput, NativePanelVisualDisplayMode,
 };
 
@@ -235,7 +235,7 @@ pub struct NativePanelPresentationModel {
 
 #[derive(Clone, Debug)]
 pub struct NativePanelResolvedPresentation {
-    pub bundle: NativePanelRenderCommandBundle,
+    pub bundle: NativePanelRenderBundle,
     pub presentation: NativePanelPresentationModel,
 }
 
@@ -300,7 +300,7 @@ impl NativePanelPresentationModel {
 }
 
 pub fn resolve_native_panel_presentation_model(
-    bundle: &NativePanelRenderCommandBundle,
+    bundle: &NativePanelRenderBundle,
 ) -> NativePanelPresentationModel {
     native_panel_presentation_model_from_input(
         native_panel_presentation_model_input_from_bundle(bundle),
@@ -331,7 +331,7 @@ pub fn native_panel_visual_plan_input_from_presentation(
     window_state: NativePanelHostWindowState,
     display_mode: NativePanelVisualDisplayMode,
     presentation: Option<&NativePanelPresentationModel>,
-) -> NativePanelDrawPlanInput {
+) -> NativePanelPaintInput {
     let zero = PanelRect {
         x: 0.0,
         y: 0.0,
@@ -339,7 +339,7 @@ pub fn native_panel_visual_plan_input_from_presentation(
         height: 0.0,
     };
 
-    NativePanelDrawPlanInput {
+    NativePanelPaintInput {
         window_state,
         display_mode,
         surface: presentation
@@ -496,7 +496,7 @@ pub fn resolve_native_panel_presentation(
 
 pub fn resolve_native_panel_presentation_model_for_scene(
     scene: &PanelScene,
-    bundle: Option<&NativePanelRenderCommandBundle>,
+    bundle: Option<&NativePanelRenderBundle>,
 ) -> NativePanelPresentationModel {
     bundle
         .map(resolve_native_panel_presentation_model)
@@ -505,7 +505,7 @@ pub fn resolve_native_panel_presentation_model_for_scene(
 
 pub fn resolve_native_panel_snapshot_render_plan_for_scene(
     scene: PanelScene,
-    bundle: Option<NativePanelRenderCommandBundle>,
+    bundle: Option<NativePanelRenderBundle>,
 ) -> NativePanelSnapshotRenderPlan {
     let presentation = resolve_native_panel_presentation_model_for_scene(&scene, bundle.as_ref());
 
@@ -537,7 +537,7 @@ pub fn build_native_panel_presentation_model(scene: &PanelScene) -> NativePanelP
 }
 
 pub fn native_panel_presentation_model_input_from_bundle(
-    bundle: &NativePanelRenderCommandBundle,
+    bundle: &NativePanelRenderBundle,
 ) -> NativePanelPresentationModelInput {
     NativePanelPresentationModelInput {
         shell: shell_presentation_input_from_command(&bundle.shell),

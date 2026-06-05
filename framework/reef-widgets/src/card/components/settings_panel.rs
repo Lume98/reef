@@ -1,6 +1,6 @@
 use reef_core::{
     color::Color,
-    geometry::{Point, Rect, Size},
+    geometry::{Rect, Size},
 };
 use reef_draw::primitive::{DrawPrimitive, TextAlignment, TextWeight};
 use reef_layout::Constraints;
@@ -34,11 +34,12 @@ impl Widget for CardSettingsPanel {
         if !self.title.is_empty() {
             let y = rect.y + rect.height - 24.0 + self.content_translate_y;
             ctx.primitives.push(DrawPrimitive::Text {
-                origin: Point {
+                frame: Rect {
                     x: rect.x + theme::HEADER_PAD_X,
                     y,
+                    width: rect.width - theme::HEADER_PAD_X * 2.0,
+                    height: 20.0,
                 },
-                max_width: rect.width - theme::HEADER_PAD_X * 2.0,
                 text: self.title.clone(),
                 color: Color::from(theme::TEXT_TITLE),
                 size: 12,
@@ -65,11 +66,12 @@ impl Widget for CardSettingsPanel {
                 alpha: self.content_alpha,
             });
             ctx.primitives.push(DrawPrimitive::Text {
-                origin: Point {
+                frame: Rect {
                     x: bx + 7.0,
                     y: by + 2.0,
+                    width: w - 14.0,
+                    height: 16.0,
                 },
-                max_width: w - 14.0,
                 text: version.clone(),
                 color: Color::from(theme::BADGE_FG_DEFAULT),
                 size: 10,
@@ -110,11 +112,12 @@ impl Widget for CardSettingsPanel {
                 alpha: self.content_alpha,
             });
             ctx.primitives.push(DrawPrimitive::Text {
-                origin: Point {
+                frame: Rect {
                     x: inner.x + 11.0,
                     y: inner.y + (inner.height - 16.0) / 2.0,
+                    width: inner.width - 70.0,
+                    height: 16.0,
                 },
-                max_width: inner.width - 70.0,
                 text: row.title.clone(),
                 color: Color::from(theme::TEXT_TITLE),
                 size: 11,
@@ -139,11 +142,12 @@ impl Widget for CardSettingsPanel {
                 alpha: self.content_alpha,
             });
             ctx.primitives.push(DrawPrimitive::Text {
-                origin: Point {
+                frame: Rect {
                     x: badge_x + 9.0,
                     y: badge_y + 2.0,
+                    width: badge_w - 18.0,
+                    height: 14.0,
                 },
-                max_width: badge_w - 18.0,
                 text: row.value.clone(),
                 color: settings_value_badge_fg(row.active),
                 size: 10,

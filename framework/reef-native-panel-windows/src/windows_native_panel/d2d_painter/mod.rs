@@ -7,12 +7,9 @@ use super::{
     window_shell::WindowsNativePanelShellPaintJob,
 };
 use crate::native_panel_core::{PanelPoint, PanelRect};
-use reef_ui::native_panel_ui::rendering::{
-    native_panel_submit_visual_plan, NativePanelDrawBackend, NativePanelDrawFrameSubmission,
-};
-#[cfg(all(windows, not(test)))]
-use reef_ui::native_panel_ui::visual::native_panel_visual_text_box_height_for_role;
-use reef_ui::native_panel_ui::visual::NativePanelVisualShoulderSide;
+use reef_core::geometry::{Point, Rect};
+use reef_draw::primitive::DrawPrimitive;
+use reef_ui::native_panel_ui::rendering::native_panel_submit_visual_plan;
 
 #[cfg(all(windows, not(test)))]
 use super::{
@@ -53,27 +50,19 @@ pub(super) fn directwrite_text_requests_from_paint_plan(
 }
 
 fn directwrite_text_request_from_native_panel_primitive(
-    primitive: &reef_ui::native_panel_ui::visual::NativePanelDrawPrimitive,
+    primitive: &DrawPrimitive,
 ) -> Option<WindowsDirectWriteTextLayoutRequest> {
     match primitive {
-        reef_ui::native_panel_ui::visual::NativePanelDrawPrimitive::Text {
+        DrawPrimitive::Text {
             text,
-            max_width,
-            size,
-            weight,
-            alignment,
-            ..
-        }
-        | reef_ui::native_panel_ui::visual::NativePanelDrawPrimitive::MascotText {
-            text,
-            max_width,
+            frame,
             size,
             weight,
             alignment,
             ..
         } => Some(WindowsDirectWriteTextLayoutRequest::new(
             text.clone(),
-            *max_width,
+            frame.width,
             *size,
             *weight,
             *alignment,
@@ -92,12 +81,12 @@ pub(super) trait WindowsNativePanelPainter {
 #[derive(Default)]
 struct NativePanelPlanSubmissionRecorder;
 
-impl NativePanelDrawBackend for NativePanelPlanSubmissionRecorder {
+impl reef_draw::draw_backend::DrawBackend for NativePanelPlanSubmissionRecorder {
     type Error = String;
 
     fn submit_frame(
         &mut self,
-        _submission: &NativePanelDrawFrameSubmission,
+        _submission: &reef_draw::draw_backend::FrameSubmission,
     ) -> Result<(), Self::Error> {
         Ok(())
     }
@@ -108,30 +97,6 @@ pub(super) struct WindowsDirect2DCoordinateSpace {
     surface_height: f64,
 }
 
-#[derive(Clone, Copy, Debug, PartialEq)]
-pub(super) struct WindowsCompactShoulderPath {
-    start: PanelPoint,
-    line_to_top_edge: PanelPoint,
-    line_to_outer_edge: PanelPoint,
-    curve_control_1: PanelPoint,
-    curve_control_2: PanelPoint,
-    curve_end: PanelPoint,
-}
-
-#[derive(Clone, Copy, Debug, PartialEq)]
-pub(super) struct WindowsCompactPillPath {
-    start: PanelPoint,
-    top_right: PanelPoint,
-    right_edge_bottom_arc_start: PanelPoint,
-    bottom_right_control_1: PanelPoint,
-    bottom_right_control_2: PanelPoint,
-    bottom_right_arc_end: PanelPoint,
-    bottom_left_arc_start: PanelPoint,
-    bottom_left_control_1: PanelPoint,
-    bottom_left_control_2: PanelPoint,
-    bottom_left_arc_end: PanelPoint,
-}
-
 impl WindowsDirect2DCoordinateSpace {
     pub(super) fn new(surface_height: f64) -> Self {
         Self {
@@ -139,7 +104,7 @@ impl WindowsDirect2DCoordinateSpace {
         }
     }
 
-    pub(super) fn rect(self, rect: PanelRect) -> PanelRect {
+    pub(super) fn rect(self, rect: Rect) -> PanelRect {
         PanelRect {
             x: rect.x,
             y: self.surface_height - rect.y - rect.height,
@@ -148,164 +113,10 @@ impl WindowsDirect2DCoordinateSpace {
         }
     }
 
-    pub(super) fn point(self, point: PanelPoint) -> PanelPoint {
+    pub(super) fn point(self, point: Point) -> PanelPoint {
         PanelPoint {
             x: point.x,
             y: self.surface_height - point.y,
-        }
-    }
-
-    pub(super) fn text_rect(
-        self,
-        origin: PanelPoint,
-        max_width: f64,
-        text_height: f64,
-    ) -> PanelRect {
-        PanelRect {
-            x: origin.x,
-            y: self.surface_height - origin.y - text_height,
-            width: max_width,
-            height: text_height,
-        }
-    }
-}
-
-impl WindowsCompactShoulderPath {
-    pub(super) fn resolve(
-        frame: PanelRect,
-        side: NativePanelVisualShoulderSide,
-        progress: f64,
-    ) -> Option<Self> {
-        let scale_x = (1.0 - progress.clamp(0.0, 1.0)).clamp(0.0, 1.0);
-        if frame.width <= 0.0 || frame.height <= 0.0 || scale_x <= 0.001 {
-            return None;
-        }
-
-        let control_y = frame.y
-            + frame.height * (1.0 - crate::native_panel_core::COMPACT_SHOULDER_CURVE_FACTOR);
-
-        match side {
-            NativePanelVisualShoulderSide::Left => {
-                let left = frame.x + frame.width * (1.0 - scale_x);
-                let right = frame.x + frame.width;
-                let control_x = right
-                    - frame.width
-                        * (1.0 - crate::native_panel_core::COMPACT_SHOULDER_CURVE_FACTOR)
-                        * scale_x;
-                Some(Self {
-                    start: PanelPoint {
-                        x: left,
-                        y: frame.y,
-                    },
-                    line_to_top_edge: PanelPoint {
-                        x: right,
-                        y: frame.y,
-                    },
-                    line_to_outer_edge: PanelPoint {
-                        x: right,
-                        y: frame.y + frame.height,
-                    },
-                    curve_control_1: PanelPoint {
-                        x: right,
-                        y: control_y,
-                    },
-                    curve_control_2: PanelPoint {
-                        x: control_x,
-                        y: frame.y,
-                    },
-                    curve_end: PanelPoint {
-                        x: left,
-                        y: frame.y,
-                    },
-                })
-            }
-            NativePanelVisualShoulderSide::Right => {
-                let left = frame.x;
-                let right = frame.x + frame.width * scale_x;
-                let control_x = frame.x
-                    + frame.width
-                        * crate::native_panel_core::COMPACT_SHOULDER_CURVE_FACTOR
-                        * scale_x;
-                Some(Self {
-                    start: PanelPoint {
-                        x: right,
-                        y: frame.y,
-                    },
-                    line_to_top_edge: PanelPoint {
-                        x: left,
-                        y: frame.y,
-                    },
-                    line_to_outer_edge: PanelPoint {
-                        x: left,
-                        y: frame.y + frame.height,
-                    },
-                    curve_control_1: PanelPoint {
-                        x: left,
-                        y: control_y,
-                    },
-                    curve_control_2: PanelPoint {
-                        x: control_x,
-                        y: frame.y,
-                    },
-                    curve_end: PanelPoint {
-                        x: right,
-                        y: frame.y,
-                    },
-                })
-            }
-        }
-    }
-}
-
-impl WindowsCompactPillPath {
-    pub(super) fn resolve(frame: PanelRect, radius: f64) -> Self {
-        const ARC_CONTROL_FACTOR: f64 = 0.552_284_749_830_793_6;
-
-        let radius = radius
-            .max(0.0)
-            .min(frame.width / 2.0)
-            .min(frame.height.max(0.0));
-        let control = radius * ARC_CONTROL_FACTOR;
-        let left = frame.x;
-        let right = frame.x + frame.width;
-        let top = frame.y;
-        let bottom = frame.y + frame.height;
-
-        Self {
-            start: PanelPoint { x: left, y: top },
-            top_right: PanelPoint { x: right, y: top },
-            right_edge_bottom_arc_start: PanelPoint {
-                x: right,
-                y: bottom - radius,
-            },
-            bottom_right_control_1: PanelPoint {
-                x: right,
-                y: bottom - radius + control,
-            },
-            bottom_right_control_2: PanelPoint {
-                x: right - radius + control,
-                y: bottom,
-            },
-            bottom_right_arc_end: PanelPoint {
-                x: right - radius,
-                y: bottom,
-            },
-            bottom_left_arc_start: PanelPoint {
-                x: left + radius,
-                y: bottom,
-            },
-            bottom_left_control_1: PanelPoint {
-                x: left + radius - control,
-                y: bottom,
-            },
-            bottom_left_control_2: PanelPoint {
-                x: left,
-                y: bottom - radius + control,
-            },
-            bottom_left_arc_end: PanelPoint {
-                x: left,
-                y: bottom - radius,
-            },
         }
     }
 }
@@ -442,9 +253,9 @@ impl Direct2DWindowsNativePanelPainter {
                     WindowsNativePanelPaintOperation::PopClip => {
                         surface.target.PopAxisAlignedClip();
                     }
-                    WindowsNativePanelPaintOperation::DrawCompletionGlowImage {
-                        frame,
-                        opacity,
+                    WindowsNativePanelPaintOperation::DrawImage { .. } => {}
+                    WindowsNativePanelPaintOperation::DrawNineSliceImage {
+                        frame, opacity, ..
                     } => {
                         let target = &surface.target;
                         let Ok(bitmap) = ensure_completion_glow_bitmap_for_target(
@@ -457,11 +268,11 @@ impl Direct2DWindowsNativePanelPainter {
                             target,
                             bitmap,
                             coordinate_space,
-                            frame,
+                            panel_rect_from_rect(frame),
                             opacity,
                         );
                     }
-                    WindowsNativePanelPaintOperation::DrawMascotSprite {
+                    WindowsNativePanelPaintOperation::DrawSpriteImage {
                         source_rect,
                         frame,
                         opacity,
@@ -478,19 +289,10 @@ impl Direct2DWindowsNativePanelPainter {
                             target,
                             bitmap,
                             coordinate_space,
-                            source_rect,
-                            frame,
+                            panel_rect_from_rect(source_rect),
+                            panel_rect_from_rect(frame),
                             opacity,
                         );
-                    }
-                    WindowsNativePanelPaintOperation::FillHitTestBlocker { frame, alpha } => {
-                        let brush = surface
-                            .target
-                            .CreateSolidColorBrush(&d2d_alpha_color(alpha), None)
-                            .map_err(|error| error.to_string())?;
-                        surface
-                            .target
-                            .FillRectangle(&d2d_rect(coordinate_space.rect(frame)), &brush);
                     }
                     WindowsNativePanelPaintOperation::FillRoundRect {
                         frame,
@@ -502,30 +304,14 @@ impl Direct2DWindowsNativePanelPainter {
                             .target
                             .CreateSolidColorBrush(&d2d_color_with_alpha(color, alpha), None)
                             .map_err(|error| error.to_string())?;
-                        if job.display_mode
-                            == reef_ui::native_panel_ui::presentation::NativePanelVisualDisplayMode::Compact
-                            && frame == job.compact_bar_frame
-                        {
-                            let geometry = d2d_compact_pill_geometry(
-                                self.direct2d
-                                    .factory()
-                                    .ok_or_else(|| "Direct2D factory is not initialized".to_string())?,
-                                WindowsCompactPillPath::resolve(
-                                    coordinate_space.rect(frame),
-                                    radius,
-                                ),
-                            )?;
-                            surface.target.FillGeometry(&geometry, &brush, None);
-                        } else {
-                            surface.target.FillRoundedRectangle(
-                                &D2D1_ROUNDED_RECT {
-                                    rect: d2d_rect(coordinate_space.rect(frame)),
-                                    radiusX: radius as f32,
-                                    radiusY: radius as f32,
-                                },
-                                &brush,
-                            );
-                        }
+                        surface.target.FillRoundedRectangle(
+                            &D2D1_ROUNDED_RECT {
+                                rect: d2d_rect(coordinate_space.rect(frame)),
+                                radiusX: radius as f32,
+                                radiusY: radius as f32,
+                            },
+                            &brush,
+                        );
                     }
                     WindowsNativePanelPaintOperation::FillRect {
                         frame,
@@ -568,14 +354,12 @@ impl Direct2DWindowsNativePanelPainter {
                             d2d_point(coordinate_space.point(from)),
                             d2d_point(coordinate_space.point(to)),
                             &brush,
-                            width.max(1) as f32,
+                            width.max(1.0) as f32,
                             None,
                         );
                     }
                     WindowsNativePanelPaintOperation::DrawText {
-                        role,
-                        origin,
-                        max_width,
+                        frame,
                         text,
                         color,
                         size,
@@ -585,7 +369,7 @@ impl Direct2DWindowsNativePanelPainter {
                     } => {
                         let request = WindowsDirectWriteTextLayoutRequest::new(
                             text.clone(),
-                            max_width,
+                            frame.width,
                             size,
                             weight,
                             alignment,
@@ -600,11 +384,7 @@ impl Direct2DWindowsNativePanelPainter {
                             .target
                             .CreateSolidColorBrush(&d2d_color_with_alpha(color, alpha), None)
                             .map_err(|error| error.to_string())?;
-                        let text_rect = d2d_rect(coordinate_space.text_rect(
-                            origin,
-                            max_width,
-                            native_panel_visual_text_box_height_for_role(role, &text, size),
-                        ));
+                        let text_rect = d2d_rect(coordinate_space.rect(frame));
                         let wide: Vec<u16> = text.encode_utf16().collect();
                         surface.target.DrawText(
                             &wide,
@@ -615,18 +395,17 @@ impl Direct2DWindowsNativePanelPainter {
                             DWRITE_MEASURING_MODE_NATURAL,
                         );
                     }
-                    WindowsNativePanelPaintOperation::FillMascotDot {
+                    WindowsNativePanelPaintOperation::FillStrokedRoundRect {
                         frame,
                         radius,
-                        color,
+                        fill,
                         stroke_color,
                         stroke_width,
                         alpha,
-                        ..
                     } => {
                         let fill_brush = surface
                             .target
-                            .CreateSolidColorBrush(&d2d_color_with_alpha(color, alpha), None)
+                            .CreateSolidColorBrush(&d2d_color_with_alpha(fill, alpha), None)
                             .map_err(|error| error.to_string())?;
                         let stroke_brush = surface
                             .target
@@ -645,29 +424,21 @@ impl Direct2DWindowsNativePanelPainter {
                             None,
                         );
                     }
-                    WindowsNativePanelPaintOperation::FillCompactShoulder {
-                        frame,
-                        side,
-                        progress,
+                    WindowsNativePanelPaintOperation::FillPath {
+                        segments,
                         fill,
-                        ..
+                        alpha,
                     } => {
-                        let Some(path) = WindowsCompactShoulderPath::resolve(
-                            coordinate_space.rect(frame),
-                            side,
-                            progress,
-                        ) else {
-                            continue;
-                        };
                         let brush = surface
                             .target
-                            .CreateSolidColorBrush(&d2d_color(fill), None)
+                            .CreateSolidColorBrush(&d2d_color_with_alpha(fill, alpha), None)
                             .map_err(|error| error.to_string())?;
-                        let geometry = d2d_compact_shoulder_geometry(
+                        let geometry = d2d_path_geometry(
                             self.direct2d
                                 .factory()
                                 .ok_or_else(|| "Direct2D factory is not initialized".to_string())?,
-                            path,
+                            coordinate_space,
+                            &segments,
                         )?;
                         surface.target.FillGeometry(&geometry, &brush, None);
                     }
@@ -806,7 +577,7 @@ fn draw_completion_glow_image(
         if dest.width <= 0.0 || dest.height <= 0.0 || source.width <= 0.0 || source.height <= 0.0 {
             continue;
         }
-        let dest = d2d_rect(coordinate_space.rect(dest));
+        let dest = d2d_rect(coordinate_space.rect(rect_from_panel_rect(dest)));
         let source = d2d_rect(source);
         unsafe {
             target.DrawBitmap(
@@ -838,7 +609,7 @@ fn draw_mascot_sprite_image(
     {
         return;
     }
-    let dest = d2d_rect(coordinate_space.rect(frame));
+    let dest = d2d_rect(coordinate_space.rect(rect_from_panel_rect(frame)));
     let source = d2d_rect(source_rect);
     unsafe {
         target.DrawBitmap(
@@ -852,13 +623,6 @@ fn draw_mascot_sprite_image(
 }
 
 #[cfg(all(windows, not(test)))]
-fn d2d_color(
-    color: WindowsNativePanelPaintColor,
-) -> windows::Win32::Graphics::Direct2D::Common::D2D1_COLOR_F {
-    d2d_color_with_alpha(color, 1.0)
-}
-
-#[cfg(all(windows, not(test)))]
 fn d2d_color_with_alpha(
     color: WindowsNativePanelPaintColor,
     alpha: f64,
@@ -868,16 +632,6 @@ fn d2d_color_with_alpha(
         g: color.g as f32 / 255.0,
         b: color.b as f32 / 255.0,
         a: alpha.clamp(0.0, 1.0) as f32,
-    }
-}
-
-#[cfg(all(windows, not(test)))]
-fn d2d_alpha_color(alpha: u8) -> windows::Win32::Graphics::Direct2D::Common::D2D1_COLOR_F {
-    windows::Win32::Graphics::Direct2D::Common::D2D1_COLOR_F {
-        r: 0.0,
-        g: 0.0,
-        b: 0.0,
-        a: alpha as f32 / 255.0,
     }
 }
 
@@ -912,61 +666,69 @@ fn d2d_point(point: PanelPoint) -> windows::Win32::Graphics::Direct2D::Common::D
 }
 
 #[cfg(all(windows, not(test)))]
-fn d2d_compact_shoulder_geometry(
+fn d2d_path_geometry(
     factory: &windows::Win32::Graphics::Direct2D::ID2D1Factory,
-    path: WindowsCompactShoulderPath,
+    coordinate_space: WindowsDirect2DCoordinateSpace,
+    segments: &[reef_draw::primitive::PathSegment],
 ) -> Result<windows::Win32::Graphics::Direct2D::ID2D1PathGeometry, String> {
     use windows::Win32::Graphics::Direct2D::Common::{
         D2D1_BEZIER_SEGMENT, D2D1_FIGURE_BEGIN_FILLED, D2D1_FIGURE_END_CLOSED,
     };
 
+    let Some(first) = segments.first() else {
+        return unsafe { factory.CreatePathGeometry() }.map_err(|error| error.to_string());
+    };
+    let start = match first {
+        reef_draw::primitive::PathSegment::LineTo(point) => *point,
+        reef_draw::primitive::PathSegment::CubicBezier { end, .. } => *end,
+    };
     let geometry = unsafe { factory.CreatePathGeometry() }.map_err(|error| error.to_string())?;
     let sink = unsafe { geometry.Open() }.map_err(|error| error.to_string())?;
     unsafe {
-        sink.BeginFigure(d2d_point(path.start), D2D1_FIGURE_BEGIN_FILLED);
-        sink.AddLine(d2d_point(path.line_to_top_edge));
-        sink.AddLine(d2d_point(path.line_to_outer_edge));
-        sink.AddBezier(&D2D1_BEZIER_SEGMENT {
-            point1: d2d_point(path.curve_control_1),
-            point2: d2d_point(path.curve_control_2),
-            point3: d2d_point(path.curve_end),
-        });
+        sink.BeginFigure(
+            d2d_point(coordinate_space.point(start)),
+            D2D1_FIGURE_BEGIN_FILLED,
+        );
+        for segment in segments.iter().skip(1) {
+            match segment {
+                reef_draw::primitive::PathSegment::LineTo(point) => {
+                    sink.AddLine(d2d_point(coordinate_space.point(*point)));
+                }
+                reef_draw::primitive::PathSegment::CubicBezier {
+                    control1,
+                    control2,
+                    end,
+                } => {
+                    sink.AddBezier(&D2D1_BEZIER_SEGMENT {
+                        point1: d2d_point(coordinate_space.point(*control1)),
+                        point2: d2d_point(coordinate_space.point(*control2)),
+                        point3: d2d_point(coordinate_space.point(*end)),
+                    });
+                }
+            }
+        }
         sink.EndFigure(D2D1_FIGURE_END_CLOSED);
         sink.Close().map_err(|error| error.to_string())?;
     }
     Ok(geometry)
 }
 
-#[cfg(all(windows, not(test)))]
-fn d2d_compact_pill_geometry(
-    factory: &windows::Win32::Graphics::Direct2D::ID2D1Factory,
-    path: WindowsCompactPillPath,
-) -> Result<windows::Win32::Graphics::Direct2D::ID2D1PathGeometry, String> {
-    use windows::Win32::Graphics::Direct2D::Common::{
-        D2D1_BEZIER_SEGMENT, D2D1_FIGURE_BEGIN_FILLED, D2D1_FIGURE_END_CLOSED,
-    };
-
-    let geometry = unsafe { factory.CreatePathGeometry() }.map_err(|error| error.to_string())?;
-    let sink = unsafe { geometry.Open() }.map_err(|error| error.to_string())?;
-    unsafe {
-        sink.BeginFigure(d2d_point(path.start), D2D1_FIGURE_BEGIN_FILLED);
-        sink.AddLine(d2d_point(path.top_right));
-        sink.AddLine(d2d_point(path.right_edge_bottom_arc_start));
-        sink.AddBezier(&D2D1_BEZIER_SEGMENT {
-            point1: d2d_point(path.bottom_right_control_1),
-            point2: d2d_point(path.bottom_right_control_2),
-            point3: d2d_point(path.bottom_right_arc_end),
-        });
-        sink.AddLine(d2d_point(path.bottom_left_arc_start));
-        sink.AddBezier(&D2D1_BEZIER_SEGMENT {
-            point1: d2d_point(path.bottom_left_control_1),
-            point2: d2d_point(path.bottom_left_control_2),
-            point3: d2d_point(path.bottom_left_arc_end),
-        });
-        sink.EndFigure(D2D1_FIGURE_END_CLOSED);
-        sink.Close().map_err(|error| error.to_string())?;
+fn panel_rect_from_rect(rect: Rect) -> PanelRect {
+    PanelRect {
+        x: rect.x,
+        y: rect.y,
+        width: rect.width,
+        height: rect.height,
     }
-    Ok(geometry)
+}
+
+fn rect_from_panel_rect(rect: PanelRect) -> Rect {
+    Rect {
+        x: rect.x,
+        y: rect.y,
+        width: rect.width,
+        height: rect.height,
+    }
 }
 
 #[cfg(all(windows, not(test)))]

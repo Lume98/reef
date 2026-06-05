@@ -33,8 +33,7 @@ pub enum DrawPrimitive {
         alpha: f64,
     },
     Text {
-        origin: Point,
-        max_width: f64,
+        frame: Rect,
         text: String,
         color: Color,
         size: i32,
@@ -161,8 +160,12 @@ mod tests {
                     alpha: 1.0,
                 },
                 DrawPrimitive::Text {
-                    origin: Point { x: 12.0, y: 14.0 },
-                    max_width: 120.0,
+                    frame: Rect {
+                        x: 12.0,
+                        y: 14.0,
+                        width: 120.0,
+                        height: 24.0,
+                    },
                     text: "Reef UI".to_string(),
                     color: Color::rgb(230, 235, 245),
                     size: 13,
@@ -183,6 +186,51 @@ mod tests {
         };
 
         assert!(!plan.hidden);
+        assert_eq!(
+            plan.viewport,
+            Size {
+                width: 120.0,
+                height: 48.0,
+            }
+        );
         assert_eq!(plan.primitives.len(), 4);
+    }
+
+    #[test]
+    fn frame_submission_carries_multiple_plans() {
+        let submission = crate::draw_backend::FrameSubmission {
+            hidden: false,
+            plans: vec![
+                DrawPlan::with_viewport(Size {
+                    width: 10.0,
+                    height: 20.0,
+                }),
+                DrawPlan::with_viewport(Size {
+                    width: 30.0,
+                    height: 40.0,
+                }),
+            ],
+        };
+
+        assert_eq!(submission.plans.len(), 2);
+        assert_eq!(submission.plans[1].viewport.height, 40.0);
+    }
+
+    #[test]
+    fn path_segments_keep_explicit_points() {
+        let segment = PathSegment::CubicBezier {
+            control1: Point { x: 1.0, y: 2.0 },
+            control2: Point { x: 3.0, y: 4.0 },
+            end: Point { x: 5.0, y: 6.0 },
+        };
+
+        assert_eq!(
+            segment,
+            PathSegment::CubicBezier {
+                control1: Point { x: 1.0, y: 2.0 },
+                control2: Point { x: 3.0, y: 4.0 },
+                end: Point { x: 5.0, y: 6.0 },
+            }
+        );
     }
 }

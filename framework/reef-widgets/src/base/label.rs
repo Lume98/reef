@@ -104,8 +104,15 @@ impl Widget for Label {
         };
         let max_width = self.max_width.unwrap_or(rect.width);
         ctx.primitives.push(DrawPrimitive::Text {
-            origin,
-            max_width,
+            frame: Rect {
+                x: origin.x,
+                y: origin.y,
+                width: max_width,
+                height: self
+                    .line_height
+                    .unwrap_or_else(|| default_line_height(self.font_size))
+                    * self.text.lines().count().max(1) as f64,
+            },
             text: self.text.clone(),
             color: self.color,
             size: self.font_size,
@@ -168,8 +175,8 @@ mod tests {
             primitives: &mut primitives,
         };
         label.paint(rect, &mut ctx);
-        if let DrawPrimitive::Text { origin, .. } = &primitives[0] {
-            assert!(origin.x > 0.0, "Right alignment should shift origin right");
+        if let DrawPrimitive::Text { frame, .. } = &primitives[0] {
+            assert!(frame.x > 0.0, "Right alignment should shift origin right");
         }
     }
 }

@@ -6,7 +6,7 @@ use crate::native_panel_core::{point_in_rect, PanelPoint, PanelRect};
 use super::descriptors::{
     NativePanelInteractionPlan, NativePanelPlatformEvent, NativePanelPointerPointState,
 };
-use super::facade::presentation::{NativePanelDrawPlanInput, NativePanelVisualDisplayMode};
+use super::facade::presentation::{NativePanelPaintInput, NativePanelVisualDisplayMode};
 use super::runtime_click::resolve_native_panel_click_command_for_pointer_state;
 use super::runtime_hover::sync_native_panel_hover_interaction_for_state;
 use super::runtime_interaction::{
@@ -20,7 +20,7 @@ use super::runtime_interaction::{
 use super::transition_controller::native_panel_transition_request_for_surface_change;
 
 pub(crate) fn resolve_native_panel_hover_fallback_frames(
-    input: &NativePanelDrawPlanInput,
+    input: &NativePanelPaintInput,
 ) -> NativePanelHoverFallbackFrames {
     let interactive_pill_frame =
         non_zero_rect(input.compact_bar_frame).unwrap_or(input.panel_frame);

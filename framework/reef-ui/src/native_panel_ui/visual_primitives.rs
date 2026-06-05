@@ -1,7 +1,9 @@
-use crate::{
-    native_panel_core::{PanelPoint, PanelRect},
-    native_panel_scene::SceneMascotPose,
+use crate::native_panel_core::{PanelPoint, PanelRect};
+use reef_core::{
+    color::Color,
+    geometry::{Point, Rect},
 };
+use reef_draw::primitive::{TextAlignment, TextWeight};
 use reef_theme::Rgb;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -20,6 +22,28 @@ impl NativePanelVisualColor {
 impl From<Rgb> for NativePanelVisualColor {
     fn from(value: Rgb) -> Self {
         Self::rgb(value.r, value.g, value.b)
+    }
+}
+
+impl From<NativePanelVisualColor> for Color {
+    fn from(value: NativePanelVisualColor) -> Self {
+        Self::rgb(value.r, value.g, value.b)
+    }
+}
+
+pub fn draw_rect(rect: PanelRect) -> Rect {
+    Rect {
+        x: rect.x,
+        y: rect.y,
+        width: rect.width,
+        height: rect.height,
+    }
+}
+
+pub fn draw_point(point: PanelPoint) -> Point {
+    Point {
+        x: point.x,
+        y: point.y,
     }
 }
 
@@ -45,106 +69,38 @@ pub fn native_panel_visual_text_box_height_for_role(
         | NativePanelVisualTextRole::CardToolDescription
         | NativePanelVisualTextRole::CardActionHint
         | NativePanelVisualTextRole::CardSettingsValue => size as f64 + 3.0,
-        _ => {
-            return native_panel_visual_text_box_height(text, size);
-        }
+        _ => return native_panel_visual_text_box_height(text, size),
     };
     line_count * line_height.max(1.0)
 }
 
-#[derive(Clone, Debug, PartialEq)]
-pub enum NativePanelDrawPrimitive {
-    ClipStart {
-        frame: PanelRect,
-    },
-    ClipEnd,
-    CompletionGlow {
-        frame: PanelRect,
-        opacity: f64,
-    },
-    RoundRect {
-        frame: PanelRect,
-        radius: f64,
-        color: NativePanelVisualColor,
-    },
+pub fn native_panel_visual_text_frame(
+    role: NativePanelVisualTextRole,
+    origin: PanelPoint,
+    max_width: f64,
+    text: &str,
+    size: i32,
+) -> Rect {
     Rect {
-        frame: PanelRect,
-        color: NativePanelVisualColor,
-    },
-    Ellipse {
-        frame: PanelRect,
-        color: NativePanelVisualColor,
-    },
-    StrokeLine {
-        from: PanelPoint,
-        to: PanelPoint,
-        color: NativePanelVisualColor,
-        width: i32,
-    },
-    Text {
-        role: NativePanelVisualTextRole,
-        origin: PanelPoint,
-        max_width: f64,
-        text: String,
-        color: NativePanelVisualColor,
-        size: i32,
-        weight: NativePanelVisualTextWeight,
-        alignment: NativePanelVisualTextAlignment,
-        alpha: f64,
-    },
-    MascotRoundRect {
-        role: NativePanelVisualMascotRoundRectRole,
-        frame: PanelRect,
-        radius: f64,
-        color: NativePanelVisualColor,
-        alpha: f64,
-    },
-    MascotEllipse {
-        role: NativePanelVisualMascotEllipseRole,
-        frame: PanelRect,
-        color: NativePanelVisualColor,
-        alpha: f64,
-    },
-    MascotText {
-        role: NativePanelVisualMascotTextRole,
-        origin: PanelPoint,
-        max_width: f64,
-        text: String,
-        color: NativePanelVisualColor,
-        size: i32,
-        weight: NativePanelVisualTextWeight,
-        alignment: NativePanelVisualTextAlignment,
-        alpha: f64,
-    },
-    MascotSprite {
-        sprite_path: String,
-        source_rect: PanelRect,
-        frame: PanelRect,
-        opacity: f64,
-    },
-    MascotDot {
-        center: PanelPoint,
-        frame: PanelRect,
-        radius: f64,
-        corner_radius: f64,
-        scale_x: f64,
-        scale_y: f64,
-        pose: SceneMascotPose,
-        debug_mode_enabled: bool,
-        fill: NativePanelVisualColor,
-        stroke: NativePanelVisualColor,
-        stroke_width: f64,
-        shadow_opacity: f64,
-        shadow_radius: f64,
-        alpha: f64,
-    },
-    CompactShoulder {
-        frame: PanelRect,
-        side: NativePanelVisualShoulderSide,
-        progress: f64,
-        fill: NativePanelVisualColor,
-        border: NativePanelVisualColor,
-    },
+        x: origin.x,
+        y: origin.y,
+        width: max_width,
+        height: native_panel_visual_text_box_height_for_role(role, text, size),
+    }
+}
+
+pub fn native_panel_visual_plain_text_frame(
+    origin: PanelPoint,
+    max_width: f64,
+    text: &str,
+    size: i32,
+) -> Rect {
+    Rect {
+        x: origin.x,
+        y: origin.y,
+        width: max_width,
+        height: native_panel_visual_text_box_height(text, size),
+    }
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -154,11 +110,31 @@ pub enum NativePanelVisualTextWeight {
     Bold,
 }
 
+impl From<NativePanelVisualTextWeight> for TextWeight {
+    fn from(value: NativePanelVisualTextWeight) -> Self {
+        match value {
+            NativePanelVisualTextWeight::Normal => Self::Normal,
+            NativePanelVisualTextWeight::Semibold => Self::Semibold,
+            NativePanelVisualTextWeight::Bold => Self::Bold,
+        }
+    }
+}
+
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum NativePanelVisualTextAlignment {
     Left,
     Center,
     Right,
+}
+
+impl From<NativePanelVisualTextAlignment> for TextAlignment {
+    fn from(value: NativePanelVisualTextAlignment) -> Self {
+        match value {
+            NativePanelVisualTextAlignment::Left => Self::Left,
+            NativePanelVisualTextAlignment::Center => Self::Center,
+            NativePanelVisualTextAlignment::Right => Self::Right,
+        }
+    }
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -185,283 +161,18 @@ pub enum NativePanelVisualTextRole {
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub enum NativePanelVisualMascotRoundRectRole {
-    Mouth,
-    MessageBubble,
-    CompletionBadgeOutline,
-    CompletionBadgeFill,
-}
-
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub enum NativePanelVisualMascotEllipseRole {
-    LeftEye,
-    RightEye,
-    MessageBubbleDot,
-}
-
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub enum NativePanelVisualMascotTextRole {
-    SleepLabel,
-    CompletionBadgeLabel,
-}
-
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum NativePanelVisualShoulderSide {
     Left,
     Right,
-}
-
-#[derive(Clone, Debug, Default, PartialEq)]
-pub struct NativePanelDrawPlan {
-    pub hidden: bool,
-    pub primitives: Vec<NativePanelDrawPrimitive>,
-}
-
-pub fn native_panel_visual_text_primitive_by_role(
-    plan: &NativePanelDrawPlan,
-    expected_role: NativePanelVisualTextRole,
-) -> Option<&NativePanelDrawPrimitive> {
-    plan.primitives.iter().find(|primitive| {
-        matches!(
-            primitive,
-            NativePanelDrawPrimitive::Text { role, .. } if *role == expected_role
-        )
-    })
-}
-
-pub fn native_panel_visual_text_primitive_by_text<'a>(
-    plan: &'a NativePanelDrawPlan,
-    expected_text: &str,
-) -> Option<&'a NativePanelDrawPrimitive> {
-    plan.primitives.iter().find(|primitive| {
-        matches!(
-            primitive,
-            NativePanelDrawPrimitive::Text { text, .. } if text == expected_text
-        )
-    })
-}
-
-pub fn native_panel_visual_completion_glow_primitive(
-    plan: &NativePanelDrawPlan,
-) -> Option<&NativePanelDrawPrimitive> {
-    plan.primitives
-        .iter()
-        .find(|primitive| matches!(primitive, NativePanelDrawPrimitive::CompletionGlow { .. }))
-}
-
-pub fn native_panel_visual_compact_shoulder_primitive(
-    plan: &NativePanelDrawPlan,
-    expected_side: NativePanelVisualShoulderSide,
-) -> Option<&NativePanelDrawPrimitive> {
-    plan.primitives.iter().find(|primitive| {
-        matches!(
-            primitive,
-            NativePanelDrawPrimitive::CompactShoulder { side, .. } if *side == expected_side
-        )
-    })
-}
-
-pub fn native_panel_visual_mascot_body_primitive(
-    plan: &NativePanelDrawPlan,
-) -> Option<&NativePanelDrawPrimitive> {
-    plan.primitives
-        .iter()
-        .find(|primitive| matches!(primitive, NativePanelDrawPrimitive::MascotDot { .. }))
-}
-
-pub fn native_panel_visual_mascot_sprite_primitive(
-    plan: &NativePanelDrawPlan,
-) -> Option<&NativePanelDrawPrimitive> {
-    plan.primitives
-        .iter()
-        .find(|primitive| matches!(primitive, NativePanelDrawPrimitive::MascotSprite { .. }))
-}
-
-pub fn native_panel_visual_mascot_round_rect_primitive(
-    plan: &NativePanelDrawPlan,
-    expected_role: NativePanelVisualMascotRoundRectRole,
-) -> Option<&NativePanelDrawPrimitive> {
-    plan.primitives.iter().find(|primitive| {
-        matches!(
-            primitive,
-            NativePanelDrawPrimitive::MascotRoundRect { role, .. } if *role == expected_role
-        )
-    })
-}
-
-pub fn native_panel_visual_mascot_ellipse_primitive(
-    plan: &NativePanelDrawPlan,
-    expected_role: NativePanelVisualMascotEllipseRole,
-) -> Option<&NativePanelDrawPrimitive> {
-    plan.primitives.iter().find(|primitive| {
-        matches!(
-            primitive,
-            NativePanelDrawPrimitive::MascotEllipse { role, .. } if *role == expected_role
-        )
-    })
-}
-
-pub fn native_panel_visual_mascot_ellipse_primitives_by_role(
-    plan: &NativePanelDrawPlan,
-    expected_role: NativePanelVisualMascotEllipseRole,
-) -> impl Iterator<Item = &NativePanelDrawPrimitive> {
-    plan.primitives.iter().filter(move |primitive| {
-        matches!(
-            primitive,
-            NativePanelDrawPrimitive::MascotEllipse { role, .. } if *role == expected_role
-        )
-    })
-}
-
-pub fn native_panel_visual_mascot_text_primitive(
-    plan: &NativePanelDrawPlan,
-    expected_role: NativePanelVisualMascotTextRole,
-) -> Option<&NativePanelDrawPrimitive> {
-    plan.primitives.iter().find(|primitive| {
-        matches!(
-            primitive,
-            NativePanelDrawPrimitive::MascotText { role, .. } if *role == expected_role
-        )
-    })
 }
 
 #[cfg(test)]
 mod tests {
     use super::{
         native_panel_visual_text_box_height, native_panel_visual_text_box_height_for_role,
-        NativePanelDrawPlan, NativePanelDrawPrimitive, NativePanelVisualColor,
-        NativePanelVisualMascotEllipseRole, NativePanelVisualMascotRoundRectRole,
-        NativePanelVisualMascotTextRole, NativePanelVisualShoulderSide, NativePanelVisualTextRole,
+        native_panel_visual_text_frame, NativePanelVisualTextRole,
     };
-    use crate::{
-        native_panel_core::{PanelPoint, PanelRect},
-        native_panel_scene::SceneMascotPose,
-    };
-
-    #[test]
-    fn visual_plan_carries_platform_neutral_primitives() {
-        let plan = NativePanelDrawPlan {
-            hidden: false,
-            primitives: vec![
-                NativePanelDrawPrimitive::CompletionGlow {
-                    frame: PanelRect {
-                        x: 0.0,
-                        y: 0.0,
-                        width: 120.0,
-                        height: 48.0,
-                    },
-                    opacity: 0.5,
-                },
-                NativePanelDrawPrimitive::Text {
-                    role: NativePanelVisualTextRole::CompactHeadline,
-                    origin: PanelPoint { x: 12.0, y: 14.0 },
-                    max_width: 120.0,
-                    text: "Reef UI".to_string(),
-                    color: NativePanelVisualColor::rgb(230, 235, 245),
-                    size: 13,
-                    weight: super::NativePanelVisualTextWeight::Semibold,
-                    alignment: super::NativePanelVisualTextAlignment::Center,
-                    alpha: 1.0,
-                },
-                NativePanelDrawPrimitive::RoundRect {
-                    frame: PanelRect {
-                        x: 0.0,
-                        y: 0.0,
-                        width: 120.0,
-                        height: 48.0,
-                    },
-                    radius: 24.0,
-                    color: NativePanelVisualColor::rgb(18, 18, 22),
-                },
-                NativePanelDrawPrimitive::MascotRoundRect {
-                    role: NativePanelVisualMascotRoundRectRole::Mouth,
-                    frame: PanelRect {
-                        x: 20.0,
-                        y: 18.0,
-                        width: 8.0,
-                        height: 3.0,
-                    },
-                    radius: 1.5,
-                    color: NativePanelVisualColor::rgb(255, 255, 255),
-                    alpha: 1.0,
-                },
-                NativePanelDrawPrimitive::MascotEllipse {
-                    role: NativePanelVisualMascotEllipseRole::LeftEye,
-                    frame: PanelRect {
-                        x: 16.0,
-                        y: 22.0,
-                        width: 4.0,
-                        height: 4.0,
-                    },
-                    color: NativePanelVisualColor::rgb(255, 255, 255),
-                    alpha: 1.0,
-                },
-                NativePanelDrawPrimitive::MascotText {
-                    role: NativePanelVisualMascotTextRole::SleepLabel,
-                    origin: PanelPoint { x: 28.0, y: 28.0 },
-                    max_width: 10.0,
-                    text: "Z".to_string(),
-                    color: NativePanelVisualColor::rgb(255, 122, 36),
-                    size: 9,
-                    weight: super::NativePanelVisualTextWeight::Bold,
-                    alignment: super::NativePanelVisualTextAlignment::Center,
-                    alpha: 0.5,
-                },
-                NativePanelDrawPrimitive::MascotSprite {
-                    sprite_path: "mascot/default/spritesheet.png".to_string(),
-                    source_rect: PanelRect {
-                        x: 0.0,
-                        y: 0.0,
-                        width: 102.4,
-                        height: 192.0,
-                    },
-                    frame: PanelRect {
-                        x: 6.0,
-                        y: 4.0,
-                        width: 54.0,
-                        height: 54.0,
-                    },
-                    opacity: 1.0,
-                },
-                NativePanelDrawPrimitive::MascotDot {
-                    center: PanelPoint { x: 24.0, y: 24.0 },
-                    frame: PanelRect {
-                        x: 12.0,
-                        y: 14.0,
-                        width: 24.0,
-                        height: 20.0,
-                    },
-                    radius: 10.0,
-                    corner_radius: 6.0,
-                    scale_x: 1.0,
-                    scale_y: 1.0,
-                    pose: SceneMascotPose::Complete,
-                    debug_mode_enabled: false,
-                    fill: NativePanelVisualColor::rgb(5, 5, 5),
-                    stroke: NativePanelVisualColor::rgb(255, 122, 36),
-                    stroke_width: 2.2,
-                    shadow_opacity: 0.0,
-                    shadow_radius: 0.0,
-                    alpha: 1.0,
-                },
-                NativePanelDrawPrimitive::CompactShoulder {
-                    frame: PanelRect {
-                        x: -6.0,
-                        y: 31.0,
-                        width: 6.0,
-                        height: 6.0,
-                    },
-                    side: NativePanelVisualShoulderSide::Left,
-                    progress: 0.0,
-                    fill: NativePanelVisualColor::rgb(12, 12, 15),
-                    border: NativePanelVisualColor::rgb(44, 44, 50),
-                },
-            ],
-        };
-
-        assert!(!plan.hidden);
-        assert_eq!(plan.primitives.len(), 9);
-    }
+    use crate::native_panel_core::PanelPoint;
 
     #[test]
     fn visual_text_box_height_is_shared_for_platform_text_rendering() {
@@ -491,33 +202,23 @@ mod tests {
             ),
             12.0
         );
-        assert_eq!(
-            native_panel_visual_text_box_height_for_role(
-                NativePanelVisualTextRole::CompactHeadline,
-                "Reef UI",
-                13
-            ),
-            24.0
-        );
     }
 
     #[test]
-    fn visual_text_box_height_uses_card_chat_line_height_for_body_roles() {
-        assert_eq!(
-            native_panel_visual_text_box_height_for_role(
-                NativePanelVisualTextRole::CardBodyText,
-                "line one\nline two",
-                10
-            ),
-            crate::native_panel_core::CARD_CHAT_LINE_HEIGHT * 2.0
+    fn visual_text_frame_carries_computed_height_before_backend() {
+        let frame = native_panel_visual_text_frame(
+            NativePanelVisualTextRole::CardBodyText,
+            PanelPoint { x: 10.0, y: 20.0 },
+            120.0,
+            "line one\nline two",
+            10,
         );
+
+        assert_eq!(frame.x, 10.0);
+        assert_eq!(frame.width, 120.0);
         assert_eq!(
-            native_panel_visual_text_box_height_for_role(
-                NativePanelVisualTextRole::CardBodyPrefix,
-                "$",
-                10
-            ),
-            crate::native_panel_core::CARD_CHAT_LINE_HEIGHT
+            frame.height,
+            crate::native_panel_core::CARD_CHAT_LINE_HEIGHT * 2.0
         );
     }
 }

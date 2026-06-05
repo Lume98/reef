@@ -159,7 +159,7 @@ impl Direct2DPainter {
                 Ok(())
             }
             DrawPrimitive::Text {
-                origin,
+                frame,
                 text,
                 color,
                 size,
@@ -173,10 +173,10 @@ impl Direct2DPainter {
                 };
                 let wide: Vec<u16> = text.encode_utf16().collect();
                 let text_rect = windows::Win32::Graphics::Direct2D::Common::D2D_RECT_F {
-                    left: origin.x as f32,
-                    top: origin.y as f32,
-                    right: (origin.x + 300.0) as f32,
-                    bottom: (origin.y + *size as f64 + 10.0) as f32,
+                    left: frame.x as f32,
+                    top: frame.y as f32,
+                    right: (frame.x + frame.width) as f32,
+                    bottom: (frame.y + frame.height) as f32,
                 };
                 unsafe {
                     target.DrawText(
@@ -346,6 +346,28 @@ impl DrawBackend for Direct2DPainter {
         if submission.hidden {
             return Ok(());
         }
+        #[cfg(target_os = "windows")]
+        {
+            let window_rect = Rect {
+                x: 0.0,
+                y: 0.0,
+                width: submission
+                    .plans
+                    .iter()
+                    .map(|plan| plan.viewport.width)
+                    .fold(0.0, f64::max),
+                height: submission
+                    .plans
+                    .iter()
+                    .map(|plan| plan.viewport.height)
+                    .fold(0.0, f64::max),
+            };
+            for plan in &submission.plans {
+                if !plan.hidden {
+                    self.render_to_window(&plan.primitives, window_rect)?;
+                }
+            }
+        }
         Ok(())
     }
 }
@@ -402,8 +424,7 @@ pub fn resolve_paint_operations(plan: &reef_draw::primitive::DrawPlan) -> Vec<Pa
                 alpha: *alpha,
             },
             DrawPrimitive::Text {
-                origin,
-                max_width,
+                frame,
                 text,
                 color,
                 size,
@@ -411,8 +432,7 @@ pub fn resolve_paint_operations(plan: &reef_draw::primitive::DrawPlan) -> Vec<Pa
                 alignment,
                 alpha,
             } => PaintOperation::DrawText {
-                origin: *origin,
-                max_width: *max_width,
+                frame: *frame,
                 text: text.clone(),
                 color: *color,
                 size: *size,
@@ -517,8 +537,7 @@ pub enum PaintOperation {
         alpha: f64,
     },
     DrawText {
-        origin: reef_core::geometry::Point,
-        max_width: f64,
+        frame: Rect,
         text: String,
         color: reef_core::color::Color,
         size: i32,
@@ -584,69 +603,69 @@ mod tests {
             height: 100.0,
         });
         plan.primitives = vec![
-                DrawPrimitive::ClipStart {
-                    frame: Rect {
-                        x: 0.0,
-                        y: 0.0,
-                        width: 100.0,
-                        height: 50.0,
-                    },
+            DrawPrimitive::ClipStart {
+                frame: Rect {
+                    x: 0.0,
+                    y: 0.0,
+                    width: 100.0,
+                    height: 50.0,
                 },
-                DrawPrimitive::ClipEnd,
-                DrawPrimitive::RoundRect {
-                    frame: Rect {
-                        x: 0.0,
-                        y: 0.0,
-                        width: 100.0,
-                        height: 40.0,
-                    },
-                    radius: 20.0,
-                    color: Color::rgb(18, 18, 22),
-                    alpha: 1.0,
+            },
+            DrawPrimitive::ClipEnd,
+            DrawPrimitive::RoundRect {
+                frame: Rect {
+                    x: 0.0,
+                    y: 0.0,
+                    width: 100.0,
+                    height: 40.0,
                 },
-                DrawPrimitive::Rect {
-                    frame: Rect {
-                        x: 5.0,
-                        y: 5.0,
-                        width: 90.0,
-                        height: 30.0,
-                    },
-                    color: Color::BLACK,
-                    alpha: 0.5,
+                radius: 20.0,
+                color: Color::rgb(18, 18, 22),
+                alpha: 1.0,
+            },
+            DrawPrimitive::Rect {
+                frame: Rect {
+                    x: 5.0,
+                    y: 5.0,
+                    width: 90.0,
+                    height: 30.0,
                 },
-                DrawPrimitive::Ellipse {
-                    frame: Rect {
-                        x: 10.0,
-                        y: 10.0,
-                        width: 20.0,
-                        height: 20.0,
-                    },
-                    color: Color::WHITE,
-                    alpha: 1.0,
+                color: Color::BLACK,
+                alpha: 0.5,
+            },
+            DrawPrimitive::Ellipse {
+                frame: Rect {
+                    x: 10.0,
+                    y: 10.0,
+                    width: 20.0,
+                    height: 20.0,
                 },
-                DrawPrimitive::StrokeLine {
-                    from: Point { x: 0.0, y: 0.0 },
-                    to: Point { x: 100.0, y: 100.0 },
-                    color: Color::WHITE,
-                    width: 1.0,
-                    alpha: 1.0,
+                color: Color::WHITE,
+                alpha: 1.0,
+            },
+            DrawPrimitive::StrokeLine {
+                from: Point { x: 0.0, y: 0.0 },
+                to: Point { x: 100.0, y: 100.0 },
+                color: Color::WHITE,
+                width: 1.0,
+                alpha: 1.0,
+            },
+            DrawPrimitive::Image {
+                key: "test.png".to_string(),
+                source_rect: Rect {
+                    x: 0.0,
+                    y: 0.0,
+                    width: 50.0,
+                    height: 50.0,
                 },
-                DrawPrimitive::Image {
-                    key: "test.png".to_string(),
-                    source_rect: Rect {
-                        x: 0.0,
-                        y: 0.0,
-                        width: 50.0,
-                        height: 50.0,
-                    },
-                    frame: Rect {
-                        x: 0.0,
-                        y: 0.0,
-                        width: 50.0,
-                        height: 50.0,
-                    },
-                    opacity: 1.0,
+                frame: Rect {
+                    x: 0.0,
+                    y: 0.0,
+                    width: 50.0,
+                    height: 50.0,
                 },
+                opacity: 1.0,
+            },
         ];
         let ops = resolve_paint_operations(&plan);
         assert_eq!(ops.len(), 7);

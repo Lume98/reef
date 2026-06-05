@@ -20,7 +20,7 @@ use super::presentation_model::{
     resolve_native_panel_snapshot_render_plan_for_scene, NativePanelPresentationModel,
     NativePanelResolvedPresentation, NativePanelSnapshotRenderPlan,
 };
-use super::render_commands::NativePanelRenderCommandBundle;
+use super::render_commands::NativePanelRenderBundle;
 use super::runtime_interaction::NativePanelCoreStateBridge;
 use super::traits::NativePanelSceneHost;
 
@@ -38,7 +38,7 @@ pub(crate) struct NativePanelRuntimeSceneCache {
     pub(crate) last_cache_key: Option<NativePanelRuntimeSceneCacheKey>,
     pub(crate) last_scene: Option<PanelScene>,
     pub(crate) last_runtime_render_state: Option<PanelRuntimeRenderState>,
-    pub(crate) last_render_command_bundle: Option<NativePanelRenderCommandBundle>,
+    pub(crate) last_render_command_bundle: Option<NativePanelRenderBundle>,
 }
 
 pub(crate) trait NativePanelRuntimeSceneStateBridge: NativePanelCoreStateBridge {
@@ -160,7 +160,7 @@ pub(crate) fn resolve_native_panel_render_command_bundle_for_state_bridge_and_sn
     state: &S,
     snapshot: &RuntimeSnapshot,
     input: &NativePanelRuntimeInputDescriptor,
-) -> Option<NativePanelRenderCommandBundle>
+) -> Option<NativePanelRenderBundle>
 where
     S: NativePanelRuntimeSceneStateBridge,
 {
@@ -173,7 +173,7 @@ where
 pub(crate) fn resolve_current_native_panel_render_command_bundle_for_state_bridge_with_input<S>(
     state: &S,
     input: &NativePanelRuntimeInputDescriptor,
-) -> Option<NativePanelRenderCommandBundle>
+) -> Option<NativePanelRenderBundle>
 where
     S: NativePanelRuntimeSceneStateBridge,
 {
@@ -324,7 +324,7 @@ pub(crate) fn cache_scene_runtime_with_key(
 
 pub(crate) fn cache_render_command_bundle(
     cache: &mut NativePanelRuntimeSceneCache,
-    bundle: &NativePanelRenderCommandBundle,
+    bundle: &NativePanelRenderBundle,
 ) {
     cache_render_command_bundle_with_key(cache, None, bundle);
 }
@@ -332,7 +332,7 @@ pub(crate) fn cache_render_command_bundle(
 pub(crate) fn cache_render_command_bundle_with_key(
     cache: &mut NativePanelRuntimeSceneCache,
     cache_key: Option<NativePanelRuntimeSceneCacheKey>,
-    bundle: &NativePanelRenderCommandBundle,
+    bundle: &NativePanelRenderBundle,
 ) {
     cache_scene_runtime_with_key(cache, cache_key, bundle.scene.clone(), bundle.runtime);
     cache.last_render_command_bundle = Some(bundle.clone());
@@ -341,7 +341,7 @@ pub(crate) fn cache_render_command_bundle_with_key(
 pub(crate) fn cache_render_command_bundle_for_state_bridge_with_input<S>(
     state: &mut S,
     input: &NativePanelRuntimeInputDescriptor,
-    bundle: &NativePanelRenderCommandBundle,
+    bundle: &NativePanelRenderBundle,
 ) where
     S: NativePanelRuntimeSceneMutableStateBridge,
 {
@@ -393,7 +393,7 @@ pub(crate) fn cached_runtime_render_state_for_key(
 pub(crate) fn cached_render_command_bundle_for_key(
     cache: &NativePanelRuntimeSceneCache,
     cache_key: &NativePanelRuntimeSceneCacheKey,
-) -> Option<NativePanelRenderCommandBundle> {
+) -> Option<NativePanelRenderBundle> {
     (cache.last_cache_key.as_ref() == Some(cache_key))
         .then(|| cache.last_render_command_bundle.clone())
         .flatten()
@@ -554,7 +554,7 @@ mod tests {
                 NativePanelRuntimeInputDescriptor,
             },
             render_commands::{
-                resolve_native_panel_render_command_bundle, NativePanelRenderCommandBundle,
+                resolve_native_panel_render_command_bundle, NativePanelRenderBundle,
             },
             runtime_interaction::NativePanelCoreStateBridge,
             traits::{NativePanelHost, NativePanelRenderer, NativePanelSceneHost},
@@ -1370,10 +1370,7 @@ mod tests {
         }
     }
 
-    fn test_render_command_bundle(
-        status: &str,
-        transitioning: bool,
-    ) -> NativePanelRenderCommandBundle {
+    fn test_render_command_bundle(status: &str, transitioning: bool) -> NativePanelRenderBundle {
         let scene = test_bundle(status).scene;
         let layout = crate::native_panel_core::resolve_panel_layout(
             crate::native_panel_core::PanelLayoutInput {
