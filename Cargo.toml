@@ -9,6 +9,7 @@ members = [
     "framework/reef-native-panel-core",
     "framework/reef-native-panel-windows",
     "framework/reef-reconciler",
+    "framework/reef-router",
     "framework/reef-draw",
     "framework/reef-dom",
     "framework/reef-hooks",

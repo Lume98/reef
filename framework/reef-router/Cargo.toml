@@ -1,0 +1,11 @@
+[package]
+name = "reef-router"
+version.workspace = true
+edition.workspace = true
+description = "Context-based router for the Reef UI framework"
+
+[dependencies]
+reef-core = { path = "../reef-core" }
+reef-vnode = { path = "../reef-vnode" }
+reef-hooks = { path = "../reef-hooks" }
+reef-component = { path = "../reef-component" }
