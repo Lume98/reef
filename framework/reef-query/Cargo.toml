@@ -1,0 +1,8 @@
+[package]
+name = "reef-query"
+version.workspace = true
+edition.workspace = true
+description = "Data fetching and caching for Reef UI — use_query"
+
+[dependencies]
+reef-hooks = { path = "../reef-hooks" }

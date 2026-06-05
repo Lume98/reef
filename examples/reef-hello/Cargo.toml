@@ -1,0 +1,12 @@
+[package]
+name = "reef-hello"
+version.workspace = true
+edition.workspace = true
+description = "Minimal example showing the full rsx! → ReefRenderer → DrawPlan pipeline"
+
+[dependencies]
+reef-core = { path = "../../framework/reef-core" }
+reef-draw = { path = "../../framework/reef-draw" }
+reef-vnode = { path = "../../framework/reef-vnode" }
+reef-dom = { path = "../../framework/reef-dom" }
+reef-view-macros = { path = "../../framework/reef-view-macros" }

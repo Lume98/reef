@@ -52,17 +52,19 @@ impl Parse for RsxNode {
             let _: Token![<] = input.parse()?;
 
             if input.peek(Token![/]) {
-                return Err(input.error("unexpected closing tag"));
+                return Err(input.error("unexpected closing tag </...> — are you trying to close an element that was never opened?"));
             }
 
-            let name: Ident = input.parse()?;
+            let name: Ident = input.parse().map_err(|_| {
+                input.error("expected tag name after `<` — e.g. `<container>`, `<label>`")
+            })?;
             let tag_name = name.to_string();
 
             // Parse attributes
             let mut attrs = Vec::new();
             while !input.peek(Token![>]) && !input.peek(Token![/]) {
                 if input.is_empty() {
-                    return Err(input.error("unterminated tag"));
+                    return Err(input.error(format!("unterminated tag `<{}>` — expected `>` or `/>`", tag_name)));
                 }
                 attrs.push(input.parse::<RsxAttr>()?);
             }
@@ -88,14 +90,18 @@ impl Parse for RsxNode {
                     if input.peek(Token![<]) && input.peek2(Token![/]) {
                         let _: Token![<] = input.parse()?;
                         let _: Token![/] = input.parse()?;
-                        let close_name: Ident = input.parse()?;
+                        let close_name: Ident = input.parse().map_err(|_| {
+                            input.error(format!("expected tag name after `</` to close `<{}>`", tag_name))
+                        })?;
                         if close_name.to_string() != tag_name {
                             return Err(input.error(format!(
-                                "mismatched closing tag: </{}> expected </{}>",
+                                "mismatched closing tag: `</{}>` does not match opening `<{}>`",
                                 close_name, tag_name
                             )));
                         }
-                        let _: Token![>] = input.parse()?;
+                        let _: Token![>] = input.parse().map_err(|_| {
+                            input.error(format!("expected `>` after `</{}`", close_name))
+                        })?;
                         break;
                     }
                     children.push(input.parse::<RsxNode>()?);
@@ -119,7 +125,12 @@ impl Parse for RsxNode {
             let s: LitStr = input.parse()?;
             Ok(RsxNode::Text(s.value()))
         } else {
-            Err(input.error("expected JSX element `<tag>`, expression `{expr}`, or string `\"text\"`"))
+            let msg = format!(
+                "expected JSX element, expression, or text\n\
+                 hint: write `<tag>...</tag>` for elements, `{{\"text\"}}` for text,\n\
+                 hint: or `{{expression}}` to embed a Rust value"
+            );
+            Err(input.error(msg))
         }
     }
 }
@@ -146,7 +157,11 @@ impl Parse for RsxAttr {
                     value: RsxAttrValue::Expr(tokens),
                 })
             } else {
-                Err(input.error("expected string literal or {expression} after ="))
+                Err(input.error(format!(
+                    "expected attribute value after `=` for `{}`\n\
+                     hint: write `=\"{}\"` for strings or `={{\"expr\"}}` for expressions",
+                    attr_name, attr_name
+                )))
             }
         } else {
             // Boolean attribute (no value → true)

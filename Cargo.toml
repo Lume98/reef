@@ -8,6 +8,7 @@ members = [
     "framework/reef-layout",
     "framework/reef-native-panel-core",
     "framework/reef-native-panel-windows",
+    "framework/reef-query",
     "framework/reef-reconciler",
     "framework/reef-router",
     "framework/reef-draw",
@@ -21,6 +22,7 @@ members = [
     "framework/reef-widgets",
     "examples/dynamic-island",
     "examples/hello-reef",
+    "examples/reef-hello",
 ]
 resolver = "2"
 

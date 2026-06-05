@@ -2,6 +2,7 @@ use crate::host_config::ReefDomConfig;
 use crate::layout::layout_scene;
 use crate::paint::paint_scene_to_plan;
 use reef_core::geometry::Size;
+use reef_draw::draw_backend::{DrawBackend, FrameSubmission};
 use reef_draw::primitive::DrawPlan;
 use reef_layout::Constraints;
 use reef_reconciler::arena::FiberArena;
@@ -94,6 +95,22 @@ impl ReefRenderer {
 
         // 5. Paint to DrawPlan
         paint_scene_to_plan(&scene, self.viewport)
+    }
+
+    /// Render a VNode tree and submit the resulting DrawPlan to a backend.
+    ///
+    /// Convenience method for the full pipeline: rsx! → submit_frame.
+    pub fn render_and_submit<B: DrawBackend>(
+        &mut self,
+        vnode: VNode,
+        backend: &mut B,
+    ) -> Result<(), B::Error> {
+        let plan = self.render(vnode);
+        let submission = FrameSubmission {
+            hidden: false,
+            plans: vec![plan],
+        };
+        backend.submit_frame(&submission)
     }
 
     /// Resize the viewport.
