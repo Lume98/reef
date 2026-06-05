@@ -1,0 +1,8 @@
+[package]
+name = "reef-vnode"
+version.workspace = true
+edition.workspace = true
+description = "Virtual node types for the Reef UI framework - VNode, VElement, Props"
+
+[dependencies]
+reef-core = { path = "../reef-core" }

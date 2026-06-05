@@ -2775,6 +2775,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "reef-component"
+version = "0.1.0"
+dependencies = [
+ "reef-vnode",
+]
+
+[[package]]
 name = "reef-core"
 version = "0.1.0"
 
@@ -2855,6 +2862,22 @@ dependencies = [
  "reef-core",
  "reef-draw",
  "reef-layout",
+]
+
+[[package]]
+name = "reef-view-macros"
+version = "0.1.0"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 2.0.117",
+]
+
+[[package]]
+name = "reef-vnode"
+version = "0.1.0"
+dependencies = [
+ "reef-core",
 ]
 
 [[package]]

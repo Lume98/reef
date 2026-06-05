@@ -1,0 +1,8 @@
+[package]
+name = "reef-component"
+version.workspace = true
+edition.workspace = true
+description = "Component trait system for the Reef UI framework"
+
+[dependencies]
+reef-vnode = { path = "../reef-vnode" }

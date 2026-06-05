@@ -3,6 +3,7 @@ members = [
     "echoisland-runtime",
     "framework/reef-app",
     "framework/reef-backend-d2d",
+    "framework/reef-component",
     "framework/reef-core",
     "framework/reef-layout",
     "framework/reef-native-panel-core",
@@ -10,12 +11,18 @@ members = [
     "framework/reef-draw",
     "framework/reef-theme",
     "framework/reef-view",
+    "framework/reef-view-macros",
     "framework/reef-ui",
+    "framework/reef-vnode",
     "framework/reef-widgets",
     "examples/dynamic-island",
     "examples/hello-reef",
 ]
 resolver = "2"
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
 
 [workspace.dependencies]
 tauri = { version = "2.8.2", features = [] }
