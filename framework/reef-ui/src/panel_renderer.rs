@@ -128,27 +128,31 @@ impl PanelRenderer {
         if self.migrant.compact_bar {
             children.push(self.render_compact_bar_vnode(input));
         } else {
-            children.push(make_opaque(
-                "$native_panel_compact_bar",
-                vec![
+            children.push(VNode::VElement(VElement {
+                ty: ElementType::Native("$native_panel_compact_bar"),
+                props: PropsMap::from_pairs(vec![
                     ("headline", reef_vnode::PropValue::String(input.headline_text.clone())),
                     ("active_count", reef_vnode::PropValue::String(input.active_count.clone())),
                     ("total_count", reef_vnode::PropValue::String(input.total_count.clone())),
-                ],
-            ));
+                ]),
+                children: vec![],
+                key: None,
+            }));
         }
 
         // Card stack
         if self.migrant.card_stack {
             children.push(self.render_card_stack_vnode(input));
         } else if input.cards_visible || !input.cards.is_empty() {
-            children.push(make_opaque(
-                "$native_panel_card_stack",
-                vec![
+            children.push(VNode::VElement(VElement {
+                ty: ElementType::Native("$native_panel_card_stack"),
+                props: PropsMap::from_pairs(vec![
                     ("visible", reef_vnode::PropValue::Bool(input.cards_visible)),
                     ("count", reef_vnode::PropValue::I32(input.card_count as i32)),
-                ],
-            ));
+                ]),
+                children: vec![],
+                key: None,
+            }));
         }
 
         // Mascot
@@ -157,10 +161,14 @@ impl PanelRenderer {
                 children.push(self.render_mascot_vnode(input));
             } else {
                 let pose_str = format!("{:?}", input.mascot_pose);
-                children.push(make_opaque(
-                    "$native_panel_mascot",
-                    vec![("pose", reef_vnode::PropValue::String(pose_str))],
-                ));
+                children.push(VNode::VElement(VElement {
+                    ty: ElementType::Native("$native_panel_mascot"),
+                    props: PropsMap::from_pairs(vec![
+                        ("pose", reef_vnode::PropValue::String(pose_str)),
+                    ]),
+                    children: vec![],
+                    key: None,
+                }));
             }
         }
 
@@ -169,10 +177,14 @@ impl PanelRenderer {
             if self.migrant.glow {
                 children.push(self.render_glow_vnode(input));
             } else {
-                children.push(make_opaque(
-                    "$native_panel_glow",
-                    vec![("opacity", reef_vnode::PropValue::F64(input.glow_opacity))],
-                ));
+                children.push(VNode::VElement(VElement {
+                    ty: ElementType::Native("$native_panel_glow"),
+                    props: PropsMap::from_pairs(vec![
+                        ("opacity", reef_vnode::PropValue::F64(input.glow_opacity)),
+                    ]),
+                    children: vec![],
+                    key: None,
+                }));
             }
         }
 
@@ -187,72 +199,34 @@ impl PanelRenderer {
     // ── 各组件 VNode 渲染（随迁移进度逐步实现）──
 
     fn render_compact_bar_vnode(&self, input: &NativePanelPaintInput) -> VNode {
-        let plan = resolve_native_panel_compact_bar_visual_plan(input);
-        let opaque_id = register_opaque_plan(plan.primitives);
-        VNode::VElement(VElement {
-            ty: ElementType::Native("$opaque_draw_plan"),
-            props: {
-                let mut p = PropsMap::new();
-                p.insert("__opaque_id", opaque_id);
-                p
-            },
-            children: vec![],
-            key: None,
-        })
+        render_opaque_component(input, resolve_native_panel_compact_bar_visual_plan)
     }
 
     fn render_card_stack_vnode(&self, input: &NativePanelPaintInput) -> VNode {
-        let plan = resolve_native_panel_expanded_visual_plan(input);
-        let opaque_id = register_opaque_plan(plan.primitives);
-        VNode::VElement(VElement {
-            ty: ElementType::Native("$opaque_draw_plan"),
-            props: {
-                let mut p = PropsMap::new();
-                p.insert("__opaque_id", opaque_id);
-                p
-            },
-            children: vec![],
-            key: None,
-        })
+        render_opaque_component(input, resolve_native_panel_expanded_visual_plan)
     }
 
     fn render_mascot_vnode(&self, input: &NativePanelPaintInput) -> VNode {
-        let plan = resolve_native_panel_mascot_visual_plan(input);
-        let opaque_id = register_opaque_plan(plan.primitives);
-        VNode::VElement(VElement {
-            ty: ElementType::Native("$opaque_draw_plan"),
-            props: {
-                let mut p = PropsMap::new();
-                p.insert("__opaque_id", opaque_id);
-                p
-            },
-            children: vec![],
-            key: None,
-        })
+        render_opaque_component(input, resolve_native_panel_mascot_visual_plan)
     }
 
     fn render_glow_vnode(&self, input: &NativePanelPaintInput) -> VNode {
-        let plan = resolve_native_panel_glow_visual_plan(input);
-        let opaque_id = register_opaque_plan(plan.primitives);
-        VNode::VElement(VElement {
-            ty: ElementType::Native("$opaque_draw_plan"),
-            props: {
-                let mut p = PropsMap::new();
-                p.insert("__opaque_id", opaque_id);
-                p
-            },
-            children: vec![],
-            key: None,
-        })
+        render_opaque_component(input, resolve_native_panel_glow_visual_plan)
     }
 }
 
 // ── 辅助函数 ─────────────────────────────────────────────────────
 
-fn make_opaque(ty: &'static str, props: Vec<(&'static str, reef_vnode::PropValue)>) -> VNode {
+fn render_opaque_component(input: &NativePanelPaintInput, render_fn: impl FnOnce(&NativePanelPaintInput) -> DrawPlan) -> VNode {
+    let plan = render_fn(input);
+    let opaque_id = register_opaque_plan(plan.primitives);
     VNode::VElement(VElement {
-        ty: ElementType::Native(ty),
-        props: PropsMap::from_pairs(props),
+        ty: ElementType::Native("$opaque_draw_plan"),
+        props: {
+            let mut p = PropsMap::new();
+            p.insert("__opaque_id", opaque_id);
+            p
+        },
         children: vec![],
         key: None,
     })
