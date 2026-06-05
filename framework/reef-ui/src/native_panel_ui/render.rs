@@ -26,7 +26,11 @@ pub use super::transition_controller::*;
 pub use super::visual_plan::{
     native_panel_visual_card_input_from_scene_card,
     native_panel_visual_card_input_from_scene_card_with_height,
-    resolve_native_panel_compact_bar_visual_plan, resolve_native_panel_visual_plan,
+    resolve_native_panel_compact_bar_visual_plan,
+    resolve_native_panel_expanded_visual_plan,
+    resolve_native_panel_glow_visual_plan,
+    resolve_native_panel_mascot_visual_plan,
+    resolve_native_panel_visual_plan,
     NativePanelPaintInput, NativePanelVisualActionButtonInput, NativePanelVisualCardBadgeInput,
     NativePanelVisualCardBodyLineInput, NativePanelVisualCardBodyRole, NativePanelVisualCardInput,
     NativePanelVisualCardRowInput, NativePanelVisualCardStyle, NativePanelVisualDisplayMode,
