@@ -2,8 +2,8 @@ use reef_core::{
     color::Color,
     geometry::{Rect, Size},
 };
+use reef_draw::primitive::DrawPrimitive;
 use reef_layout::Constraints;
-use reef_render::primitive::VisualPrimitive;
 use reef_view::widget_host::{PaintContext, Widget};
 
 /// Mascot eye ellipse.
@@ -22,7 +22,7 @@ impl Widget for MascotEye {
     }
 
     fn paint(&self, _rect: Rect, ctx: &mut PaintContext) {
-        ctx.primitives.push(VisualPrimitive::Ellipse {
+        ctx.primitives.push(DrawPrimitive::Ellipse {
             frame: self.frame,
             color: self.color,
             alpha: self.alpha,

@@ -1,14 +1,13 @@
 use super::super::{
-    NativePanelVisualActionButtonInput, NativePanelVisualCardBadgeInput,
+    NativePanelDrawPlanInput, NativePanelVisualActionButtonInput, NativePanelVisualCardBadgeInput,
     NativePanelVisualCardInput, NativePanelVisualCardRowInput, NativePanelVisualDisplayMode,
-    NativePanelVisualPlanInput,
 };
 use crate::{
     native_panel_core::{ExpandedSurface, PanelRect},
     native_panel_scene::SceneMascotPose,
     native_panel_ui::{
         descriptors::{NativePanelEdgeAction, NativePanelHostWindowState},
-        visual_primitives::{NativePanelVisualPrimitive, NativePanelVisualTextRole},
+        visual_primitives::{NativePanelDrawPrimitive, NativePanelVisualTextRole},
     },
 };
 use chrono::Utc;
@@ -19,15 +18,13 @@ pub(super) const QUIT_ACTION_ICON_TEXT: &str = "\u{E7E8}";
 pub(super) const SETTINGS_ACTION_ICON_SIZE: i32 = 16;
 pub(super) const QUIT_ACTION_ICON_SIZE: i32 = 16;
 
-pub(super) fn visual_input(
-    display_mode: NativePanelVisualDisplayMode,
-) -> NativePanelVisualPlanInput {
+pub(super) fn visual_input(display_mode: NativePanelVisualDisplayMode) -> NativePanelDrawPlanInput {
     let compact_bar_width = if display_mode == NativePanelVisualDisplayMode::Expanded {
         crate::native_panel_core::DEFAULT_EXPANDED_PILL_WIDTH
     } else {
         240.0
     };
-    NativePanelVisualPlanInput {
+    NativePanelDrawPlanInput {
         window_state: NativePanelHostWindowState {
             frame: Some(PanelRect {
                 x: 100.0,
@@ -175,7 +172,7 @@ pub(super) fn visual_input(
 }
 
 pub(super) fn text_role_count(
-    plan: &crate::native_panel_ui::visual_primitives::NativePanelVisualPlan,
+    plan: &crate::native_panel_ui::visual_primitives::NativePanelDrawPlan,
     role: NativePanelVisualTextRole,
 ) -> usize {
     plan.primitives
@@ -183,7 +180,7 @@ pub(super) fn text_role_count(
         .filter(|primitive| {
             matches!(
                 primitive,
-                NativePanelVisualPrimitive::Text { role: primitive_role, .. }
+                NativePanelDrawPrimitive::Text { role: primitive_role, .. }
                     if *primitive_role == role
             )
         })
@@ -244,12 +241,12 @@ pub(super) fn pending_question() -> PendingQuestionView {
 }
 
 pub(super) fn headline_text_frame(
-    plan: &crate::native_panel_ui::visual_primitives::NativePanelVisualPlan,
+    plan: &crate::native_panel_ui::visual_primitives::NativePanelDrawPlan,
 ) -> (f64, f64, f64) {
     plan.primitives
         .iter()
         .find_map(|primitive| match primitive {
-            NativePanelVisualPrimitive::Text {
+            NativePanelDrawPrimitive::Text {
                 origin,
                 max_width,
                 text,
@@ -276,18 +273,18 @@ pub(super) fn centered_text_visual_bounds(
 }
 
 pub(super) fn text_primitive<'a>(
-    plan: &'a crate::native_panel_ui::visual_primitives::NativePanelVisualPlan,
+    plan: &'a crate::native_panel_ui::visual_primitives::NativePanelDrawPlan,
     expected: &str,
-) -> &'a NativePanelVisualPrimitive {
+) -> &'a NativePanelDrawPrimitive {
     plan.primitives
             .iter()
             .find(|primitive| {
-                matches!(primitive, NativePanelVisualPrimitive::Text { text, .. } if text == expected)
+                matches!(primitive, NativePanelDrawPrimitive::Text { text, .. } if text == expected)
             })
             .unwrap_or_else(|| panic!("missing text primitive {expected}"))
 }
 
-pub(super) fn use_wide_action_button_hit_regions(input: &mut NativePanelVisualPlanInput) {
+pub(super) fn use_wide_action_button_hit_regions(input: &mut NativePanelDrawPlanInput) {
     let compact = input.compact_bar_frame;
     input.action_buttons = vec![
         NativePanelVisualActionButtonInput {

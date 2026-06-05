@@ -2,8 +2,8 @@ use reef_core::{
     color::Color,
     geometry::{Rect, Size},
 };
+use reef_draw::primitive::DrawPrimitive;
 use reef_layout::Constraints;
-use reef_render::primitive::VisualPrimitive;
 use reef_view::widget_host::{PaintContext, Widget};
 
 /// Mascot shadow layer.
@@ -38,7 +38,7 @@ impl Widget for MascotShadow {
         let cy = self.center_y + self.offset_y;
         let sr = self.shadow_radius + r;
 
-        ctx.primitives.push(VisualPrimitive::Ellipse {
+        ctx.primitives.push(DrawPrimitive::Ellipse {
             frame: Rect {
                 x: cx - sr * self.scale_x,
                 y: cy + r * 0.3,

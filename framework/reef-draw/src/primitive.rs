@@ -1,10 +1,10 @@
 use reef_core::{
     color::Color,
-    geometry::{Point, Rect},
+    geometry::{Point, Rect, Size},
 };
 
 #[derive(Clone, Debug, PartialEq)]
-pub enum VisualPrimitive {
+pub enum DrawPrimitive {
     ClipStart {
         frame: Rect,
     },
@@ -38,7 +38,7 @@ pub enum VisualPrimitive {
         text: String,
         color: Color,
         size: i32,
-        weight: FontWeight,
+        weight: TextWeight,
         alignment: TextAlignment,
         alpha: f64,
     },
@@ -65,7 +65,7 @@ pub enum VisualPrimitive {
         slice_bottom: f64,
         opacity: f64,
     },
-    BezierPath {
+    Path {
         segments: Vec<PathSegment>,
         fill: Color,
         alpha: f64,
@@ -89,7 +89,7 @@ pub enum PathSegment {
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub enum FontWeight {
+pub enum TextWeight {
     Normal,
     Semibold,
     Bold,
@@ -102,15 +102,37 @@ pub enum TextAlignment {
     Right,
 }
 
-#[derive(Clone, Debug, Default, PartialEq)]
-pub struct VisualPlan {
+#[derive(Clone, Debug, PartialEq)]
+pub struct DrawPlan {
     pub hidden: bool,
-    pub primitives: Vec<VisualPrimitive>,
+    pub viewport: Size,
+    pub primitives: Vec<DrawPrimitive>,
 }
 
-impl VisualPlan {
+impl Default for DrawPlan {
+    fn default() -> Self {
+        Self {
+            hidden: false,
+            viewport: Size {
+                width: 0.0,
+                height: 0.0,
+            },
+            primitives: Vec::new(),
+        }
+    }
+}
+
+impl DrawPlan {
     pub fn new() -> Self {
         Self::default()
+    }
+
+    pub fn with_viewport(viewport: Size) -> Self {
+        Self {
+            hidden: false,
+            viewport,
+            primitives: Vec::new(),
+        }
     }
 }
 
@@ -120,10 +142,14 @@ mod tests {
 
     #[test]
     fn visual_plan_carries_platform_neutral_primitives() {
-        let plan = VisualPlan {
+        let plan = DrawPlan {
             hidden: false,
+            viewport: Size {
+                width: 120.0,
+                height: 48.0,
+            },
             primitives: vec![
-                VisualPrimitive::RoundRect {
+                DrawPrimitive::RoundRect {
                     frame: Rect {
                         x: 0.0,
                         y: 0.0,
@@ -134,17 +160,17 @@ mod tests {
                     color: Color::rgb(18, 18, 22),
                     alpha: 1.0,
                 },
-                VisualPrimitive::Text {
+                DrawPrimitive::Text {
                     origin: Point { x: 12.0, y: 14.0 },
                     max_width: 120.0,
                     text: "Reef UI".to_string(),
                     color: Color::rgb(230, 235, 245),
                     size: 13,
-                    weight: FontWeight::Semibold,
+                    weight: TextWeight::Semibold,
                     alignment: TextAlignment::Center,
                     alpha: 1.0,
                 },
-                VisualPrimitive::ClipStart {
+                DrawPrimitive::ClipStart {
                     frame: Rect {
                         x: 0.0,
                         y: 0.0,
@@ -152,7 +178,7 @@ mod tests {
                         height: 40.0,
                     },
                 },
-                VisualPrimitive::ClipEnd,
+                DrawPrimitive::ClipEnd,
             ],
         };
 

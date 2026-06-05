@@ -3,10 +3,10 @@
 use super::super::{
     compact_digit_y, extend_visible_content_primitives,
     native_panel_visual_card_input_from_scene_card_with_height, resolve_native_panel_visual_plan,
-    NativePanelVisualActionButtonInput, NativePanelVisualCardBadgeInput,
-    NativePanelVisualCardBodyLineInput, NativePanelVisualCardBodyRole, NativePanelVisualCardInput,
-    NativePanelVisualCardRowInput, NativePanelVisualCardStyle, NativePanelVisualDisplayMode,
-    NativePanelVisualPlan, NativePanelVisualPlanInput,
+    NativePanelDrawPlan, NativePanelDrawPlanInput, NativePanelVisualActionButtonInput,
+    NativePanelVisualCardBadgeInput, NativePanelVisualCardBodyLineInput,
+    NativePanelVisualCardBodyRole, NativePanelVisualCardInput, NativePanelVisualCardRowInput,
+    NativePanelVisualCardStyle, NativePanelVisualDisplayMode,
 };
 use super::common::*;
 use crate::{
@@ -18,10 +18,10 @@ use crate::{
     native_panel_ui::{
         descriptors::{NativePanelEdgeAction, NativePanelHostWindowState},
         visual_primitives::{
-            native_panel_visual_text_box_height, NativePanelVisualColor,
+            native_panel_visual_text_box_height, NativePanelDrawPrimitive, NativePanelVisualColor,
             NativePanelVisualMascotEllipseRole, NativePanelVisualMascotRoundRectRole,
-            NativePanelVisualMascotTextRole, NativePanelVisualPrimitive,
-            NativePanelVisualTextAlignment, NativePanelVisualTextRole, NativePanelVisualTextWeight,
+            NativePanelVisualMascotTextRole, NativePanelVisualTextAlignment,
+            NativePanelVisualTextRole, NativePanelVisualTextWeight,
         },
     },
 };
@@ -45,25 +45,25 @@ fn visual_plan_contains_panel_content_and_icons() {
 
     assert!(!plan.hidden);
     assert!(plan.primitives.iter().any(|primitive| {
-        matches!(primitive, NativePanelVisualPrimitive::Text { text, .. } if text == "Codex ready")
+        matches!(primitive, NativePanelDrawPrimitive::Text { text, .. } if text == "Codex ready")
     }));
     assert!(!plan.primitives.iter().any(|primitive| {
         matches!(
             primitive,
-            NativePanelVisualPrimitive::MascotDot {
+            NativePanelDrawPrimitive::MascotDot {
                 pose: SceneMascotPose::Complete,
                 ..
             }
         )
     }));
     assert!(plan.primitives.iter().any(|primitive| {
-            matches!(primitive, NativePanelVisualPrimitive::Text { text, .. } if text == SETTINGS_ACTION_ICON_TEXT)
+            matches!(primitive, NativePanelDrawPrimitive::Text { text, .. } if text == SETTINGS_ACTION_ICON_TEXT)
         }));
     assert!(plan.primitives.iter().any(|primitive| {
-            matches!(primitive, NativePanelVisualPrimitive::Text { text, .. } if text == QUIT_ACTION_ICON_TEXT)
+            matches!(primitive, NativePanelDrawPrimitive::Text { text, .. } if text == QUIT_ACTION_ICON_TEXT)
         }));
     assert!(plan.primitives.iter().any(|primitive| {
-        matches!(primitive, NativePanelVisualPrimitive::Text { text, .. } if text == "Done")
+        matches!(primitive, NativePanelDrawPrimitive::Text { text, .. } if text == "Done")
     }));
 }
 
@@ -99,7 +99,7 @@ fn expanded_visual_plan_draws_action_icons_from_mac_button_layout_not_wide_hit_r
         .primitives
         .iter()
         .find_map(|primitive| match primitive {
-            NativePanelVisualPrimitive::Text {
+            NativePanelDrawPrimitive::Text {
                 origin,
                 max_width,
                 text,
@@ -115,7 +115,7 @@ fn expanded_visual_plan_draws_action_icons_from_mac_button_layout_not_wide_hit_r
         .primitives
         .iter()
         .find_map(|primitive| match primitive {
-            NativePanelVisualPrimitive::Text {
+            NativePanelDrawPrimitive::Text {
                 origin,
                 max_width,
                 text,
@@ -132,10 +132,10 @@ fn expanded_visual_plan_draws_action_icons_from_mac_button_layout_not_wide_hit_r
     assert!(!plan
         .primitives
         .iter()
-        .any(|primitive| matches!(primitive, NativePanelVisualPrimitive::MascotDot { .. })));
+        .any(|primitive| matches!(primitive, NativePanelDrawPrimitive::MascotDot { .. })));
     assert!(!plan.primitives.iter().any(|primitive| matches!(
         primitive,
-        NativePanelVisualPrimitive::Text {
+        NativePanelDrawPrimitive::Text {
             role: NativePanelVisualTextRole::CompactActiveCount,
             ..
         }
@@ -153,7 +153,7 @@ fn expanded_visual_plan_draws_platform_matching_action_icon_glyphs() {
 
     assert!(plan.primitives.iter().any(|primitive| matches!(
         primitive,
-        NativePanelVisualPrimitive::Text {
+        NativePanelDrawPrimitive::Text {
             text,
             size,
             weight,
@@ -173,7 +173,7 @@ fn expanded_visual_plan_draws_platform_matching_action_icon_glyphs() {
     )));
     assert!(plan.primitives.iter().any(|primitive| matches!(
         primitive,
-        NativePanelVisualPrimitive::Text {
+        NativePanelDrawPrimitive::Text {
             text,
             size,
             weight,
@@ -203,7 +203,7 @@ fn expanded_visual_plan_draws_action_buttons_above_collapsing_mascot() {
     let mascot_index = plan
         .primitives
         .iter()
-        .position(|primitive| matches!(primitive, NativePanelVisualPrimitive::MascotDot { .. }))
+        .position(|primitive| matches!(primitive, NativePanelDrawPrimitive::MascotDot { .. }))
         .expect("collapsing mascot dot");
     let settings_index = plan
         .primitives
@@ -211,7 +211,7 @@ fn expanded_visual_plan_draws_action_buttons_above_collapsing_mascot() {
         .position(|primitive| {
             matches!(
                 primitive,
-                NativePanelVisualPrimitive::Text {
+                NativePanelDrawPrimitive::Text {
                     role: NativePanelVisualTextRole::ActionButtonSettings,
                     text,
                     alpha,
@@ -231,7 +231,7 @@ fn expanded_visual_plan_uses_windows_settings_icon_glyph() {
 
     assert!(plan.primitives.iter().any(|primitive| matches!(
         primitive,
-        NativePanelVisualPrimitive::Text {
+        NativePanelDrawPrimitive::Text {
             text,
             size,
             weight,
@@ -255,7 +255,7 @@ fn expanded_visual_plan_applies_shared_action_button_transition_phase() {
     let hidden_plan = resolve_native_panel_visual_plan(&input);
 
     match text_primitive(&hidden_plan, SETTINGS_ACTION_ICON_TEXT) {
-        NativePanelVisualPrimitive::Text { alpha, .. } => {
+        NativePanelDrawPrimitive::Text { alpha, .. } => {
             assert_eq!(*alpha, 0.0);
         }
         _ => unreachable!(),
@@ -274,12 +274,12 @@ fn expanded_visual_plan_applies_shared_action_button_transition_phase() {
     full_input.chrome_transition_progress = 1.0;
     let full_plan = resolve_native_panel_visual_plan(&full_input);
     let full_settings_y = match text_primitive(&full_plan, SETTINGS_ACTION_ICON_TEXT) {
-        NativePanelVisualPrimitive::Text { origin, .. } => origin.y,
+        NativePanelDrawPrimitive::Text { origin, .. } => origin.y,
         _ => unreachable!(),
     };
 
     match mid_settings {
-        NativePanelVisualPrimitive::Text {
+        NativePanelDrawPrimitive::Text {
             origin,
             color,
             alpha,
@@ -306,7 +306,7 @@ fn expanded_visual_plan_fades_compact_counts_with_alpha_not_color_blend() {
     input.chrome_transition_progress = 0.4;
 
     let plan = resolve_native_panel_visual_plan(&input);
-    let NativePanelVisualPrimitive::Text {
+    let NativePanelDrawPrimitive::Text {
         role: NativePanelVisualTextRole::CompactActiveCount,
         color,
         alpha,
@@ -317,7 +317,7 @@ fn expanded_visual_plan_fades_compact_counts_with_alpha_not_color_blend() {
         .find(|primitive| {
             matches!(
                 primitive,
-                NativePanelVisualPrimitive::Text {
+                NativePanelDrawPrimitive::Text {
                     role: NativePanelVisualTextRole::CompactActiveCount,
                     ..
                 }
@@ -339,13 +339,13 @@ fn expanded_visual_plan_places_headline_after_settings_icon_when_actions_are_vis
     input.compact_bar_frame.width = 283.0;
     let plan = resolve_native_panel_visual_plan(&input);
     let settings_right = match text_primitive(&plan, SETTINGS_ACTION_ICON_TEXT) {
-        NativePanelVisualPrimitive::Text {
+        NativePanelDrawPrimitive::Text {
             origin, max_width, ..
         } => origin.x + max_width,
         _ => unreachable!(),
     };
     let headline_visual_left = match text_primitive(&plan, "Codex ready") {
-        NativePanelVisualPrimitive::Text {
+        NativePanelDrawPrimitive::Text {
             origin,
             max_width,
             text,
@@ -381,7 +381,7 @@ fn expanded_visual_plan_keeps_headline_visible_when_default_chrome_exits() {
     input.chrome_transition_progress = 1.0;
 
     let plan = resolve_native_panel_visual_plan(&input);
-    let NativePanelVisualPrimitive::Text {
+    let NativePanelDrawPrimitive::Text {
         alpha, role, text, ..
     } = text_primitive(&plan, "Codex ready")
     else {

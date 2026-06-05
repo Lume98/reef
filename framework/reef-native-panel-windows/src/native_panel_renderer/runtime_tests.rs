@@ -119,7 +119,7 @@ mod tests {
             NativePanelRuntimeCommandHandler, NativePanelRuntimeInputDescriptor,
             NativePanelTimelineDescriptor,
         },
-        facade::presentation::{NativePanelVisualDisplayMode, NativePanelVisualPlanInput},
+        facade::presentation::{NativePanelDrawPlanInput, NativePanelVisualDisplayMode},
         runtime_scene_cache::NativePanelRuntimeSceneCache,
         traits::{NativePanelHost, NativePanelSceneHost},
         transition_controller::NativePanelTransitionRequest,
@@ -171,8 +171,8 @@ mod tests {
         }
     }
 
-    fn visual_input(display_mode: NativePanelVisualDisplayMode) -> NativePanelVisualPlanInput {
-        NativePanelVisualPlanInput {
+    fn visual_input(display_mode: NativePanelVisualDisplayMode) -> NativePanelDrawPlanInput {
+        NativePanelDrawPlanInput {
             window_state: NativePanelHostWindowState {
                 frame: Some(PanelRect {
                     x: 100.0,

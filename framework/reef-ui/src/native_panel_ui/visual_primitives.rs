@@ -53,7 +53,7 @@ pub fn native_panel_visual_text_box_height_for_role(
 }
 
 #[derive(Clone, Debug, PartialEq)]
-pub enum NativePanelVisualPrimitive {
+pub enum NativePanelDrawPrimitive {
     ClipStart {
         frame: PanelRect,
     },
@@ -212,115 +212,115 @@ pub enum NativePanelVisualShoulderSide {
 }
 
 #[derive(Clone, Debug, Default, PartialEq)]
-pub struct NativePanelVisualPlan {
+pub struct NativePanelDrawPlan {
     pub hidden: bool,
-    pub primitives: Vec<NativePanelVisualPrimitive>,
+    pub primitives: Vec<NativePanelDrawPrimitive>,
 }
 
 pub fn native_panel_visual_text_primitive_by_role(
-    plan: &NativePanelVisualPlan,
+    plan: &NativePanelDrawPlan,
     expected_role: NativePanelVisualTextRole,
-) -> Option<&NativePanelVisualPrimitive> {
+) -> Option<&NativePanelDrawPrimitive> {
     plan.primitives.iter().find(|primitive| {
         matches!(
             primitive,
-            NativePanelVisualPrimitive::Text { role, .. } if *role == expected_role
+            NativePanelDrawPrimitive::Text { role, .. } if *role == expected_role
         )
     })
 }
 
 pub fn native_panel_visual_text_primitive_by_text<'a>(
-    plan: &'a NativePanelVisualPlan,
+    plan: &'a NativePanelDrawPlan,
     expected_text: &str,
-) -> Option<&'a NativePanelVisualPrimitive> {
+) -> Option<&'a NativePanelDrawPrimitive> {
     plan.primitives.iter().find(|primitive| {
         matches!(
             primitive,
-            NativePanelVisualPrimitive::Text { text, .. } if text == expected_text
+            NativePanelDrawPrimitive::Text { text, .. } if text == expected_text
         )
     })
 }
 
 pub fn native_panel_visual_completion_glow_primitive(
-    plan: &NativePanelVisualPlan,
-) -> Option<&NativePanelVisualPrimitive> {
+    plan: &NativePanelDrawPlan,
+) -> Option<&NativePanelDrawPrimitive> {
     plan.primitives
         .iter()
-        .find(|primitive| matches!(primitive, NativePanelVisualPrimitive::CompletionGlow { .. }))
+        .find(|primitive| matches!(primitive, NativePanelDrawPrimitive::CompletionGlow { .. }))
 }
 
 pub fn native_panel_visual_compact_shoulder_primitive(
-    plan: &NativePanelVisualPlan,
+    plan: &NativePanelDrawPlan,
     expected_side: NativePanelVisualShoulderSide,
-) -> Option<&NativePanelVisualPrimitive> {
+) -> Option<&NativePanelDrawPrimitive> {
     plan.primitives.iter().find(|primitive| {
         matches!(
             primitive,
-            NativePanelVisualPrimitive::CompactShoulder { side, .. } if *side == expected_side
+            NativePanelDrawPrimitive::CompactShoulder { side, .. } if *side == expected_side
         )
     })
 }
 
 pub fn native_panel_visual_mascot_body_primitive(
-    plan: &NativePanelVisualPlan,
-) -> Option<&NativePanelVisualPrimitive> {
+    plan: &NativePanelDrawPlan,
+) -> Option<&NativePanelDrawPrimitive> {
     plan.primitives
         .iter()
-        .find(|primitive| matches!(primitive, NativePanelVisualPrimitive::MascotDot { .. }))
+        .find(|primitive| matches!(primitive, NativePanelDrawPrimitive::MascotDot { .. }))
 }
 
 pub fn native_panel_visual_mascot_sprite_primitive(
-    plan: &NativePanelVisualPlan,
-) -> Option<&NativePanelVisualPrimitive> {
+    plan: &NativePanelDrawPlan,
+) -> Option<&NativePanelDrawPrimitive> {
     plan.primitives
         .iter()
-        .find(|primitive| matches!(primitive, NativePanelVisualPrimitive::MascotSprite { .. }))
+        .find(|primitive| matches!(primitive, NativePanelDrawPrimitive::MascotSprite { .. }))
 }
 
 pub fn native_panel_visual_mascot_round_rect_primitive(
-    plan: &NativePanelVisualPlan,
+    plan: &NativePanelDrawPlan,
     expected_role: NativePanelVisualMascotRoundRectRole,
-) -> Option<&NativePanelVisualPrimitive> {
+) -> Option<&NativePanelDrawPrimitive> {
     plan.primitives.iter().find(|primitive| {
         matches!(
             primitive,
-            NativePanelVisualPrimitive::MascotRoundRect { role, .. } if *role == expected_role
+            NativePanelDrawPrimitive::MascotRoundRect { role, .. } if *role == expected_role
         )
     })
 }
 
 pub fn native_panel_visual_mascot_ellipse_primitive(
-    plan: &NativePanelVisualPlan,
+    plan: &NativePanelDrawPlan,
     expected_role: NativePanelVisualMascotEllipseRole,
-) -> Option<&NativePanelVisualPrimitive> {
+) -> Option<&NativePanelDrawPrimitive> {
     plan.primitives.iter().find(|primitive| {
         matches!(
             primitive,
-            NativePanelVisualPrimitive::MascotEllipse { role, .. } if *role == expected_role
+            NativePanelDrawPrimitive::MascotEllipse { role, .. } if *role == expected_role
         )
     })
 }
 
 pub fn native_panel_visual_mascot_ellipse_primitives_by_role(
-    plan: &NativePanelVisualPlan,
+    plan: &NativePanelDrawPlan,
     expected_role: NativePanelVisualMascotEllipseRole,
-) -> impl Iterator<Item = &NativePanelVisualPrimitive> {
+) -> impl Iterator<Item = &NativePanelDrawPrimitive> {
     plan.primitives.iter().filter(move |primitive| {
         matches!(
             primitive,
-            NativePanelVisualPrimitive::MascotEllipse { role, .. } if *role == expected_role
+            NativePanelDrawPrimitive::MascotEllipse { role, .. } if *role == expected_role
         )
     })
 }
 
 pub fn native_panel_visual_mascot_text_primitive(
-    plan: &NativePanelVisualPlan,
+    plan: &NativePanelDrawPlan,
     expected_role: NativePanelVisualMascotTextRole,
-) -> Option<&NativePanelVisualPrimitive> {
+) -> Option<&NativePanelDrawPrimitive> {
     plan.primitives.iter().find(|primitive| {
         matches!(
             primitive,
-            NativePanelVisualPrimitive::MascotText { role, .. } if *role == expected_role
+            NativePanelDrawPrimitive::MascotText { role, .. } if *role == expected_role
         )
     })
 }
@@ -329,10 +329,9 @@ pub fn native_panel_visual_mascot_text_primitive(
 mod tests {
     use super::{
         native_panel_visual_text_box_height, native_panel_visual_text_box_height_for_role,
-        NativePanelVisualColor, NativePanelVisualMascotEllipseRole,
-        NativePanelVisualMascotRoundRectRole, NativePanelVisualMascotTextRole,
-        NativePanelVisualPlan, NativePanelVisualPrimitive, NativePanelVisualShoulderSide,
-        NativePanelVisualTextRole,
+        NativePanelDrawPlan, NativePanelDrawPrimitive, NativePanelVisualColor,
+        NativePanelVisualMascotEllipseRole, NativePanelVisualMascotRoundRectRole,
+        NativePanelVisualMascotTextRole, NativePanelVisualShoulderSide, NativePanelVisualTextRole,
     };
     use crate::{
         native_panel_core::{PanelPoint, PanelRect},
@@ -341,10 +340,10 @@ mod tests {
 
     #[test]
     fn visual_plan_carries_platform_neutral_primitives() {
-        let plan = NativePanelVisualPlan {
+        let plan = NativePanelDrawPlan {
             hidden: false,
             primitives: vec![
-                NativePanelVisualPrimitive::CompletionGlow {
+                NativePanelDrawPrimitive::CompletionGlow {
                     frame: PanelRect {
                         x: 0.0,
                         y: 0.0,
@@ -353,7 +352,7 @@ mod tests {
                     },
                     opacity: 0.5,
                 },
-                NativePanelVisualPrimitive::Text {
+                NativePanelDrawPrimitive::Text {
                     role: NativePanelVisualTextRole::CompactHeadline,
                     origin: PanelPoint { x: 12.0, y: 14.0 },
                     max_width: 120.0,
@@ -364,7 +363,7 @@ mod tests {
                     alignment: super::NativePanelVisualTextAlignment::Center,
                     alpha: 1.0,
                 },
-                NativePanelVisualPrimitive::RoundRect {
+                NativePanelDrawPrimitive::RoundRect {
                     frame: PanelRect {
                         x: 0.0,
                         y: 0.0,
@@ -374,7 +373,7 @@ mod tests {
                     radius: 24.0,
                     color: NativePanelVisualColor::rgb(18, 18, 22),
                 },
-                NativePanelVisualPrimitive::MascotRoundRect {
+                NativePanelDrawPrimitive::MascotRoundRect {
                     role: NativePanelVisualMascotRoundRectRole::Mouth,
                     frame: PanelRect {
                         x: 20.0,
@@ -386,7 +385,7 @@ mod tests {
                     color: NativePanelVisualColor::rgb(255, 255, 255),
                     alpha: 1.0,
                 },
-                NativePanelVisualPrimitive::MascotEllipse {
+                NativePanelDrawPrimitive::MascotEllipse {
                     role: NativePanelVisualMascotEllipseRole::LeftEye,
                     frame: PanelRect {
                         x: 16.0,
@@ -397,7 +396,7 @@ mod tests {
                     color: NativePanelVisualColor::rgb(255, 255, 255),
                     alpha: 1.0,
                 },
-                NativePanelVisualPrimitive::MascotText {
+                NativePanelDrawPrimitive::MascotText {
                     role: NativePanelVisualMascotTextRole::SleepLabel,
                     origin: PanelPoint { x: 28.0, y: 28.0 },
                     max_width: 10.0,
@@ -408,7 +407,7 @@ mod tests {
                     alignment: super::NativePanelVisualTextAlignment::Center,
                     alpha: 0.5,
                 },
-                NativePanelVisualPrimitive::MascotSprite {
+                NativePanelDrawPrimitive::MascotSprite {
                     sprite_path: "mascot/default/spritesheet.png".to_string(),
                     source_rect: PanelRect {
                         x: 0.0,
@@ -424,7 +423,7 @@ mod tests {
                     },
                     opacity: 1.0,
                 },
-                NativePanelVisualPrimitive::MascotDot {
+                NativePanelDrawPrimitive::MascotDot {
                     center: PanelPoint { x: 24.0, y: 24.0 },
                     frame: PanelRect {
                         x: 12.0,
@@ -445,7 +444,7 @@ mod tests {
                     shadow_radius: 0.0,
                     alpha: 1.0,
                 },
-                NativePanelVisualPrimitive::CompactShoulder {
+                NativePanelDrawPrimitive::CompactShoulder {
                     frame: PanelRect {
                         x: -6.0,
                         y: 31.0,

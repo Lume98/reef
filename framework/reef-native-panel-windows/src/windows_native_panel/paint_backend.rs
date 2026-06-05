@@ -1,8 +1,8 @@
 use reef_ui::native_panel_ui::rendering::{
-    native_panel_submit_visual_plan, NativePanelFrameSubmission,
+    native_panel_submit_visual_plan, NativePanelDrawFrameSubmission,
 };
 use reef_ui::native_panel_ui::visual::{
-    NativePanelVisualColor, NativePanelVisualPlan, NativePanelVisualPrimitive,
+    NativePanelDrawPlan, NativePanelDrawPrimitive, NativePanelVisualColor,
     NativePanelVisualTextAlignment, NativePanelVisualTextRole, NativePanelVisualTextWeight,
 };
 
@@ -24,21 +24,21 @@ thread_local! {
 pub(super) const WINDOWS_NATIVE_PANEL_TRANSPARENT_COLOR_KEY: u32 = 0x00FF00FF;
 
 pub(super) type WindowsNativePanelPaintColor = NativePanelVisualColor;
-pub(super) type WindowsNativePanelPaintPlan = NativePanelVisualPlan;
-pub(super) type WindowsNativePanelPaintPrimitive = NativePanelVisualPrimitive;
-pub(super) type WindowsNativePanelFrameSubmission = NativePanelFrameSubmission;
+pub(super) type WindowsNativePanelPaintPlan = NativePanelDrawPlan;
+pub(super) type WindowsNativePanelPaintPrimitive = NativePanelDrawPrimitive;
+pub(super) type WindowsNativePanelDrawFrameSubmission = NativePanelDrawFrameSubmission;
 
 #[derive(Default)]
-struct WindowsNativePanelFrameSubmissionRecorder;
+struct WindowsNativePanelDrawFrameSubmissionRecorder;
 
-impl reef_ui::native_panel_ui::rendering::NativePanelRenderBackend
-    for WindowsNativePanelFrameSubmissionRecorder
+impl reef_ui::native_panel_ui::rendering::NativePanelDrawBackend
+    for WindowsNativePanelDrawFrameSubmissionRecorder
 {
     type Error = String;
 
     fn submit_frame(
         &mut self,
-        _submission: &WindowsNativePanelFrameSubmission,
+        _submission: &WindowsNativePanelDrawFrameSubmission,
     ) -> Result<(), Self::Error> {
         Ok(())
     }
@@ -389,7 +389,7 @@ pub(super) fn paint_windows_native_panel_job(
         let _ = raw_window_handle;
         let mut painter = super::d2d_painter::PlanOnlyWindowsNativePanelPainter;
         let plan = painter.paint(job)?;
-        let mut recorder = WindowsNativePanelFrameSubmissionRecorder::default();
+        let mut recorder = WindowsNativePanelDrawFrameSubmissionRecorder::default();
         let _ = native_panel_submit_visual_plan(&mut recorder, &plan);
         Ok(plan)
     }
@@ -433,7 +433,7 @@ pub(super) fn paint_windows_native_panel_job_with_gdi(
     };
 
     let plan = resolve_windows_native_panel_paint_plan(job);
-    let mut recorder = WindowsNativePanelFrameSubmissionRecorder::default();
+    let mut recorder = WindowsNativePanelDrawFrameSubmissionRecorder::default();
     let _ = native_panel_submit_visual_plan(&mut recorder, &plan);
     let operations = resolve_windows_native_panel_paint_operations(&plan);
     let Some(hwnd) = raw_window_handle else {

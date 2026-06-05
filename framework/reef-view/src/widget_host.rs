@@ -2,8 +2,8 @@ use reef_core::{
     event::Event,
     geometry::{point_in_rect, Point, Rect, Size},
 };
+use reef_draw::primitive::{DrawPlan, DrawPrimitive};
 use reef_layout::Constraints;
-use reef_render::primitive::{VisualPlan, VisualPrimitive};
 
 /// Reef UI 树中的可视化组件。
 ///
@@ -27,7 +27,7 @@ pub trait Widget {
 
 /// paint 阶段的上下文，用于收集绘制图元。
 pub struct PaintContext<'a> {
-    pub primitives: &'a mut Vec<VisualPrimitive>,
+    pub primitives: &'a mut Vec<DrawPrimitive>,
 }
 
 /// 事件处理阶段的上下文，用于标记组件树是否需要重绘。
@@ -42,7 +42,7 @@ pub struct WidgetHost {
     /// 脏标记，为 true 时表示需要重新 measure/paint
     dirty: bool,
     /// 最近一次生成的视觉计划
-    last_plan: Option<VisualPlan>,
+    last_plan: Option<DrawPlan>,
     /// 窗口逻辑尺寸
     size: Size,
 }
@@ -106,15 +106,15 @@ impl WidgetHost {
         self.root.take()
     }
 
-    /// 先 measure 再 paint，产出完整的 VisualPlan 交给渲染层。
-    pub fn render(&mut self) -> VisualPlan {
+    /// 先 measure 再 paint，产出完整的 DrawPlan 交给渲染层。
+    pub fn render(&mut self) -> DrawPlan {
         if !self.dirty {
             if let Some(plan) = &self.last_plan {
                 return plan.clone();
             }
         }
 
-        let mut plan = VisualPlan::new();
+        let mut plan = DrawPlan::with_viewport(self.size);
         if let Some(root) = &self.root {
             let root_rect = Rect {
                 x: 0.0,
@@ -205,7 +205,7 @@ mod tests {
             self.size
         }
         fn paint(&self, rect: Rect, ctx: &mut PaintContext) {
-            ctx.primitives.push(VisualPrimitive::RoundRect {
+            ctx.primitives.push(DrawPrimitive::RoundRect {
                 frame: rect,
                 radius: 12.0,
                 color: self.color,
@@ -283,7 +283,7 @@ mod tests {
         fn paint(&self, rect: Rect, ctx: &mut PaintContext) {
             self.paint_count
                 .set(self.paint_count.get().saturating_add(1));
-            ctx.primitives.push(VisualPrimitive::RoundRect {
+            ctx.primitives.push(DrawPrimitive::RoundRect {
                 frame: rect,
                 radius: 8.0,
                 color: Color::BLACK,

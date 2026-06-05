@@ -2761,8 +2761,8 @@ name = "reef-app"
 version = "0.1.0"
 dependencies = [
  "reef-core",
+ "reef-draw",
  "reef-layout",
- "reef-render",
  "reef-view",
 ]
 
@@ -2771,7 +2771,7 @@ name = "reef-backend-d2d"
 version = "0.1.0"
 dependencies = [
  "reef-core",
- "reef-render",
+ "reef-draw",
  "windows 0.58.0",
  "windows-sys 0.59.0",
 ]
@@ -2779,6 +2779,13 @@ dependencies = [
 [[package]]
 name = "reef-core"
 version = "0.1.0"
+
+[[package]]
+name = "reef-draw"
+version = "0.1.0"
+dependencies = [
+ "reef-core",
+]
 
 [[package]]
 name = "reef-layout"
@@ -2823,13 +2830,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "reef-render"
-version = "0.1.0"
-dependencies = [
- "reef-core",
-]
-
-[[package]]
 name = "reef-theme"
 version = "0.1.0"
 dependencies = [
@@ -2856,8 +2856,8 @@ name = "reef-view"
 version = "0.1.0"
 dependencies = [
  "reef-core",
+ "reef-draw",
  "reef-layout",
- "reef-render",
 ]
 
 [[package]]
@@ -2865,8 +2865,8 @@ name = "reef-widgets"
 version = "0.1.0"
 dependencies = [
  "reef-core",
+ "reef-draw",
  "reef-layout",
- "reef-render",
  "reef-theme",
  "reef-view",
 ]

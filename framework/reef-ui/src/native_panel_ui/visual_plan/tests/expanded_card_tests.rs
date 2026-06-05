@@ -3,10 +3,10 @@
 use super::super::{
     compact_digit_y, extend_visible_content_primitives,
     native_panel_visual_card_input_from_scene_card_with_height, resolve_native_panel_visual_plan,
-    NativePanelVisualActionButtonInput, NativePanelVisualCardBadgeInput,
-    NativePanelVisualCardBodyLineInput, NativePanelVisualCardBodyRole, NativePanelVisualCardInput,
-    NativePanelVisualCardRowInput, NativePanelVisualCardStyle, NativePanelVisualDisplayMode,
-    NativePanelVisualPlan, NativePanelVisualPlanInput,
+    NativePanelDrawPlan, NativePanelDrawPlanInput, NativePanelVisualActionButtonInput,
+    NativePanelVisualCardBadgeInput, NativePanelVisualCardBodyLineInput,
+    NativePanelVisualCardBodyRole, NativePanelVisualCardInput, NativePanelVisualCardRowInput,
+    NativePanelVisualCardStyle, NativePanelVisualDisplayMode,
 };
 use super::common::*;
 use crate::{
@@ -18,10 +18,10 @@ use crate::{
     native_panel_ui::{
         descriptors::{NativePanelEdgeAction, NativePanelHostWindowState},
         visual_primitives::{
-            native_panel_visual_text_box_height, NativePanelVisualColor,
+            native_panel_visual_text_box_height, NativePanelDrawPrimitive, NativePanelVisualColor,
             NativePanelVisualMascotEllipseRole, NativePanelVisualMascotRoundRectRole,
-            NativePanelVisualMascotTextRole, NativePanelVisualPrimitive,
-            NativePanelVisualTextAlignment, NativePanelVisualTextRole, NativePanelVisualTextWeight,
+            NativePanelVisualMascotTextRole, NativePanelVisualTextAlignment,
+            NativePanelVisualTextRole, NativePanelVisualTextWeight,
         },
     },
 };
@@ -37,37 +37,37 @@ fn expanded_visual_plan_draws_card_content_from_shared_inputs() {
 
     assert!(plan.primitives.iter().any(|primitive| matches!(
             primitive,
-            NativePanelVisualPrimitive::Text { text, weight, .. }
+            NativePanelDrawPrimitive::Text { text, weight, .. }
                 if text == "Settings"
                     && *weight == crate::native_panel_ui::visual_primitives::NativePanelVisualTextWeight::Semibold
         )));
     assert!(plan.primitives.iter().any(|primitive| matches!(
         primitive,
-        NativePanelVisualPrimitive::Text { text, .. } if text == "Reef UI v0.6.1"
+        NativePanelDrawPrimitive::Text { text, .. } if text == "Reef UI v0.6.1"
     )));
     assert!(plan.primitives.iter().any(|primitive| matches!(
         primitive,
-        NativePanelVisualPrimitive::Text { text, .. } if text == "Mute Sound"
+        NativePanelDrawPrimitive::Text { text, .. } if text == "Mute Sound"
     )));
     assert!(plan.primitives.iter().any(|primitive| matches!(
         primitive,
-        NativePanelVisualPrimitive::Text { text, .. } if text == "Off"
+        NativePanelDrawPrimitive::Text { text, .. } if text == "Off"
     )));
     assert!(plan.primitives.iter().any(|primitive| matches!(
         primitive,
-        NativePanelVisualPrimitive::Text { text, .. } if text == "Done"
+        NativePanelDrawPrimitive::Text { text, .. } if text == "Done"
     )));
     assert!(plan.primitives.iter().any(|primitive| matches!(
         primitive,
-        NativePanelVisualPrimitive::Text { text, .. } if text == "Task complete"
+        NativePanelDrawPrimitive::Text { text, .. } if text == "Task complete"
     )));
     assert!(plan.primitives.iter().any(|primitive| matches!(
         primitive,
-        NativePanelVisualPrimitive::Text { text, .. } if text == "Codex"
+        NativePanelDrawPrimitive::Text { text, .. } if text == "Codex"
     )));
     assert!(plan.primitives.iter().any(|primitive| matches!(
         primitive,
-        NativePanelVisualPrimitive::RoundRect { frame, radius, .. }
+        NativePanelDrawPrimitive::RoundRect { frame, radius, .. }
             if frame.width > 20.0
                 && (frame.height - 22.0).abs() < 0.001
                 && (*radius - 11.0).abs() < 0.001
@@ -83,7 +83,7 @@ fn expanded_visual_plan_draws_settings_rows_as_surfaces_with_value_badges() {
 
     assert!(plan.primitives.iter().any(|primitive| matches!(
             primitive,
-            NativePanelVisualPrimitive::RoundRect { frame, radius, color }
+            NativePanelDrawPrimitive::RoundRect { frame, radius, color }
                 if (frame.height - crate::native_panel_core::SETTINGS_ROW_HEIGHT).abs() < 0.001
                     && (*radius - 8.0).abs() < 0.001
                     && *color
@@ -91,7 +91,7 @@ fn expanded_visual_plan_draws_settings_rows_as_surfaces_with_value_badges() {
         )));
     assert!(plan.primitives.iter().any(|primitive| matches!(
             primitive,
-            NativePanelVisualPrimitive::RoundRect { frame, radius, color }
+            NativePanelDrawPrimitive::RoundRect { frame, radius, color }
                 if (frame.height - 18.0).abs() < 0.001
                     && (*radius - 9.0).abs() < 0.001
                     && *color
@@ -99,7 +99,7 @@ fn expanded_visual_plan_draws_settings_rows_as_surfaces_with_value_badges() {
         )));
     assert!(plan.primitives.iter().any(|primitive| matches!(
             primitive,
-            NativePanelVisualPrimitive::Text { text, color, size, alignment, .. }
+            NativePanelDrawPrimitive::Text { text, color, size, alignment, .. }
                 if text == "Off"
                     && *size == 10
                     && *alignment
@@ -120,7 +120,7 @@ fn expanded_visual_plan_matches_mac_session_card_density_and_clips_long_body() {
     input.cards[1].body = Some(long_body.to_string());
     let plan = resolve_native_panel_visual_plan(&input);
 
-    let NativePanelVisualPrimitive::Text { size, weight, .. } = text_primitive(&plan, "Finished")
+    let NativePanelDrawPrimitive::Text { size, weight, .. } = text_primitive(&plan, "Finished")
     else {
         panic!("expected title text");
     };
@@ -130,11 +130,11 @@ fn expanded_visual_plan_matches_mac_session_card_density_and_clips_long_body() {
         crate::native_panel_ui::visual_primitives::NativePanelVisualTextWeight::Semibold
     );
 
-    let NativePanelVisualPrimitive::Text { size, .. } = plan
+    let NativePanelDrawPrimitive::Text { size, .. } = plan
             .primitives
             .iter()
             .find(|primitive| {
-                matches!(primitive, NativePanelVisualPrimitive::Text { text, .. } if text.starts_with("#abcdef"))
+                matches!(primitive, NativePanelDrawPrimitive::Text { text, .. } if text.starts_with("#abcdef"))
             })
             .expect("expected meta text")
         else {
@@ -142,24 +142,24 @@ fn expanded_visual_plan_matches_mac_session_card_density_and_clips_long_body() {
         };
     assert_eq!(*size, 9);
 
-    let NativePanelVisualPrimitive::Text { size, .. } = text_primitive(&plan, "Codex") else {
+    let NativePanelDrawPrimitive::Text { size, .. } = text_primitive(&plan, "Codex") else {
         panic!("expected source badge text");
     };
     assert_eq!(*size, 10);
     assert!(plan.primitives.iter().any(|primitive| matches!(
         primitive,
-        NativePanelVisualPrimitive::RoundRect { frame, radius, .. }
+        NativePanelDrawPrimitive::RoundRect { frame, radius, .. }
             if (frame.height - 22.0).abs() < 0.001
                 && (*radius - 11.0).abs() < 0.001
     )));
 
     assert!(!plan.primitives.iter().any(|primitive| matches!(
         primitive,
-        NativePanelVisualPrimitive::Text { text, .. } if text == long_body
+        NativePanelDrawPrimitive::Text { text, .. } if text == long_body
     )));
     assert!(plan.primitives.iter().any(|primitive| matches!(
         primitive,
-        NativePanelVisualPrimitive::Text { text, size, .. }
+        NativePanelDrawPrimitive::Text { text, size, .. }
             if text.starts_with("abcdefghijklmnopqrstuvwxyz")
                 && text.contains('\n')
                 && text.lines().count() == 2
@@ -199,14 +199,14 @@ fn expanded_visual_plan_uses_mac_chat_line_tones_for_default_and_completion_card
 
     assert!(plan.primitives.iter().any(|primitive| matches!(
             primitive,
-            NativePanelVisualPrimitive::Text { text, color, .. }
+            NativePanelDrawPrimitive::Text { text, color, .. }
                 if text == "$"
                     && *color
                         == crate::native_panel_ui::visual_primitives::NativePanelVisualColor::rgb(217, 120, 87)
         )));
     assert!(plan.primitives.iter().any(|primitive| matches!(
             primitive,
-            NativePanelVisualPrimitive::Text { text, color, .. }
+            NativePanelDrawPrimitive::Text { text, color, .. }
                 if text == "Assistant reply"
                     && *color
                         == crate::native_panel_ui::visual_primitives::NativePanelVisualColor::rgb(177, 183, 194)
@@ -217,28 +217,28 @@ fn expanded_visual_plan_uses_mac_chat_line_tones_for_default_and_completion_card
     let plan = resolve_native_panel_visual_plan(&input);
     assert!(plan.primitives.iter().any(|primitive| matches!(
             primitive,
-            NativePanelVisualPrimitive::Text { text, color, .. }
+            NativePanelDrawPrimitive::Text { text, color, .. }
                 if text == "$"
                     && *color
                         == crate::native_panel_ui::visual_primitives::NativePanelVisualColor::rgb(104, 222, 145)
         )));
     assert!(plan.primitives.iter().any(|primitive| matches!(
             primitive,
-            NativePanelVisualPrimitive::RoundRect { frame, color, .. }
+            NativePanelDrawPrimitive::RoundRect { frame, color, .. }
                 if *color
                     == crate::native_panel_ui::visual_primitives::NativePanelVisualColor::rgb(37, 37, 41)
                     && frame.height > 60.0
         )));
     assert!(plan.primitives.iter().any(|primitive| matches!(
             primitive,
-            NativePanelVisualPrimitive::RoundRect { frame, color, .. }
+            NativePanelDrawPrimitive::RoundRect { frame, color, .. }
                 if *color
                     == crate::native_panel_ui::visual_primitives::NativePanelVisualColor::rgb(46, 79, 61)
                     && frame.height > 60.0
         )));
     assert!(!plan.primitives.iter().any(|primitive| matches!(
             primitive,
-            NativePanelVisualPrimitive::RoundRect { frame, color, .. }
+            NativePanelDrawPrimitive::RoundRect { frame, color, .. }
                 if *color
                     == crate::native_panel_ui::visual_primitives::NativePanelVisualColor::rgb(30, 40, 38)
                     && frame.height > 60.0
@@ -284,7 +284,7 @@ fn expanded_visual_plan_clips_title_before_source_badge_on_narrow_cards() {
         .primitives
         .iter()
         .find_map(|primitive| match primitive {
-            NativePanelVisualPrimitive::Text {
+            NativePanelDrawPrimitive::Text {
                 role: NativePanelVisualTextRole::CardTitle,
                 origin,
                 max_width,
@@ -298,7 +298,7 @@ fn expanded_visual_plan_clips_title_before_source_badge_on_narrow_cards() {
         .primitives
         .iter()
         .find_map(|primitive| match primitive {
-            NativePanelVisualPrimitive::Text {
+            NativePanelDrawPrimitive::Text {
                 role: NativePanelVisualTextRole::CardSourceBadge,
                 origin,
                 ..
@@ -352,25 +352,25 @@ fn expanded_visual_plan_draws_session_reply_and_prompt_lines() {
 
     assert!(plan.primitives.iter().any(|primitive| matches!(
             primitive,
-            NativePanelVisualPrimitive::Text { text, color, .. }
+            NativePanelDrawPrimitive::Text { text, color, .. }
                 if text == "$"
                     && *color
                         == crate::native_panel_ui::visual_primitives::NativePanelVisualColor::rgb(217, 120, 87)
         )));
     assert!(plan.primitives.iter().any(|primitive| matches!(
             primitive,
-            NativePanelVisualPrimitive::Text { text, color, .. }
+            NativePanelDrawPrimitive::Text { text, color, .. }
                 if text == ">"
                     && *color
                         == crate::native_panel_ui::visual_primitives::NativePanelVisualColor::rgb(104, 222, 145)
         )));
     assert!(plan.primitives.iter().any(|primitive| matches!(
         primitive,
-        NativePanelVisualPrimitive::Text { text, .. } if text == "Assistant reply"
+        NativePanelDrawPrimitive::Text { text, .. } if text == "Assistant reply"
     )));
     assert!(plan.primitives.iter().any(|primitive| matches!(
         primitive,
-        NativePanelVisualPrimitive::Text { text, .. } if text == "User prompt"
+        NativePanelDrawPrimitive::Text { text, .. } if text == "User prompt"
     )));
 }
 
@@ -418,7 +418,7 @@ fn expanded_visual_plan_aligns_body_prefix_to_first_wrapped_text_line() {
         .primitives
         .iter()
         .find_map(|primitive| match primitive {
-            NativePanelVisualPrimitive::Text {
+            NativePanelDrawPrimitive::Text {
                 role, text, origin, ..
             } if *role == NativePanelVisualTextRole::CardBodyPrefix && text == "$" => {
                 Some(origin.y)
@@ -430,7 +430,7 @@ fn expanded_visual_plan_aligns_body_prefix_to_first_wrapped_text_line() {
         .primitives
         .iter()
         .find_map(|primitive| match primitive {
-            NativePanelVisualPrimitive::Text {
+            NativePanelDrawPrimitive::Text {
                 role, text, origin, ..
             } if *role == NativePanelVisualTextRole::CardBodyText && text.contains('\n') => {
                 Some(origin.y)
@@ -454,14 +454,14 @@ fn expanded_visual_plan_keeps_partially_clipped_card_shell_without_content() {
 
     assert!(plan.primitives.iter().any(|primitive| matches!(
         primitive,
-        NativePanelVisualPrimitive::RoundRect {
+        NativePanelDrawPrimitive::RoundRect {
             radius,
             ..
         } if (*radius - crate::native_panel_core::CARD_RADIUS).abs() < 0.001
     )));
     assert!(!plan.primitives.iter().any(|primitive| matches!(
         primitive,
-        NativePanelVisualPrimitive::Text { text, .. }
+        NativePanelDrawPrimitive::Text { text, .. }
             if text == "Settings"
                 || text == "Mute Sound"
                 || text == "Done"
@@ -481,7 +481,7 @@ fn expanded_visual_plan_anchors_overflowing_card_stack_to_visible_bottom() {
 
     assert!(plan.primitives.iter().any(|primitive| matches!(
         primitive,
-        NativePanelVisualPrimitive::RoundRect {
+        NativePanelDrawPrimitive::RoundRect {
             frame,
             radius,
             ..
@@ -491,7 +491,7 @@ fn expanded_visual_plan_anchors_overflowing_card_stack_to_visible_bottom() {
     )));
     assert!(plan.primitives.iter().any(|primitive| matches!(
         primitive,
-        NativePanelVisualPrimitive::Text { text, .. } if text == "Settings"
+        NativePanelDrawPrimitive::Text { text, .. } if text == "Settings"
     )));
 }
 
@@ -527,11 +527,11 @@ fn expanded_visual_plan_does_not_relayout_content_from_top_clipped_card() {
 
     assert!(plan.primitives.iter().any(|primitive| matches!(
         primitive,
-        NativePanelVisualPrimitive::Text { text, .. } if text == "Done"
+        NativePanelDrawPrimitive::Text { text, .. } if text == "Done"
     )));
     assert!(!plan.primitives.iter().any(|primitive| matches!(
         primitive,
-        NativePanelVisualPrimitive::Text { text, .. } if text == "Task complete"
+        NativePanelDrawPrimitive::Text { text, .. } if text == "Task complete"
     )));
 }
 
@@ -543,7 +543,7 @@ fn visible_content_extension_clips_partially_visible_text_without_dropping_it() 
         width: 120.0,
         height: 20.0,
     };
-    let text = NativePanelVisualPrimitive::Text {
+    let text = NativePanelDrawPrimitive::Text {
         role: NativePanelVisualTextRole::CardBodyText,
         origin: PanelPoint { x: 8.0, y: 14.0 },
         max_width: 100.0,
@@ -559,15 +559,15 @@ fn visible_content_extension_clips_partially_visible_text_without_dropping_it() 
 
     assert!(output.iter().any(|primitive| matches!(
         primitive,
-        NativePanelVisualPrimitive::Text { text, .. } if text == "Task complete"
+        NativePanelDrawPrimitive::Text { text, .. } if text == "Task complete"
     )));
     assert!(matches!(
         output.first(),
-        Some(NativePanelVisualPrimitive::ClipStart { frame }) if *frame == visible_frame
+        Some(NativePanelDrawPrimitive::ClipStart { frame }) if *frame == visible_frame
     ));
     assert!(matches!(
         output.last(),
-        Some(NativePanelVisualPrimitive::ClipEnd)
+        Some(NativePanelDrawPrimitive::ClipEnd)
     ));
 }
 
@@ -596,7 +596,7 @@ fn expanded_visual_plan_centers_empty_card_prompt() {
 
     assert!(plan.primitives.iter().any(|primitive| matches!(
         primitive,
-        NativePanelVisualPrimitive::Text {
+        NativePanelDrawPrimitive::Text {
             text,
             origin,
             max_width,
@@ -638,7 +638,7 @@ fn expanded_visual_plan_keeps_single_empty_card_when_viewport_is_shorter_than_em
 
     assert!(plan.primitives.iter().any(|primitive| matches!(
         primitive,
-        NativePanelVisualPrimitive::RoundRect {
+        NativePanelDrawPrimitive::RoundRect {
             frame,
             radius,
             ..
@@ -647,7 +647,7 @@ fn expanded_visual_plan_keeps_single_empty_card_when_viewport_is_shorter_than_em
     )));
     assert!(plan.primitives.iter().any(|primitive| matches!(
         primitive,
-        NativePanelVisualPrimitive::Text { text, .. } if text == "No active sessions"
+        NativePanelDrawPrimitive::Text { text, .. } if text == "No active sessions"
     )));
 }
 
@@ -658,7 +658,7 @@ fn expanded_visual_plan_does_not_fill_transparent_canvas_background() {
 
     assert!(!plan.primitives.iter().any(|primitive| matches!(
         primitive,
-        NativePanelVisualPrimitive::RoundRect {
+        NativePanelDrawPrimitive::RoundRect {
             frame,
             color,
             ..
@@ -677,7 +677,7 @@ fn expanded_visual_plan_keeps_shell_color_stable_with_compact_island() {
 
     assert!(plan.primitives.iter().any(|primitive| matches!(
         primitive,
-        NativePanelVisualPrimitive::RoundRect {
+        NativePanelDrawPrimitive::RoundRect {
             frame,
             radius,
             color,
@@ -702,7 +702,7 @@ fn expanded_visual_plan_draws_card_shells_from_shared_stack_layout() {
         .primitives
         .iter()
         .filter_map(|primitive| match primitive {
-            NativePanelVisualPrimitive::RoundRect { frame, radius, .. }
+            NativePanelDrawPrimitive::RoundRect { frame, radius, .. }
                 if frame.width > 80.0
                     && (*radius - crate::native_panel_core::CARD_RADIUS).abs() < 0.001 =>
             {
@@ -742,7 +742,7 @@ fn expanded_visual_plan_reveals_card_shells_with_staggered_collapsed_height() {
         .primitives
         .iter()
         .filter_map(|primitive| match primitive {
-            NativePanelVisualPrimitive::RoundRect { frame, radius, .. }
+            NativePanelDrawPrimitive::RoundRect { frame, radius, .. }
                 if frame.width > 80.0
                     && (*radius - crate::native_panel_core::CARD_RADIUS).abs() < 0.001 =>
             {
@@ -767,7 +767,7 @@ fn expanded_visual_plan_hides_card_shells_before_card_reveal_progress() {
 
     assert!(!plan.primitives.iter().any(|primitive| matches!(
         primitive,
-        NativePanelVisualPrimitive::RoundRect {
+        NativePanelDrawPrimitive::RoundRect {
             radius,
             ..
         } if (*radius - crate::native_panel_core::CARD_RADIUS).abs() < 0.001

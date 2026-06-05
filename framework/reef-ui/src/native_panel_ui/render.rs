@@ -20,17 +20,16 @@ pub use super::render_bundle::{
 };
 pub use super::rendering_backend::{
     native_panel_frame_submission_from_visual_plan, native_panel_submit_visual_plan,
-    NativePanelFrameSubmission, NativePanelRenderBackend, NativePanelRenderCommand,
+    NativePanelDrawBackend, NativePanelDrawFrameSubmission, NativePanelRenderCommand,
 };
 pub use super::transition_controller::*;
 pub use super::visual_plan::{
     native_panel_visual_card_input_from_scene_card,
     native_panel_visual_card_input_from_scene_card_with_height,
     resolve_native_panel_compact_bar_visual_plan, resolve_native_panel_visual_plan,
-    NativePanelVisualActionButtonInput, NativePanelVisualCardBadgeInput,
+    NativePanelDrawPlanInput, NativePanelVisualActionButtonInput, NativePanelVisualCardBadgeInput,
     NativePanelVisualCardBodyLineInput, NativePanelVisualCardBodyRole, NativePanelVisualCardInput,
     NativePanelVisualCardRowInput, NativePanelVisualCardStyle, NativePanelVisualDisplayMode,
-    NativePanelVisualPlanInput,
 };
 pub use super::visual_primitives::{
     native_panel_visual_compact_shoulder_primitive, native_panel_visual_completion_glow_primitive,
@@ -39,9 +38,9 @@ pub use super::visual_primitives::{
     native_panel_visual_mascot_round_rect_primitive, native_panel_visual_mascot_sprite_primitive,
     native_panel_visual_mascot_text_primitive, native_panel_visual_text_box_height,
     native_panel_visual_text_box_height_for_role, native_panel_visual_text_primitive_by_role,
-    native_panel_visual_text_primitive_by_text, NativePanelVisualColor,
-    NativePanelVisualMascotEllipseRole, NativePanelVisualMascotRoundRectRole,
-    NativePanelVisualMascotTextRole, NativePanelVisualPlan, NativePanelVisualPrimitive,
+    native_panel_visual_text_primitive_by_text, NativePanelDrawPlan, NativePanelDrawPrimitive,
+    NativePanelVisualColor, NativePanelVisualMascotEllipseRole,
+    NativePanelVisualMascotRoundRectRole, NativePanelVisualMascotTextRole,
     NativePanelVisualShoulderSide, NativePanelVisualTextAlignment, NativePanelVisualTextRole,
     NativePanelVisualTextWeight,
 };
@@ -61,10 +60,11 @@ pub mod presentation {
         NativePanelActionButtonCommand, NativePanelCardStackCommand, NativePanelCompactBarCommand,
     };
     pub use super::super::visual_plan::{
-        native_panel_visual_card_input_from_scene_card, NativePanelVisualActionButtonInput,
-        NativePanelVisualCardBadgeInput, NativePanelVisualCardBodyLineInput,
-        NativePanelVisualCardBodyRole, NativePanelVisualCardInput, NativePanelVisualCardRowInput,
-        NativePanelVisualCardStyle, NativePanelVisualDisplayMode, NativePanelVisualPlanInput,
+        native_panel_visual_card_input_from_scene_card, NativePanelDrawPlanInput,
+        NativePanelVisualActionButtonInput, NativePanelVisualCardBadgeInput,
+        NativePanelVisualCardBodyLineInput, NativePanelVisualCardBodyRole,
+        NativePanelVisualCardInput, NativePanelVisualCardRowInput, NativePanelVisualCardStyle,
+        NativePanelVisualDisplayMode,
     };
     pub use super::super::visual_primitives::NativePanelVisualColor;
 }
@@ -110,10 +110,10 @@ pub mod visual {
         native_panel_visual_card_input_from_scene_card,
         native_panel_visual_card_input_from_scene_card_with_height,
         resolve_native_panel_compact_bar_visual_plan, resolve_native_panel_visual_plan,
-        NativePanelVisualActionButtonInput, NativePanelVisualCardBadgeInput,
-        NativePanelVisualCardBodyLineInput, NativePanelVisualCardBodyRole,
-        NativePanelVisualCardInput, NativePanelVisualCardRowInput, NativePanelVisualCardStyle,
-        NativePanelVisualDisplayMode, NativePanelVisualPlanInput,
+        NativePanelDrawPlanInput, NativePanelVisualActionButtonInput,
+        NativePanelVisualCardBadgeInput, NativePanelVisualCardBodyLineInput,
+        NativePanelVisualCardBodyRole, NativePanelVisualCardInput, NativePanelVisualCardRowInput,
+        NativePanelVisualCardStyle, NativePanelVisualDisplayMode,
     };
     pub use super::super::visual_primitives::{
         native_panel_visual_compact_shoulder_primitive,
@@ -124,9 +124,9 @@ pub mod visual {
         native_panel_visual_mascot_sprite_primitive, native_panel_visual_mascot_text_primitive,
         native_panel_visual_text_box_height, native_panel_visual_text_box_height_for_role,
         native_panel_visual_text_primitive_by_role, native_panel_visual_text_primitive_by_text,
-        NativePanelVisualColor, NativePanelVisualMascotEllipseRole,
-        NativePanelVisualMascotRoundRectRole, NativePanelVisualMascotTextRole,
-        NativePanelVisualPlan, NativePanelVisualPrimitive, NativePanelVisualShoulderSide,
+        NativePanelDrawPlan, NativePanelDrawPrimitive, NativePanelVisualColor,
+        NativePanelVisualMascotEllipseRole, NativePanelVisualMascotRoundRectRole,
+        NativePanelVisualMascotTextRole, NativePanelVisualShoulderSide,
         NativePanelVisualTextAlignment, NativePanelVisualTextRole, NativePanelVisualTextWeight,
     };
 }

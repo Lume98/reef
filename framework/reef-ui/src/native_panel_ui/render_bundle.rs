@@ -11,7 +11,7 @@ use super::descriptors::{
 };
 use super::presentation_model::estimated_scene_content_height_for_card_width;
 use super::rendering_backend::{
-    native_panel_frame_submission_from_visual_plan, NativePanelFrameSubmission,
+    native_panel_frame_submission_from_visual_plan, NativePanelDrawFrameSubmission,
 };
 use super::{
     presentation_model::native_panel_visual_plan_input_from_presentation,
@@ -131,7 +131,7 @@ pub fn resolve_native_panel_render_command_bundle(
 
 pub fn resolve_native_panel_frame_submission_for_render_command_bundle(
     bundle: &NativePanelRenderCommandBundle,
-) -> NativePanelFrameSubmission {
+) -> NativePanelDrawFrameSubmission {
     let presentation = resolve_native_panel_presentation_model(bundle);
     let window_state = super::descriptors::NativePanelHostWindowState {
         frame: Some(bundle.layout.panel_frame),

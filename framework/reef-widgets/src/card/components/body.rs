@@ -2,8 +2,8 @@ use reef_core::{
     color::Color,
     geometry::{Point, Rect, Size},
 };
+use reef_draw::primitive::{DrawPrimitive, TextAlignment, TextWeight};
 use reef_layout::Constraints;
-use reef_render::primitive::{FontWeight, TextAlignment, VisualPrimitive};
 use reef_view::widget_host::{PaintContext, Widget};
 
 use crate::card::{
@@ -49,25 +49,25 @@ impl Widget for CardBody {
             let mut x = rect.x + self.pad_x;
             if let Some(prefix) = &line.prefix {
                 let pw = prefix.chars().count() as f64 * 6.0;
-                ctx.primitives.push(VisualPrimitive::Text {
+                ctx.primitives.push(DrawPrimitive::Text {
                     origin: Point { x, y },
                     max_width: pw + 4.0,
                     text: prefix.clone(),
                     color: prefix_color,
                     size: 10,
-                    weight: FontWeight::Normal,
+                    weight: TextWeight::Normal,
                     alignment: TextAlignment::Left,
                     alpha: self.content_alpha,
                 });
                 x += 24.0;
             }
-            ctx.primitives.push(VisualPrimitive::Text {
+            ctx.primitives.push(DrawPrimitive::Text {
                 origin: Point { x, y },
                 max_width: rect.width - x + rect.x - self.pad_x,
                 text: line.text.clone(),
                 color: text_color,
                 size: 10,
-                weight: FontWeight::Normal,
+                weight: TextWeight::Normal,
                 alignment: TextAlignment::Left,
                 alpha: self.content_alpha,
             });
@@ -88,7 +88,7 @@ impl Widget for CardBody {
             let px = rect.x + self.pad_x;
             let py = y;
 
-            ctx.primitives.push(VisualPrimitive::RoundRect {
+            ctx.primitives.push(DrawPrimitive::RoundRect {
                 frame: Rect {
                     x: px,
                     y: py,
@@ -99,7 +99,7 @@ impl Widget for CardBody {
                 color: Color::from(theme::TOOL_PILL_BG),
                 alpha: self.content_alpha,
             });
-            ctx.primitives.push(VisualPrimitive::RoundRect {
+            ctx.primitives.push(DrawPrimitive::RoundRect {
                 frame: Rect {
                     x: px,
                     y: py,
@@ -110,7 +110,7 @@ impl Widget for CardBody {
                 color: Color::from(theme::TOOL_PILL_SHADOW),
                 alpha: 0.4 * self.content_alpha,
             });
-            ctx.primitives.push(VisualPrimitive::Text {
+            ctx.primitives.push(DrawPrimitive::Text {
                 origin: Point {
                     x: px + 7.0,
                     y: py + 5.0,
@@ -119,14 +119,14 @@ impl Widget for CardBody {
                 text: tool.name.clone(),
                 color: tool_tone_color(&tool.name),
                 size: 9,
-                weight: FontWeight::Semibold,
+                weight: TextWeight::Semibold,
                 alignment: TextAlignment::Left,
                 alpha: self.content_alpha,
             });
             if let Some(desc) = &tool.description {
                 if !desc.trim().is_empty() {
                     let desc_x = px + 7.0 + name_w + 6.0;
-                    ctx.primitives.push(VisualPrimitive::Text {
+                    ctx.primitives.push(DrawPrimitive::Text {
                         origin: Point {
                             x: desc_x,
                             y: py + 5.0,
@@ -135,7 +135,7 @@ impl Widget for CardBody {
                         text: desc.clone(),
                         color: Color::from(theme::TEXT_DETAIL),
                         size: 9,
-                        weight: FontWeight::Normal,
+                        weight: TextWeight::Normal,
                         alignment: TextAlignment::Left,
                         alpha: self.content_alpha,
                     });
@@ -152,7 +152,7 @@ impl Widget for CardBody {
                 let hx = rect.x + self.pad_x;
                 let hy = rect.y + 10.0;
 
-                ctx.primitives.push(VisualPrimitive::RoundRect {
+                ctx.primitives.push(DrawPrimitive::RoundRect {
                     frame: Rect {
                         x: hx,
                         y: hy,
@@ -163,7 +163,7 @@ impl Widget for CardBody {
                     color: Color::from(theme::ACTION_HINT_BG),
                     alpha: self.content_alpha,
                 });
-                ctx.primitives.push(VisualPrimitive::Text {
+                ctx.primitives.push(DrawPrimitive::Text {
                     origin: Point {
                         x: hx + 9.0,
                         y: hy + 4.0,
@@ -172,7 +172,7 @@ impl Widget for CardBody {
                     text: hint_text,
                     color: Color::from(theme::ACTION_HINT_FG),
                     size: 10,
-                    weight: FontWeight::Normal,
+                    weight: TextWeight::Normal,
                     alignment: TextAlignment::Left,
                     alpha: self.content_alpha,
                 });

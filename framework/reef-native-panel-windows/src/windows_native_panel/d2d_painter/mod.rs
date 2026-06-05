@@ -8,7 +8,7 @@ use super::{
 };
 use crate::native_panel_core::{PanelPoint, PanelRect};
 use reef_ui::native_panel_ui::rendering::{
-    native_panel_submit_visual_plan, NativePanelFrameSubmission, NativePanelRenderBackend,
+    native_panel_submit_visual_plan, NativePanelDrawBackend, NativePanelDrawFrameSubmission,
 };
 #[cfg(all(windows, not(test)))]
 use reef_ui::native_panel_ui::visual::native_panel_visual_text_box_height_for_role;
@@ -53,10 +53,10 @@ pub(super) fn directwrite_text_requests_from_paint_plan(
 }
 
 fn directwrite_text_request_from_native_panel_primitive(
-    primitive: &reef_ui::native_panel_ui::visual::NativePanelVisualPrimitive,
+    primitive: &reef_ui::native_panel_ui::visual::NativePanelDrawPrimitive,
 ) -> Option<WindowsDirectWriteTextLayoutRequest> {
     match primitive {
-        reef_ui::native_panel_ui::visual::NativePanelVisualPrimitive::Text {
+        reef_ui::native_panel_ui::visual::NativePanelDrawPrimitive::Text {
             text,
             max_width,
             size,
@@ -64,7 +64,7 @@ fn directwrite_text_request_from_native_panel_primitive(
             alignment,
             ..
         }
-        | reef_ui::native_panel_ui::visual::NativePanelVisualPrimitive::MascotText {
+        | reef_ui::native_panel_ui::visual::NativePanelDrawPrimitive::MascotText {
             text,
             max_width,
             size,
@@ -92,12 +92,12 @@ pub(super) trait WindowsNativePanelPainter {
 #[derive(Default)]
 struct NativePanelPlanSubmissionRecorder;
 
-impl NativePanelRenderBackend for NativePanelPlanSubmissionRecorder {
+impl NativePanelDrawBackend for NativePanelPlanSubmissionRecorder {
     type Error = String;
 
     fn submit_frame(
         &mut self,
-        _submission: &NativePanelFrameSubmission,
+        _submission: &NativePanelDrawFrameSubmission,
     ) -> Result<(), Self::Error> {
         Ok(())
     }

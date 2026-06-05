@@ -2,8 +2,8 @@ use reef_core::{
     color::Color,
     geometry::{Rect, Size},
 };
+use reef_draw::primitive::DrawPrimitive;
 use reef_layout::Constraints;
-use reef_render::primitive::VisualPrimitive;
 use reef_view::widget_host::{PaintContext, Widget};
 
 /// Mascot body blob with fill and stroke.
@@ -43,7 +43,7 @@ impl Widget for MascotDot {
     }
 
     fn paint(&self, rect: Rect, ctx: &mut PaintContext) {
-        ctx.primitives.push(VisualPrimitive::StrokedRoundRect {
+        ctx.primitives.push(DrawPrimitive::StrokedRoundRect {
             frame: rect,
             radius: self.corner_radius,
             fill: self.fill_color,

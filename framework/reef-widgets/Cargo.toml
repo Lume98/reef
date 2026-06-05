@@ -5,7 +5,7 @@ edition = "2021"
 
 [dependencies]
 reef-core = { path = "../reef-core" }
-reef-render = { path = "../reef-render" }
+reef-draw = { path = "../reef-draw" }
 reef-layout = { path = "../reef-layout" }
 reef-view = { path = "../reef-view" }
 reef-theme = { path = "../reef-theme" }

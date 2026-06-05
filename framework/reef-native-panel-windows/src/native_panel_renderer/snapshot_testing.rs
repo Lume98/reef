@@ -6,7 +6,7 @@ use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
 
 use crate::native_panel_renderer::visual_primitives::{
-    NativePanelVisualPlan, NativePanelVisualPrimitive,
+    NativePanelDrawPlan, NativePanelDrawPrimitive,
 };
 
 /// 可序列化的渲染快照
@@ -44,7 +44,7 @@ impl RenderSnapshot {
     /// 从渲染计划创建快照
     pub fn from_visual_plan(
         scenario: &str,
-        plan: &NativePanelVisualPlan,
+        plan: &NativePanelDrawPlan,
         metadata: SnapshotMetadata,
     ) -> Self {
         let primitives = plan
@@ -121,9 +121,9 @@ pub enum SnapshotDiff {
 }
 
 impl SerializablePrimitive {
-    fn from_primitive(p: &NativePanelVisualPrimitive) -> Self {
+    fn from_primitive(p: &NativePanelDrawPrimitive) -> Self {
         match p {
-            NativePanelVisualPrimitive::RoundRect {
+            NativePanelDrawPrimitive::RoundRect {
                 frame,
                 radius,
                 color,
@@ -141,7 +141,7 @@ impl SerializablePrimitive {
                 }),
             },
 
-            NativePanelVisualPrimitive::Text {
+            NativePanelDrawPrimitive::Text {
                 role,
                 origin,
                 max_width,
@@ -169,7 +169,7 @@ impl SerializablePrimitive {
                 }),
             },
 
-            NativePanelVisualPrimitive::Rect { frame, color } => Self {
+            NativePanelDrawPrimitive::Rect { frame, color } => Self {
                 primitive_type: "Rect".to_string(),
                 data: serde_json::json!({
                     "frame": {
@@ -182,7 +182,7 @@ impl SerializablePrimitive {
                 }),
             },
 
-            NativePanelVisualPrimitive::CompactShoulder {
+            NativePanelDrawPrimitive::CompactShoulder {
                 side,
                 frame,
                 progress,
@@ -257,10 +257,10 @@ mod tests {
 
     #[test]
     fn test_snapshot_serialization() {
-        let plan = NativePanelVisualPlan {
+        let plan = NativePanelDrawPlan {
             hidden: false,
             primitives: vec![
-                NativePanelVisualPrimitive::RoundRect {
+                NativePanelDrawPrimitive::RoundRect {
                     frame: PanelRect {
                         x: 0.0,
                         y: 0.0,
@@ -270,7 +270,7 @@ mod tests {
                     radius: 22.0,
                     color: NativePanelVisualColor::rgb(18, 18, 22),
                 },
-                NativePanelVisualPrimitive::Text {
+                NativePanelDrawPrimitive::Text {
                     role: NativePanelVisualTextRole::CompactHeadline,
                     origin: PanelPoint { x: 52.0, y: 15.0 },
                     max_width: 156.0,

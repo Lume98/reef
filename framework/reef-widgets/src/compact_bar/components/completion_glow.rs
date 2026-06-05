@@ -1,6 +1,6 @@
 use reef_core::geometry::{Rect, Size};
+use reef_draw::primitive::DrawPrimitive;
 use reef_layout::Constraints;
-use reef_render::primitive::VisualPrimitive;
 use reef_view::widget_host::{PaintContext, Widget};
 
 /// Breathing 9-slice glow image for completion animation.
@@ -37,7 +37,7 @@ impl Widget for CompletionGlow {
 
     fn paint(&self, _rect: Rect, ctx: &mut PaintContext) {
         let opacity = self.opacity();
-        ctx.primitives.push(VisualPrimitive::NineSliceImage {
+        ctx.primitives.push(DrawPrimitive::NineSliceImage {
             key: "island-completion-inner-glow-9slice".to_string(),
             frame: self.frame,
             slice_left: 20.0,

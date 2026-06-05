@@ -15,12 +15,12 @@ use super::super::completion_glow_visual_spec::{
 };
 use super::super::descriptors::NativePanelEdgeAction;
 use super::super::visual_primitives::{
-    native_panel_visual_text_box_height, NativePanelVisualPlan, NativePanelVisualPrimitive,
+    native_panel_visual_text_box_height, NativePanelDrawPlan, NativePanelDrawPrimitive,
     NativePanelVisualShoulderSide, NativePanelVisualTextAlignment, NativePanelVisualTextRole,
     NativePanelVisualTextWeight,
 };
 
-use super::input::{NativePanelVisualDisplayMode, NativePanelVisualPlanInput};
+use super::input::{NativePanelDrawPlanInput, NativePanelVisualDisplayMode};
 
 use super::utils::{
     compact_collapsed_alpha, compact_digit_y, compact_headline_y, fit_text_to_width, non_zero_rect,
@@ -29,10 +29,10 @@ use super::utils::{
 use reef_theme::{compact_bar as compact_theme, panel as theme};
 
 pub fn resolve_native_panel_compact_bar_visual_plan(
-    input: &NativePanelVisualPlanInput,
-) -> NativePanelVisualPlan {
+    input: &NativePanelDrawPlanInput,
+) -> NativePanelDrawPlan {
     if input.display_mode == NativePanelVisualDisplayMode::Hidden || !input.window_state.visible {
-        return NativePanelVisualPlan {
+        return NativePanelDrawPlan {
             hidden: true,
             primitives: Vec::new(),
         };
@@ -74,7 +74,7 @@ pub fn resolve_native_panel_compact_bar_visual_plan(
         action_button_visibility,
     );
 
-    NativePanelVisualPlan {
+    NativePanelDrawPlan {
         hidden: false,
         primitives,
     }
@@ -111,8 +111,8 @@ pub(super) fn compact_content_layout(
 }
 
 pub(super) fn push_compact_island_background(
-    primitives: &mut Vec<NativePanelVisualPrimitive>,
-    input: &NativePanelVisualPlanInput,
+    primitives: &mut Vec<NativePanelDrawPrimitive>,
+    input: &NativePanelDrawPlanInput,
     compact_frame: PanelRect,
 ) {
     push_compact_shoulder_primitive(
@@ -127,7 +127,7 @@ pub(super) fn push_compact_island_background(
         NativePanelVisualShoulderSide::Right,
         input.shoulder_progress,
     );
-    primitives.push(NativePanelVisualPrimitive::RoundRect {
+    primitives.push(NativePanelDrawPrimitive::RoundRect {
         frame: compact_frame,
         radius: COMPACT_PILL_RADIUS,
         color: theme::SHELL_FILL.into(),
@@ -135,8 +135,8 @@ pub(super) fn push_compact_island_background(
 }
 
 pub(super) fn push_compact_headline_primitive(
-    primitives: &mut Vec<NativePanelVisualPrimitive>,
-    input: &NativePanelVisualPlanInput,
+    primitives: &mut Vec<NativePanelDrawPrimitive>,
+    input: &NativePanelDrawPlanInput,
     compact_frame: PanelRect,
     compact_content: CompactBarContentLayout,
     collapsed_alpha: f64,
@@ -157,7 +157,7 @@ pub(super) fn push_compact_headline_primitive(
         crate::native_panel_core::resolve_estimated_text_width(&headline_text, 13.0)
             .min(compact_content.headline_width);
     let headline_center_x = compact_frame.x + compact_content.headline_center_x;
-    primitives.push(NativePanelVisualPrimitive::Text {
+    primitives.push(NativePanelDrawPrimitive::Text {
         role: NativePanelVisualTextRole::CompactHeadline,
         origin: PanelPoint {
             x: headline_center_x - headline_width / 2.0,
@@ -178,8 +178,8 @@ pub(super) fn push_compact_headline_primitive(
 }
 
 pub(super) fn push_compact_metrics_primitives(
-    primitives: &mut Vec<NativePanelVisualPrimitive>,
-    input: &NativePanelVisualPlanInput,
+    primitives: &mut Vec<NativePanelDrawPrimitive>,
+    input: &NativePanelDrawPlanInput,
     compact_frame: PanelRect,
     compact_content: CompactBarContentLayout,
     chrome_visibility: PanelChromeVisibilitySpec,
@@ -202,7 +202,7 @@ pub(super) fn push_compact_metrics_primitives(
     } else {
         compact_theme::COUNT_INACTIVE.into()
     };
-    primitives.push(NativePanelVisualPrimitive::Text {
+    primitives.push(NativePanelDrawPrimitive::Text {
         role: NativePanelVisualTextRole::CompactActiveCount,
         origin: PanelPoint {
             x: active_count_x,
@@ -217,7 +217,7 @@ pub(super) fn push_compact_metrics_primitives(
         alpha: collapsed_alpha,
     });
     if active_count_marquee.show_next {
-        primitives.push(NativePanelVisualPrimitive::Text {
+        primitives.push(NativePanelDrawPrimitive::Text {
             role: NativePanelVisualTextRole::CompactActiveCountNext,
             origin: PanelPoint {
                 x: active_count_x,
@@ -233,7 +233,7 @@ pub(super) fn push_compact_metrics_primitives(
         });
     }
     if !input.total_count.is_empty() {
-        primitives.push(NativePanelVisualPrimitive::Text {
+        primitives.push(NativePanelDrawPrimitive::Text {
             role: NativePanelVisualTextRole::CompactSlash,
             origin: PanelPoint {
                 x: compact_frame.x + compact_content.slash_x,
@@ -247,7 +247,7 @@ pub(super) fn push_compact_metrics_primitives(
             alignment: NativePanelVisualTextAlignment::Center,
             alpha: collapsed_alpha,
         });
-        primitives.push(NativePanelVisualPrimitive::Text {
+        primitives.push(NativePanelDrawPrimitive::Text {
             role: NativePanelVisualTextRole::CompactTotalCount,
             origin: PanelPoint {
                 x: compact_frame.x + compact_content.total_x,
@@ -265,8 +265,8 @@ pub(super) fn push_compact_metrics_primitives(
 }
 
 pub(super) fn push_compact_action_button_primitives(
-    primitives: &mut Vec<NativePanelVisualPrimitive>,
-    input: &NativePanelVisualPlanInput,
+    primitives: &mut Vec<NativePanelDrawPrimitive>,
+    input: &NativePanelDrawPlanInput,
     compact_frame: PanelRect,
     action_button_visibility: ActionButtonVisibilitySpec,
 ) {
@@ -293,8 +293,8 @@ pub(super) fn push_compact_action_button_primitives(
 }
 
 pub(super) fn push_completion_glow_if_visible(
-    primitives: &mut Vec<NativePanelVisualPrimitive>,
-    input: &NativePanelVisualPlanInput,
+    primitives: &mut Vec<NativePanelDrawPrimitive>,
+    input: &NativePanelDrawPlanInput,
     compact_frame: PanelRect,
 ) {
     let Some(spec) = resolve_completion_glow_visual_spec(CompletionGlowVisualSpecInput {
@@ -305,14 +305,14 @@ pub(super) fn push_completion_glow_if_visible(
     }) else {
         return;
     };
-    primitives.push(NativePanelVisualPrimitive::CompletionGlow {
+    primitives.push(NativePanelDrawPrimitive::CompletionGlow {
         frame: spec.frame,
         opacity: spec.opacity,
     });
 }
 
 fn push_action_button_icon(
-    primitives: &mut Vec<NativePanelVisualPrimitive>,
+    primitives: &mut Vec<NativePanelDrawPrimitive>,
     spec: &ActionButtonVisualSpec,
     visibility: ActionButtonVisibilitySpec,
 ) {
@@ -323,7 +323,7 @@ fn push_action_button_icon(
     );
     let size = ((spec.size as f64) * visibility.scale).round().max(1.0) as i32;
     let text_height = native_panel_visual_text_box_height(&spec.text, size);
-    primitives.push(NativePanelVisualPrimitive::Text {
+    primitives.push(NativePanelDrawPrimitive::Text {
         role: action_button_text_role(spec.action),
         origin: PanelPoint {
             x: frame.x,
@@ -354,7 +354,7 @@ fn action_button_text_role(action: NativePanelEdgeAction) -> NativePanelVisualTe
 }
 
 fn push_compact_shoulder_primitive(
-    primitives: &mut Vec<NativePanelVisualPrimitive>,
+    primitives: &mut Vec<NativePanelDrawPrimitive>,
     frame: PanelRect,
     side: NativePanelVisualShoulderSide,
     progress: f64,
@@ -366,7 +366,7 @@ fn push_compact_shoulder_primitive(
     if progress >= 0.999 {
         return;
     }
-    primitives.push(NativePanelVisualPrimitive::CompactShoulder {
+    primitives.push(NativePanelDrawPrimitive::CompactShoulder {
         frame,
         side,
         progress,

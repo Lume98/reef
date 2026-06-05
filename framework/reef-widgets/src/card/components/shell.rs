@@ -2,8 +2,8 @@ use reef_core::{
     color::Color,
     geometry::{Rect, Size},
 };
+use reef_draw::primitive::DrawPrimitive;
 use reef_layout::Constraints;
-use reef_render::primitive::VisualPrimitive;
 use reef_view::widget_host::{PaintContext, Widget};
 
 /// Card shell: fill plus border.
@@ -24,13 +24,13 @@ impl Widget for CardShell {
     }
 
     fn paint(&self, rect: Rect, ctx: &mut PaintContext) {
-        ctx.primitives.push(VisualPrimitive::RoundRect {
+        ctx.primitives.push(DrawPrimitive::RoundRect {
             frame: rect,
             radius: self.radius,
             color: self.fill_color,
             alpha: self.alpha,
         });
-        ctx.primitives.push(VisualPrimitive::RoundRect {
+        ctx.primitives.push(DrawPrimitive::RoundRect {
             frame: rect,
             radius: self.radius,
             color: self.border_color,

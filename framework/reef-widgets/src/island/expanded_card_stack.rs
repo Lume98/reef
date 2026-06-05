@@ -1,6 +1,6 @@
 use reef_core::geometry::{Rect, Size};
+use reef_draw::primitive::DrawPrimitive;
 use reef_layout::Constraints;
-use reef_render::primitive::VisualPrimitive;
 use reef_view::widget_host::{PaintContext, Widget};
 
 use crate::base::{card_content_visibility, lerp, shell_reveal_frame, staggered_card_phase};
@@ -84,13 +84,13 @@ impl Widget for ExpandedCardStack {
                 && card_rect.y < card_area.y + card_area.height
             {
                 ctx.primitives
-                    .push(VisualPrimitive::ClipStart { frame: card_rect });
+                    .push(DrawPrimitive::ClipStart { frame: card_rect });
                 let mut staged_card = card.clone();
                 staged_card.reveal_phase = phase;
                 staged_card.content_visibility = vis;
                 staged_card.content_translate_y = lerp(-5.0, 0.0, phase);
                 staged_card.paint(card_rect, ctx);
-                ctx.primitives.push(VisualPrimitive::ClipEnd);
+                ctx.primitives.push(DrawPrimitive::ClipEnd);
             }
 
             y -= self.card_gap;

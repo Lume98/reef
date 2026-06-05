@@ -2,8 +2,8 @@ use reef_core::{
     color::Color,
     geometry::{Rect, Size},
 };
+use reef_draw::primitive::DrawPrimitive;
 use reef_layout::Constraints;
-use reef_render::primitive::VisualPrimitive;
 use reef_view::widget_host::{PaintContext, Widget};
 
 pub struct Container {
@@ -85,14 +85,14 @@ impl Widget for Container {
     }
 
     fn paint(&self, rect: Rect, ctx: &mut PaintContext) {
-        ctx.primitives.push(VisualPrimitive::RoundRect {
+        ctx.primitives.push(DrawPrimitive::RoundRect {
             frame: rect,
             radius: self.radius,
             color: self.color,
             alpha: 1.0,
         });
         if let Some(border_color) = self.border_color {
-            ctx.primitives.push(VisualPrimitive::RoundRect {
+            ctx.primitives.push(DrawPrimitive::RoundRect {
                 frame: rect,
                 radius: self.radius,
                 color: border_color,
@@ -108,9 +108,9 @@ impl Widget for Container {
                 height: (rect.height - self.padding * 2.0).max(0.0),
             };
             ctx.primitives
-                .push(VisualPrimitive::ClipStart { frame: child_rect });
+                .push(DrawPrimitive::ClipStart { frame: child_rect });
             child.paint(child_rect, ctx);
-            ctx.primitives.push(VisualPrimitive::ClipEnd);
+            ctx.primitives.push(DrawPrimitive::ClipEnd);
         }
     }
 }

@@ -26,7 +26,7 @@ use crate::{
         },
     },
     native_panel_renderer::rendering_backend::{
-        NativePanelFrameSubmission, NativePanelRenderBackend,
+        NativePanelDrawBackend, NativePanelDrawFrameSubmission,
     },
     native_panel_scene::{PanelRuntimeRenderState, PanelScene},
 };
@@ -44,7 +44,7 @@ pub(crate) struct WindowsNativePanelRenderer {
     pub(super) last_window_state: Option<NativePanelHostWindowState>,
     pub(super) last_pointer_regions: Vec<NativePanelPointerRegion>,
     pub(super) last_presentation_model: Option<NativePanelPresentationModel>,
-    pub(super) last_frame_submission: Option<NativePanelFrameSubmission>,
+    pub(super) last_frame_submission: Option<NativePanelDrawFrameSubmission>,
     pub(super) active_close_presentation_plan: Option<NativePanelClosePresentationPlan>,
 }
 
@@ -203,10 +203,13 @@ impl NativePanelRenderer for WindowsNativePanelRenderer {
     }
 }
 
-impl NativePanelRenderBackend for WindowsNativePanelRenderer {
+impl NativePanelDrawBackend for WindowsNativePanelRenderer {
     type Error = String;
 
-    fn submit_frame(&mut self, submission: &NativePanelFrameSubmission) -> Result<(), Self::Error> {
+    fn submit_frame(
+        &mut self,
+        submission: &NativePanelDrawFrameSubmission,
+    ) -> Result<(), Self::Error> {
         self.last_frame_submission = Some(submission.clone());
         Ok(())
     }

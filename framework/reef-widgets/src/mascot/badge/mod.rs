@@ -59,7 +59,7 @@ impl Widget for CompletionBadge {
         .paint(frame, ctx);
 
         ctx.primitives
-            .push(reef_render::primitive::VisualPrimitive::RoundRect {
+            .push(reef_draw::primitive::DrawPrimitive::RoundRect {
                 frame: Rect {
                     x: frame.x + 1.0,
                     y: frame.y + 1.0,

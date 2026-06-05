@@ -2,8 +2,8 @@ use reef_core::{
     color::Color,
     geometry::{Point, Rect, Size},
 };
+use reef_draw::primitive::{DrawPrimitive, TextAlignment, TextWeight};
 use reef_layout::Constraints;
-use reef_render::primitive::{FontWeight, TextAlignment, VisualPrimitive};
 use reef_theme::compact_bar as theme;
 use reef_view::widget_host::{PaintContext, Widget};
 
@@ -40,7 +40,7 @@ impl Widget for CompactBarHeadline {
             return;
         }
 
-        ctx.primitives.push(VisualPrimitive::Text {
+        ctx.primitives.push(DrawPrimitive::Text {
             origin: Point {
                 x: rect.x + theme::HEADLINE_LEFT_INSET + self.leading_reserve,
                 y: cy - 8.0,
@@ -54,9 +54,9 @@ impl Widget for CompactBarHeadline {
             },
             size: 14,
             weight: if self.emphasized {
-                FontWeight::Semibold
+                TextWeight::Semibold
             } else {
-                FontWeight::Normal
+                TextWeight::Normal
             },
             alignment: TextAlignment::Left,
             alpha: 1.0,

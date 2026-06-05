@@ -1,5 +1,5 @@
 use reef_core::geometry::Size;
-use reef_render::render_backend::RenderBackend;
+use reef_draw::draw_backend::DrawBackend;
 
 use reef_view::{widget_host::Widget, WidgetRoot};
 
@@ -7,14 +7,14 @@ use reef_view::{widget_host::Widget, WidgetRoot};
 ///
 /// `App` 是 Reef 框架的顶层入口，持有渲染后端 `B` 和根组件宿主 `WidgetRoot`，
 /// 通过 `render` 方法驱动整个 UI 的布局与绘制。
-pub struct App<B: RenderBackend> {
+pub struct App<B: DrawBackend> {
     /// 渲染后端，负责将渲染指令提交到目标平台。
     backend: B,
     /// 根组件宿主，管理控件树及其布局。
     root: WidgetRoot,
 }
 
-impl<B: RenderBackend> App<B> {
+impl<B: DrawBackend> App<B> {
     /// 使用给定的渲染后端创建新的 `App` 实例。
     pub fn new(backend: B) -> Self {
         Self {
@@ -51,9 +51,9 @@ impl<B: RenderBackend> App<B> {
     /// 提交给渲染后端进行实际绘制。
     pub fn render(&mut self) -> Result<(), B::Error> {
         let plan = self.root.render_current();
-        let submission = reef_render::render_backend::FrameSubmission {
+        let submission = reef_draw::draw_backend::FrameSubmission {
             hidden: plan.hidden,
-            commands: vec![plan],
+            plans: vec![plan],
         };
         self.backend.submit_frame(&submission)
     }

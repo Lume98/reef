@@ -13,7 +13,7 @@ use super::super::card_visual_spec::{
     CardVisualBadgeRole, CardVisualBadgeSpec, CardVisualRowSpec,
 };
 use super::super::visual_primitives::{
-    NativePanelVisualColor, NativePanelVisualPrimitive, NativePanelVisualTextAlignment,
+    NativePanelDrawPrimitive, NativePanelVisualColor, NativePanelVisualTextAlignment,
     NativePanelVisualTextRole, NativePanelVisualTextWeight,
 };
 use super::card_input::{
@@ -30,8 +30,8 @@ use super::utils::{
 };
 
 pub(super) fn push_expanded_card_shells(
-    primitives: &mut Vec<NativePanelVisualPrimitive>,
-    input: &super::input::NativePanelVisualPlanInput,
+    primitives: &mut Vec<NativePanelDrawPrimitive>,
+    input: &super::input::NativePanelDrawPlanInput,
     shell_frame: PanelRect,
 ) {
     if !input.cards_visible || input.cards.is_empty() || input.separator_visibility <= 0.01 {
@@ -114,12 +114,12 @@ pub(super) fn push_expanded_card_shells(
 }
 
 pub(super) fn push_card_shell(
-    primitives: &mut Vec<NativePanelVisualPrimitive>,
+    primitives: &mut Vec<NativePanelDrawPrimitive>,
     card: &NativePanelVisualCardInput,
     frame: PanelRect,
 ) {
     let radius = CARD_RADIUS.min(frame.height / 2.0);
-    primitives.push(NativePanelVisualPrimitive::RoundRect {
+    primitives.push(NativePanelDrawPrimitive::RoundRect {
         frame,
         radius,
         color: card_shell_border_color(card.style),
@@ -129,7 +129,7 @@ pub(super) fn push_card_shell(
     if inner.width <= 0.0 || inner.height <= 0.0 {
         return;
     }
-    primitives.push(NativePanelVisualPrimitive::RoundRect {
+    primitives.push(NativePanelDrawPrimitive::RoundRect {
         frame: inner,
         radius: (radius - 1.0).max(0.0).min(inner.height / 2.0),
         color: card_shell_fill_color(card.style),
@@ -149,7 +149,7 @@ fn card_shell_fill_color(style: NativePanelVisualCardStyle) -> NativePanelVisual
 }
 
 pub(super) fn push_expanded_card_content(
-    output: &mut Vec<NativePanelVisualPrimitive>,
+    output: &mut Vec<NativePanelDrawPrimitive>,
     card: &NativePanelVisualCardInput,
     frame: PanelRect,
     visible_frame: PanelRect,
@@ -172,7 +172,7 @@ pub(super) fn push_expanded_card_content(
     let header_text_spec =
         card_visual_header_text_paint_spec(card_visual_style_from_visual_style(card.style));
     if card.style == NativePanelVisualCardStyle::Empty {
-        primitives.push(NativePanelVisualPrimitive::Text {
+        primitives.push(NativePanelDrawPrimitive::Text {
             role: NativePanelVisualTextRole::CardTitle,
             origin: PanelPoint {
                 x: frame.x,
@@ -229,7 +229,7 @@ pub(super) fn push_expanded_card_content(
         header_text_spec.title.size as f64,
         1,
     );
-    primitives.push(NativePanelVisualPrimitive::Text {
+    primitives.push(NativePanelDrawPrimitive::Text {
         role: NativePanelVisualTextRole::CardTitle,
         origin: PanelPoint {
             x: content_layout.content_x,
@@ -245,7 +245,7 @@ pub(super) fn push_expanded_card_content(
     });
 
     if let Some(subtitle) = &card.subtitle {
-        primitives.push(NativePanelVisualPrimitive::Text {
+        primitives.push(NativePanelDrawPrimitive::Text {
             role: NativePanelVisualTextRole::CardSubtitle,
             origin: PanelPoint {
                 x: content_layout.content_x,
@@ -302,7 +302,7 @@ pub(super) fn push_expanded_card_content(
 }
 
 fn push_expanded_card_body_line(
-    primitives: &mut Vec<NativePanelVisualPrimitive>,
+    primitives: &mut Vec<NativePanelDrawPrimitive>,
     card: &NativePanelVisualCardInput,
     frame: PanelRect,
     body: &str,
@@ -335,7 +335,7 @@ fn push_expanded_card_body_line(
                 card_visual_body_role_from_visual_role(line.role),
                 Some(prefix),
             );
-            primitives.push(NativePanelVisualPrimitive::Text {
+            primitives.push(NativePanelDrawPrimitive::Text {
                 role: NativePanelVisualTextRole::CardBodyPrefix,
                 origin: PanelPoint {
                     x: body_layout.prefix_x,
@@ -355,7 +355,7 @@ fn push_expanded_card_body_line(
             card_visual_body_role_from_visual_role(line.role),
             line.prefix.as_deref(),
         );
-        primitives.push(NativePanelVisualPrimitive::Text {
+        primitives.push(NativePanelDrawPrimitive::Text {
             role: NativePanelVisualTextRole::CardBodyText,
             origin: PanelPoint {
                 x: body_layout.text_x,
@@ -377,19 +377,19 @@ fn push_expanded_card_body_line(
 }
 
 fn push_pending_action_hint_pill(
-    primitives: &mut Vec<NativePanelVisualPrimitive>,
+    primitives: &mut Vec<NativePanelDrawPrimitive>,
     frame: PanelRect,
     action_hint: &str,
 ) {
     let Some(layout) = card_visual_action_hint_layout(frame, action_hint) else {
         return;
     };
-    primitives.push(NativePanelVisualPrimitive::RoundRect {
+    primitives.push(NativePanelDrawPrimitive::RoundRect {
         frame: layout.pill_frame,
         radius: layout.paint.radius,
         color: visual_color_from_card_spec(layout.paint.background_color),
     });
-    primitives.push(NativePanelVisualPrimitive::Text {
+    primitives.push(NativePanelDrawPrimitive::Text {
         role: NativePanelVisualTextRole::CardActionHint,
         origin: layout.text_origin,
         max_width: layout.text_max_width,
@@ -408,7 +408,7 @@ fn push_pending_action_hint_pill(
 }
 
 fn push_expanded_tool_pill_line(
-    primitives: &mut Vec<NativePanelVisualPrimitive>,
+    primitives: &mut Vec<NativePanelDrawPrimitive>,
     frame: PanelRect,
     y: f64,
     text: &str,
@@ -417,21 +417,21 @@ fn push_expanded_tool_pill_line(
         return;
     };
 
-    primitives.push(NativePanelVisualPrimitive::RoundRect {
+    primitives.push(NativePanelDrawPrimitive::RoundRect {
         frame: layout.pill_frame,
         radius: layout.paint.radius,
         color: visual_color_from_card_spec(layout.paint.border_color),
     });
     let fill_frame = inset_rect(layout.pill_frame, 1.0);
     if fill_frame.width > 0.0 && fill_frame.height > 0.0 {
-        primitives.push(NativePanelVisualPrimitive::RoundRect {
+        primitives.push(NativePanelDrawPrimitive::RoundRect {
             frame: fill_frame,
             radius: (layout.paint.radius - 1.0).max(0.0),
             color: visual_color_from_card_spec(layout.paint.background_color),
         });
     }
 
-    primitives.push(NativePanelVisualPrimitive::Text {
+    primitives.push(NativePanelDrawPrimitive::Text {
         role: NativePanelVisualTextRole::CardToolName,
         origin: layout.tool_name_origin,
         max_width: layout.tool_name_max_width,
@@ -444,7 +444,7 @@ fn push_expanded_tool_pill_line(
     });
 
     if let Some(description) = layout.description {
-        primitives.push(NativePanelVisualPrimitive::Text {
+        primitives.push(NativePanelDrawPrimitive::Text {
             role: NativePanelVisualTextRole::CardToolDescription,
             origin: description.origin,
             max_width: description.max_width,
@@ -554,7 +554,7 @@ fn expanded_card_body_max_lines_for_prefix(
 }
 
 fn push_expanded_card_badge(
-    primitives: &mut Vec<NativePanelVisualPrimitive>,
+    primitives: &mut Vec<NativePanelDrawPrimitive>,
     badge: &NativePanelVisualCardBadgeInput,
     right: f64,
     title_y: f64,
@@ -572,12 +572,12 @@ fn push_expanded_card_badge(
         right,
         title_y,
     );
-    primitives.push(NativePanelVisualPrimitive::RoundRect {
+    primitives.push(NativePanelDrawPrimitive::RoundRect {
         frame: layout.badge_frame,
         radius: layout.paint.radius,
         color: visual_color_from_card_spec(layout.paint.background_color),
     });
-    primitives.push(NativePanelVisualPrimitive::Text {
+    primitives.push(NativePanelDrawPrimitive::Text {
         role: card_badge_text_role(role),
         origin: layout.text_origin,
         max_width: layout.text_max_width,
@@ -599,7 +599,7 @@ fn card_badge_text_role(role: CardVisualBadgeRole) -> NativePanelVisualTextRole 
 }
 
 fn push_expanded_settings_rows(
-    primitives: &mut Vec<NativePanelVisualPrimitive>,
+    primitives: &mut Vec<NativePanelDrawPrimitive>,
     card: &NativePanelVisualCardInput,
     frame: PanelRect,
     _content_x: f64,
@@ -614,18 +614,18 @@ fn push_expanded_settings_rows(
         let Some(layout) = card_visual_settings_row_layout(frame, index, &row_spec) else {
             break;
         };
-        primitives.push(NativePanelVisualPrimitive::RoundRect {
+        primitives.push(NativePanelDrawPrimitive::RoundRect {
             frame: layout.row_frame,
             radius: layout.paint.border_radius,
             color: visual_color_from_card_spec(layout.paint.border_color),
         });
-        primitives.push(NativePanelVisualPrimitive::RoundRect {
+        primitives.push(NativePanelDrawPrimitive::RoundRect {
             frame: layout.row_inner_frame,
             radius: layout.paint.fill_radius,
             color: visual_color_from_card_spec(layout.paint.fill_color),
         });
 
-        primitives.push(NativePanelVisualPrimitive::Text {
+        primitives.push(NativePanelDrawPrimitive::Text {
             role: NativePanelVisualTextRole::CardSettingsTitle,
             origin: layout.title_origin,
             max_width: layout.title_max_width,
@@ -636,12 +636,12 @@ fn push_expanded_settings_rows(
             alignment: NativePanelVisualTextAlignment::Left,
             alpha: 1.0,
         });
-        primitives.push(NativePanelVisualPrimitive::RoundRect {
+        primitives.push(NativePanelDrawPrimitive::RoundRect {
             frame: layout.value_badge_frame,
             radius: layout.paint.value_badge.radius,
             color: visual_color_from_card_spec(layout.paint.value_badge.background_color),
         });
-        primitives.push(NativePanelVisualPrimitive::Text {
+        primitives.push(NativePanelDrawPrimitive::Text {
             role: NativePanelVisualTextRole::CardSettingsValue,
             origin: layout.value_origin,
             max_width: layout.value_max_width,

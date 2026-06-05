@@ -18,9 +18,9 @@ use crate::{
         },
         presentation::{
             native_panel_visual_display_mode_from_presentation,
-            native_panel_visual_plan_input_from_presentation, NativePanelPresentationModel,
-            NativePanelVisualActionButtonInput, NativePanelVisualDisplayMode,
-            NativePanelVisualPlanInput,
+            native_panel_visual_plan_input_from_presentation, NativePanelDrawPlanInput,
+            NativePanelPresentationModel, NativePanelVisualActionButtonInput,
+            NativePanelVisualDisplayMode,
         },
         shell::{
             native_panel_has_raw_window_handle, sync_native_panel_raw_window_handle,
@@ -58,14 +58,14 @@ impl NativePanelPlatformWindowHandleAdapter for WindowsNativePanelWindowHandle {
 
 pub(super) type WindowsNativePanelShellCommand = NativePanelHostShellCommand;
 
-pub(super) type WindowsNativePanelShellPaintJob = NativePanelVisualPlanInput;
+pub(super) type WindowsNativePanelShellPaintJob = NativePanelDrawPlanInput;
 
 pub(super) type WindowsNativePanelShellActionButtonPaintInput = NativePanelVisualActionButtonInput;
 
 #[derive(Clone, Debug, PartialEq)]
 pub(super) struct WindowsNativePanelShellDisplaySnapshot {
     pub(super) display_mode: NativePanelVisualDisplayMode,
-    pub(super) visual_input: NativePanelVisualPlanInput,
+    pub(super) visual_input: NativePanelDrawPlanInput,
     pub(super) shared_visible: bool,
     pub(super) pointer_region_count: usize,
 }
@@ -415,7 +415,7 @@ fn build_paint_job(
 }
 
 fn windows_client_hover_fallback_frames(
-    input: &NativePanelVisualPlanInput,
+    input: &NativePanelDrawPlanInput,
     frames: NativePanelHoverFallbackFrames,
 ) -> NativePanelHoverFallbackFrames {
     let surface_height = input
@@ -452,7 +452,7 @@ fn windows_client_hover_fallback_frames(
     }
 }
 
-fn local_visual_frame(input: &NativePanelVisualPlanInput, frame: PanelRect) -> PanelRect {
+fn local_visual_frame(input: &NativePanelDrawPlanInput, frame: PanelRect) -> PanelRect {
     let panel = input.panel_frame;
     let frame_is_absolute = frame.x >= panel.x
         && frame.x + frame.width <= panel.x + panel.width

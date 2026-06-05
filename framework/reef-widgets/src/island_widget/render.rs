@@ -1,12 +1,12 @@
-use reef_core::geometry::Rect;
-use reef_render::primitive::{VisualPlan, VisualPrimitive};
+use reef_core::geometry::{Rect, Size};
+use reef_draw::primitive::{DrawPlan, DrawPrimitive};
 use reef_view::widget_host::{PaintContext, Widget};
 
 use crate::island::ExpandedCardStack;
 
 use super::{display_mode::DisplayMode, widget::IslandWidget};
 
-pub fn render_island_widget(widget: &IslandWidget) -> VisualPlan {
+pub fn render_island_widget(widget: &IslandWidget) -> DrawPlan {
     let rect = Rect {
         x: 0.0,
         y: 0.0,
@@ -15,8 +15,12 @@ pub fn render_island_widget(widget: &IslandWidget) -> VisualPlan {
     };
     let mut primitives = Vec::new();
     render_island_widget_primitives(widget, rect, &mut primitives);
-    VisualPlan {
+    DrawPlan {
         hidden: widget.mode == DisplayMode::Hidden,
+        viewport: Size {
+            width: rect.width,
+            height: rect.height,
+        },
         primitives,
     }
 }
@@ -24,7 +28,7 @@ pub fn render_island_widget(widget: &IslandWidget) -> VisualPlan {
 pub(crate) fn render_island_widget_primitives(
     widget: &IslandWidget,
     rect: Rect,
-    primitives: &mut Vec<VisualPrimitive>,
+    primitives: &mut Vec<DrawPrimitive>,
 ) {
     if widget.mode == DisplayMode::Hidden {
         return;
@@ -85,13 +89,13 @@ pub(crate) fn paint_island_widget(widget: &IslandWidget, rect: Rect, ctx: &mut P
     }
 
     ctx.primitives
-        .push(VisualPrimitive::ClipStart { frame: bar_rect });
+        .push(DrawPrimitive::ClipStart { frame: bar_rect });
     let mut bar = widget.compact_bar.clone();
     if widget.mode == DisplayMode::Expanded {
         bar.chrome = widget.chrome;
     }
     bar.paint(bar_rect, ctx);
-    ctx.primitives.push(VisualPrimitive::ClipEnd);
+    ctx.primitives.push(DrawPrimitive::ClipEnd);
 
     if let Some(mascot) = &widget.mascot {
         mascot.paint(rect, ctx);

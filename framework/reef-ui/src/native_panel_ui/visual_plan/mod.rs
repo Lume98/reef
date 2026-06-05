@@ -10,7 +10,7 @@ use crate::native_panel_core::{
 };
 use reef_theme::panel as theme;
 
-use super::visual_primitives::{NativePanelVisualPlan, NativePanelVisualPrimitive};
+use super::visual_primitives::{NativePanelDrawPlan, NativePanelDrawPrimitive};
 
 pub use card_input::{
     native_panel_visual_card_input_from_scene_card,
@@ -23,19 +23,16 @@ use compact::{
 };
 use expanded::push_expanded_card_shells;
 pub use input::{
-    NativePanelVisualActionButtonInput, NativePanelVisualCardBadgeInput,
+    NativePanelDrawPlanInput, NativePanelVisualActionButtonInput, NativePanelVisualCardBadgeInput,
     NativePanelVisualCardBodyLineInput, NativePanelVisualCardBodyRole, NativePanelVisualCardInput,
     NativePanelVisualCardRowInput, NativePanelVisualCardStyle, NativePanelVisualDisplayMode,
-    NativePanelVisualPlanInput,
 };
 use mascot::{apply_mascot_chrome_alpha, push_mascot_primitives};
 use utils::{compact_collapsed_alpha, non_zero_rect, visual_panel_frame};
 
-pub fn resolve_native_panel_visual_plan(
-    input: &NativePanelVisualPlanInput,
-) -> NativePanelVisualPlan {
+pub fn resolve_native_panel_visual_plan(input: &NativePanelDrawPlanInput) -> NativePanelDrawPlan {
     if input.display_mode == NativePanelVisualDisplayMode::Hidden || !input.window_state.visible {
-        return NativePanelVisualPlan {
+        return NativePanelDrawPlan {
             hidden: true,
             primitives: Vec::new(),
         };
@@ -58,14 +55,14 @@ pub fn resolve_native_panel_visual_plan(
     }
 
     if input.display_mode == NativePanelVisualDisplayMode::Expanded {
-        primitives.push(NativePanelVisualPrimitive::RoundRect {
+        primitives.push(NativePanelDrawPrimitive::RoundRect {
             frame: shell_frame,
             radius: EXPANDED_PANEL_RADIUS,
             color: theme::SHELL_FILL.into(),
         });
 
         if input.separator_visibility > 0.01 {
-            primitives.push(NativePanelVisualPrimitive::Rect {
+            primitives.push(NativePanelDrawPrimitive::Rect {
                 frame: PanelRect {
                     x: shell_frame.x + 20.0,
                     y: compact_frame.y + compact_frame.height + 8.0,
@@ -131,7 +128,7 @@ pub fn resolve_native_panel_visual_plan(
         action_button_visibility,
     );
 
-    NativePanelVisualPlan {
+    NativePanelDrawPlan {
         hidden: false,
         primitives,
     }
@@ -143,14 +140,12 @@ pub use compact::resolve_native_panel_compact_bar_visual_plan;
 #[allow(unused_imports)]
 pub(crate) use utils::{compact_digit_y, extend_visible_content_primitives};
 
-pub(super) fn native_panel_visual_expanded_display_mode(
-    input: &NativePanelVisualPlanInput,
-) -> bool {
+pub(super) fn native_panel_visual_expanded_display_mode(input: &NativePanelDrawPlanInput) -> bool {
     input.display_mode == NativePanelVisualDisplayMode::Expanded
 }
 
 pub(super) fn resolve_compact_chrome_visibility(
-    input: &NativePanelVisualPlanInput,
+    input: &NativePanelDrawPlanInput,
     expanded_display_mode: bool,
 ) -> PanelChromeVisibilitySpec {
     let chrome_transition_progress = if expanded_display_mode {

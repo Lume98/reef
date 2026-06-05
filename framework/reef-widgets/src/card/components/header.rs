@@ -2,8 +2,8 @@ use reef_core::{
     color::Color,
     geometry::{Point, Rect, Size},
 };
+use reef_draw::primitive::{DrawPrimitive, TextAlignment, TextWeight};
 use reef_layout::Constraints;
-use reef_render::primitive::{FontWeight, TextAlignment, VisualPrimitive};
 use reef_theme::card as theme;
 use reef_view::widget_host::{PaintContext, Widget};
 
@@ -34,7 +34,7 @@ impl Widget for CardHeader {
             } else {
                 rect.y + rect.height - 24.0
             };
-            ctx.primitives.push(VisualPrimitive::Text {
+            ctx.primitives.push(DrawPrimitive::Text {
                 origin: Point {
                     x: rect.x + self.pad_x,
                     y: base_y + self.content_translate_y,
@@ -43,14 +43,14 @@ impl Widget for CardHeader {
                 text: self.title.clone(),
                 color: self.title_color,
                 size: 12,
-                weight: FontWeight::Semibold,
+                weight: TextWeight::Semibold,
                 alignment: TextAlignment::Left,
                 alpha: self.content_alpha,
             });
         }
 
         if let Some(sub) = &self.subtitle {
-            ctx.primitives.push(VisualPrimitive::Text {
+            ctx.primitives.push(DrawPrimitive::Text {
                 origin: Point {
                     x: rect.x + self.pad_x,
                     y: rect.y + rect.height - 40.0 + self.content_translate_y,
@@ -59,7 +59,7 @@ impl Widget for CardHeader {
                 text: sub.clone(),
                 color: Color::from(theme::TEXT_SUBTITLE),
                 size: 9,
-                weight: FontWeight::Normal,
+                weight: TextWeight::Normal,
                 alignment: TextAlignment::Left,
                 alpha: self.content_alpha,
             });

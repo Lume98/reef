@@ -17,8 +17,8 @@ use super::render_bundle::{
     NativePanelMascotCommand, NativePanelRenderCommandBundle, NativePanelShellCommand,
 };
 use super::visual_plan::{
-    native_panel_visual_card_input_from_scene_card_with_height, NativePanelVisualActionButtonInput,
-    NativePanelVisualDisplayMode, NativePanelVisualPlanInput,
+    native_panel_visual_card_input_from_scene_card_with_height, NativePanelDrawPlanInput,
+    NativePanelVisualActionButtonInput, NativePanelVisualDisplayMode,
 };
 
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -331,7 +331,7 @@ pub fn native_panel_visual_plan_input_from_presentation(
     window_state: NativePanelHostWindowState,
     display_mode: NativePanelVisualDisplayMode,
     presentation: Option<&NativePanelPresentationModel>,
-) -> NativePanelVisualPlanInput {
+) -> NativePanelDrawPlanInput {
     let zero = PanelRect {
         x: 0.0,
         y: 0.0,
@@ -339,7 +339,7 @@ pub fn native_panel_visual_plan_input_from_presentation(
         height: 0.0,
     };
 
-    NativePanelVisualPlanInput {
+    NativePanelDrawPlanInput {
         window_state,
         display_mode,
         surface: presentation

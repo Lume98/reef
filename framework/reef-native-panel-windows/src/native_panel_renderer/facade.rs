@@ -167,10 +167,10 @@ pub(crate) mod presentation {
         native_panel_visual_card_input_from_scene_card,
         native_panel_visual_card_input_from_scene_card_with_height,
         resolve_native_panel_compact_bar_visual_plan, resolve_native_panel_visual_plan,
-        NativePanelVisualActionButtonInput, NativePanelVisualCardBadgeInput,
-        NativePanelVisualCardBodyLineInput, NativePanelVisualCardBodyRole,
-        NativePanelVisualCardInput, NativePanelVisualCardRowInput, NativePanelVisualCardStyle,
-        NativePanelVisualDisplayMode, NativePanelVisualPlanInput,
+        NativePanelDrawPlanInput, NativePanelVisualActionButtonInput,
+        NativePanelVisualCardBadgeInput, NativePanelVisualCardBodyLineInput,
+        NativePanelVisualCardBodyRole, NativePanelVisualCardInput, NativePanelVisualCardRowInput,
+        NativePanelVisualCardStyle, NativePanelVisualDisplayMode,
     };
 }
 
@@ -298,9 +298,9 @@ pub(crate) mod visual {
         native_panel_visual_mascot_sprite_primitive, native_panel_visual_mascot_text_primitive,
         native_panel_visual_text_box_height, native_panel_visual_text_box_height_for_role,
         native_panel_visual_text_primitive_by_role, native_panel_visual_text_primitive_by_text,
-        NativePanelVisualColor, NativePanelVisualMascotEllipseRole,
-        NativePanelVisualMascotRoundRectRole, NativePanelVisualMascotTextRole,
-        NativePanelVisualPlan, NativePanelVisualPrimitive, NativePanelVisualShoulderSide,
+        NativePanelDrawPlan, NativePanelDrawPrimitive, NativePanelVisualColor,
+        NativePanelVisualMascotEllipseRole, NativePanelVisualMascotRoundRectRole,
+        NativePanelVisualMascotTextRole, NativePanelVisualShoulderSide,
         NativePanelVisualTextAlignment, NativePanelVisualTextRole, NativePanelVisualTextWeight,
     };
     pub(crate) use reef_ui::native_panel_ui::visual::{

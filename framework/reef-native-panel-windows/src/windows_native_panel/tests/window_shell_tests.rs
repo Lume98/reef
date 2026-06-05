@@ -144,7 +144,7 @@ fn windows_runtime_clicks_visual_settings_button_center() {
         .primitives
         .iter()
         .find_map(|primitive| match primitive {
-            NativePanelVisualPrimitive::Text {
+            NativePanelDrawPrimitive::Text {
                 origin,
                 max_width,
                 text,

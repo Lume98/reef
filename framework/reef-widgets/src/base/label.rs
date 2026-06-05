@@ -2,15 +2,15 @@ use reef_core::{
     color::Color,
     geometry::{Point, Rect, Size},
 };
+use reef_draw::primitive::{DrawPrimitive, TextAlignment, TextWeight};
 use reef_layout::Constraints;
-use reef_render::primitive::{FontWeight, TextAlignment, VisualPrimitive};
 use reef_view::widget_host::{PaintContext, Widget};
 
 pub struct Label {
     pub text: String,
     pub color: Color,
     pub font_size: i32,
-    pub weight: FontWeight,
+    pub weight: TextWeight,
     pub alignment: TextAlignment,
     pub max_width: Option<f64>,
     pub line_height: Option<f64>,
@@ -22,7 +22,7 @@ impl Label {
             text: text.into(),
             color: Color::WHITE,
             font_size: 14,
-            weight: FontWeight::Normal,
+            weight: TextWeight::Normal,
             alignment: TextAlignment::Left,
             max_width: None,
             line_height: None,
@@ -39,7 +39,7 @@ impl Label {
         self
     }
 
-    pub fn weight(mut self, weight: FontWeight) -> Self {
+    pub fn weight(mut self, weight: TextWeight) -> Self {
         self.weight = weight;
         self
     }
@@ -103,7 +103,7 @@ impl Widget for Label {
             },
         };
         let max_width = self.max_width.unwrap_or(rect.width);
-        ctx.primitives.push(VisualPrimitive::Text {
+        ctx.primitives.push(DrawPrimitive::Text {
             origin,
             max_width,
             text: self.text.clone(),
@@ -150,7 +150,7 @@ mod tests {
         assert_eq!(primitives.len(), 1);
         assert!(matches!(
             &primitives[0],
-            VisualPrimitive::Text { text, .. } if text == "Hello"
+            DrawPrimitive::Text { text, .. } if text == "Hello"
         ));
     }
 
@@ -168,7 +168,7 @@ mod tests {
             primitives: &mut primitives,
         };
         label.paint(rect, &mut ctx);
-        if let VisualPrimitive::Text { origin, .. } = &primitives[0] {
+        if let DrawPrimitive::Text { origin, .. } = &primitives[0] {
             assert!(origin.x > 0.0, "Right alignment should shift origin right");
         }
     }

@@ -2,8 +2,8 @@ use reef_core::{
     color::Color,
     geometry::{Rect, Size},
 };
+use reef_draw::primitive::DrawPrimitive;
 use reef_layout::Constraints;
-use reef_render::primitive::VisualPrimitive;
 use reef_theme::mascot as theme;
 use reef_view::widget_host::{PaintContext, Widget};
 
@@ -32,7 +32,7 @@ impl Widget for MessageBubbleDots {
 
         for i in 0..3 {
             let dx = start_x + i as f64 * dot_spacing;
-            ctx.primitives.push(VisualPrimitive::Ellipse {
+            ctx.primitives.push(DrawPrimitive::Ellipse {
                 frame: Rect {
                     x: dx - self.dot_radius,
                     y: dot_y - self.dot_radius,

@@ -4,9 +4,9 @@ use crate::native_panel_core::PanelChromeVisibilitySpec;
 
 use super::super::visual_primitives::{
     native_panel_visual_text_box_height, native_panel_visual_text_box_height_for_role,
-    NativePanelVisualColor, NativePanelVisualPrimitive,
+    NativePanelDrawPrimitive, NativePanelVisualColor,
 };
-use super::input::NativePanelVisualPlanInput;
+use super::input::NativePanelDrawPlanInput;
 
 // ---- geometry utilities ----
 
@@ -35,7 +35,7 @@ pub(super) fn clip_rect_vertically(rect: PanelRect, bounds: PanelRect) -> Option
 }
 
 pub(super) fn primitive_intersects_vertical_bounds(
-    primitive: &NativePanelVisualPrimitive,
+    primitive: &NativePanelDrawPrimitive,
     bounds: PanelRect,
 ) -> bool {
     let Some((bottom, top)) = primitive_vertical_bounds(primitive) else {
@@ -45,24 +45,22 @@ pub(super) fn primitive_intersects_vertical_bounds(
 }
 
 pub(super) fn primitive_vertical_bounds(
-    primitive: &NativePanelVisualPrimitive,
+    primitive: &NativePanelDrawPrimitive,
 ) -> Option<(f64, f64)> {
     match primitive {
-        NativePanelVisualPrimitive::RoundRect { frame, .. }
-        | NativePanelVisualPrimitive::Rect { frame, .. }
-        | NativePanelVisualPrimitive::Ellipse { frame, .. }
-        | NativePanelVisualPrimitive::MascotRoundRect { frame, .. }
-        | NativePanelVisualPrimitive::MascotEllipse { frame, .. }
-        | NativePanelVisualPrimitive::MascotSprite { frame, .. }
-        | NativePanelVisualPrimitive::CompactShoulder { frame, .. }
-        | NativePanelVisualPrimitive::CompletionGlow { frame, .. }
-        | NativePanelVisualPrimitive::ClipStart { frame } => {
-            Some((frame.y, frame.y + frame.height))
-        }
-        NativePanelVisualPrimitive::StrokeLine { from, to, .. } => {
+        NativePanelDrawPrimitive::RoundRect { frame, .. }
+        | NativePanelDrawPrimitive::Rect { frame, .. }
+        | NativePanelDrawPrimitive::Ellipse { frame, .. }
+        | NativePanelDrawPrimitive::MascotRoundRect { frame, .. }
+        | NativePanelDrawPrimitive::MascotEllipse { frame, .. }
+        | NativePanelDrawPrimitive::MascotSprite { frame, .. }
+        | NativePanelDrawPrimitive::CompactShoulder { frame, .. }
+        | NativePanelDrawPrimitive::CompletionGlow { frame, .. }
+        | NativePanelDrawPrimitive::ClipStart { frame } => Some((frame.y, frame.y + frame.height)),
+        NativePanelDrawPrimitive::StrokeLine { from, to, .. } => {
             Some((from.y.min(to.y), from.y.max(to.y)))
         }
-        NativePanelVisualPrimitive::Text {
+        NativePanelDrawPrimitive::Text {
             origin,
             text,
             size,
@@ -72,23 +70,23 @@ pub(super) fn primitive_vertical_bounds(
             let height = native_panel_visual_text_box_height_for_role(*role, text, *size);
             Some((origin.y, origin.y + height))
         }
-        NativePanelVisualPrimitive::MascotText {
+        NativePanelDrawPrimitive::MascotText {
             origin, text, size, ..
         } => {
             let height = native_panel_visual_text_box_height(text, *size);
             Some((origin.y, origin.y + height))
         }
-        NativePanelVisualPrimitive::MascotDot { frame, .. } => {
+        NativePanelDrawPrimitive::MascotDot { frame, .. } => {
             Some((frame.y, frame.y + frame.height))
         }
-        NativePanelVisualPrimitive::ClipEnd => None,
+        NativePanelDrawPrimitive::ClipEnd => None,
     }
 }
 
 // ---- animation / reveal utilities ----
 
 pub(super) fn apply_card_content_reveal_to_primitives(
-    primitives: &mut [NativePanelVisualPrimitive],
+    primitives: &mut [NativePanelDrawPrimitive],
     translate_y: f64,
     progress: f64,
     fade_base: NativePanelVisualColor,
@@ -99,69 +97,69 @@ pub(super) fn apply_card_content_reveal_to_primitives(
     }
 }
 
-fn translate_primitive_y(primitive: &mut NativePanelVisualPrimitive, translate_y: f64) {
+fn translate_primitive_y(primitive: &mut NativePanelDrawPrimitive, translate_y: f64) {
     match primitive {
-        NativePanelVisualPrimitive::RoundRect { frame, .. }
-        | NativePanelVisualPrimitive::Rect { frame, .. }
-        | NativePanelVisualPrimitive::Ellipse { frame, .. }
-        | NativePanelVisualPrimitive::MascotRoundRect { frame, .. }
-        | NativePanelVisualPrimitive::MascotEllipse { frame, .. }
-        | NativePanelVisualPrimitive::MascotSprite { frame, .. }
-        | NativePanelVisualPrimitive::CompactShoulder { frame, .. }
-        | NativePanelVisualPrimitive::CompletionGlow { frame, .. }
-        | NativePanelVisualPrimitive::ClipStart { frame } => {
+        NativePanelDrawPrimitive::RoundRect { frame, .. }
+        | NativePanelDrawPrimitive::Rect { frame, .. }
+        | NativePanelDrawPrimitive::Ellipse { frame, .. }
+        | NativePanelDrawPrimitive::MascotRoundRect { frame, .. }
+        | NativePanelDrawPrimitive::MascotEllipse { frame, .. }
+        | NativePanelDrawPrimitive::MascotSprite { frame, .. }
+        | NativePanelDrawPrimitive::CompactShoulder { frame, .. }
+        | NativePanelDrawPrimitive::CompletionGlow { frame, .. }
+        | NativePanelDrawPrimitive::ClipStart { frame } => {
             frame.y += translate_y;
         }
-        NativePanelVisualPrimitive::StrokeLine { from, to, .. } => {
+        NativePanelDrawPrimitive::StrokeLine { from, to, .. } => {
             from.y += translate_y;
             to.y += translate_y;
         }
-        NativePanelVisualPrimitive::Text { origin, .. } => {
+        NativePanelDrawPrimitive::Text { origin, .. } => {
             origin.y += translate_y;
         }
-        NativePanelVisualPrimitive::MascotText { origin, .. } => {
+        NativePanelDrawPrimitive::MascotText { origin, .. } => {
             origin.y += translate_y;
         }
-        NativePanelVisualPrimitive::MascotDot { center, frame, .. } => {
+        NativePanelDrawPrimitive::MascotDot { center, frame, .. } => {
             center.y += translate_y;
             frame.y += translate_y;
         }
-        NativePanelVisualPrimitive::ClipEnd => {}
+        NativePanelDrawPrimitive::ClipEnd => {}
     }
 }
 
 fn fade_primitive_color(
-    primitive: &mut NativePanelVisualPrimitive,
+    primitive: &mut NativePanelDrawPrimitive,
     fade_base: NativePanelVisualColor,
     progress: f64,
 ) {
     match primitive {
-        NativePanelVisualPrimitive::RoundRect { color, .. }
-        | NativePanelVisualPrimitive::Rect { color, .. }
-        | NativePanelVisualPrimitive::Ellipse { color, .. }
-        | NativePanelVisualPrimitive::MascotRoundRect { color, .. }
-        | NativePanelVisualPrimitive::MascotEllipse { color, .. }
-        | NativePanelVisualPrimitive::StrokeLine { color, .. }
-        | NativePanelVisualPrimitive::Text { color, .. } => {
+        NativePanelDrawPrimitive::RoundRect { color, .. }
+        | NativePanelDrawPrimitive::Rect { color, .. }
+        | NativePanelDrawPrimitive::Ellipse { color, .. }
+        | NativePanelDrawPrimitive::MascotRoundRect { color, .. }
+        | NativePanelDrawPrimitive::MascotEllipse { color, .. }
+        | NativePanelDrawPrimitive::StrokeLine { color, .. }
+        | NativePanelDrawPrimitive::Text { color, .. } => {
             *color = blend_visual_color(fade_base, *color, progress);
         }
-        NativePanelVisualPrimitive::MascotText { color, alpha, .. } => {
+        NativePanelDrawPrimitive::MascotText { color, alpha, .. } => {
             *color = blend_visual_color(fade_base, *color, progress);
             *alpha *= progress.clamp(0.0, 1.0);
         }
-        NativePanelVisualPrimitive::CompactShoulder { fill, border, .. } => {
+        NativePanelDrawPrimitive::CompactShoulder { fill, border, .. } => {
             *fill = blend_visual_color(fade_base, *fill, progress);
             *border = blend_visual_color(fade_base, *border, progress);
         }
-        NativePanelVisualPrimitive::CompletionGlow { opacity, .. } => {
+        NativePanelDrawPrimitive::CompletionGlow { opacity, .. } => {
             *opacity *= progress.clamp(0.0, 1.0);
         }
-        NativePanelVisualPrimitive::MascotSprite { opacity, .. } => {
+        NativePanelDrawPrimitive::MascotSprite { opacity, .. } => {
             *opacity *= progress.clamp(0.0, 1.0);
         }
-        NativePanelVisualPrimitive::MascotDot { .. }
-        | NativePanelVisualPrimitive::ClipStart { .. }
-        | NativePanelVisualPrimitive::ClipEnd => {}
+        NativePanelDrawPrimitive::MascotDot { .. }
+        | NativePanelDrawPrimitive::ClipStart { .. }
+        | NativePanelDrawPrimitive::ClipEnd => {}
     }
 }
 
@@ -181,8 +179,8 @@ fn blend_visual_color(
 // ---- visibility / clipping ----
 
 pub fn extend_visible_content_primitives(
-    output: &mut Vec<NativePanelVisualPrimitive>,
-    primitives: Vec<NativePanelVisualPrimitive>,
+    output: &mut Vec<NativePanelDrawPrimitive>,
+    primitives: Vec<NativePanelDrawPrimitive>,
     visible_frame: PanelRect,
 ) {
     let visible_primitives = primitives
@@ -193,11 +191,11 @@ pub fn extend_visible_content_primitives(
         return;
     }
 
-    output.push(NativePanelVisualPrimitive::ClipStart {
+    output.push(NativePanelDrawPrimitive::ClipStart {
         frame: visible_frame,
     });
     output.extend(visible_primitives);
-    output.push(NativePanelVisualPrimitive::ClipEnd);
+    output.push(NativePanelDrawPrimitive::ClipEnd);
 }
 
 // ---- text fitting utilities ----
@@ -312,7 +310,7 @@ pub fn compact_digit_y(bar_height: f64) -> f64 {
 
 // ---- frame / visibility helpers ----
 
-pub(super) fn visual_panel_frame(input: &NativePanelVisualPlanInput) -> PanelRect {
+pub(super) fn visual_panel_frame(input: &NativePanelDrawPlanInput) -> PanelRect {
     non_zero_rect(input.content_frame)
         .or_else(|| {
             input.window_state.frame.map(|frame| PanelRect {

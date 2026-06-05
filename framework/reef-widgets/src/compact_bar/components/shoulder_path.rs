@@ -2,8 +2,8 @@ use reef_core::{
     color::Color,
     geometry::{Point, Rect, Size},
 };
+use reef_draw::primitive::{DrawPrimitive, PathSegment};
 use reef_layout::Constraints;
-use reef_render::primitive::{PathSegment, VisualPrimitive};
 use reef_view::widget_host::{PaintContext, Widget};
 
 #[derive(Clone, Copy)]
@@ -75,7 +75,7 @@ impl Widget for ShoulderPath {
     }
 
     fn paint(&self, _rect: Rect, ctx: &mut PaintContext) {
-        ctx.primitives.push(VisualPrimitive::BezierPath {
+        ctx.primitives.push(DrawPrimitive::Path {
             segments: self.build_segments(),
             fill: self.fill_color,
             alpha: 1.0,

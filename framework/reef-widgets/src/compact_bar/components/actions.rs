@@ -2,8 +2,8 @@ use reef_core::{
     color::Color,
     geometry::{Point, Rect, Size},
 };
+use reef_draw::primitive::{DrawPrimitive, TextAlignment, TextWeight};
 use reef_layout::Constraints;
-use reef_render::primitive::{FontWeight, TextAlignment, VisualPrimitive};
 use reef_theme::compact_bar as theme;
 use reef_view::widget_host::{PaintContext, Widget};
 
@@ -42,7 +42,7 @@ impl Widget for CompactBarActions {
 
         let sx = rect.x + theme::ACTION_LEFT_INSET;
         let sy = cy - 10.0 + offset_y;
-        ctx.primitives.push(VisualPrimitive::Text {
+        ctx.primitives.push(DrawPrimitive::Text {
             origin: Point { x: sx, y: sy },
             max_width: 24.0,
             text: SETTINGS_ICON.to_string(),
@@ -52,20 +52,20 @@ impl Widget for CompactBarActions {
                 Color::WHITE
             },
             size: (theme::ACTION_ICON_SIZE * scale) as i32,
-            weight: FontWeight::Normal,
+            weight: TextWeight::Normal,
             alignment: TextAlignment::Left,
             alpha: opacity,
         });
 
         let qx = rect.x + rect.width - theme::ACTION_RIGHT_INSET;
         let qy = cy - 10.0 + offset_y;
-        ctx.primitives.push(VisualPrimitive::Text {
+        ctx.primitives.push(DrawPrimitive::Text {
             origin: Point { x: qx, y: qy },
             max_width: 24.0,
             text: QUIT_ICON.to_string(),
             color: Color::from(theme::ACTION_QUIT),
             size: (theme::ACTION_ICON_SIZE * scale) as i32,
-            weight: FontWeight::Bold,
+            weight: TextWeight::Bold,
             alignment: TextAlignment::Left,
             alpha: opacity,
         });

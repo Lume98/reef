@@ -2,8 +2,8 @@ use reef_core::{
     color::Color,
     geometry::{Rect, Size},
 };
+use reef_draw::primitive::DrawPrimitive;
 use reef_layout::Constraints;
-use reef_render::primitive::VisualPrimitive;
 use reef_view::widget_host::{PaintContext, Widget};
 
 /// Bubble background layer.
@@ -23,7 +23,7 @@ impl Widget for MessageBubbleBackground {
     }
 
     fn paint(&self, _rect: Rect, ctx: &mut PaintContext) {
-        ctx.primitives.push(VisualPrimitive::RoundRect {
+        ctx.primitives.push(DrawPrimitive::RoundRect {
             frame: self.frame,
             radius: 8.0,
             color: self.fill_color,

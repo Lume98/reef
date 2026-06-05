@@ -4,10 +4,10 @@ use super::super::{
     compact_digit_y, extend_visible_content_primitives,
     native_panel_visual_card_input_from_scene_card_with_height,
     resolve_native_panel_compact_bar_visual_plan, resolve_native_panel_visual_plan,
-    NativePanelVisualActionButtonInput, NativePanelVisualCardBadgeInput,
-    NativePanelVisualCardBodyLineInput, NativePanelVisualCardBodyRole, NativePanelVisualCardInput,
-    NativePanelVisualCardRowInput, NativePanelVisualCardStyle, NativePanelVisualDisplayMode,
-    NativePanelVisualPlan, NativePanelVisualPlanInput,
+    NativePanelDrawPlan, NativePanelDrawPlanInput, NativePanelVisualActionButtonInput,
+    NativePanelVisualCardBadgeInput, NativePanelVisualCardBodyLineInput,
+    NativePanelVisualCardBodyRole, NativePanelVisualCardInput, NativePanelVisualCardRowInput,
+    NativePanelVisualCardStyle, NativePanelVisualDisplayMode,
 };
 use super::common::*;
 use crate::{
@@ -19,10 +19,10 @@ use crate::{
     native_panel_ui::{
         descriptors::{NativePanelEdgeAction, NativePanelHostWindowState},
         visual_primitives::{
-            native_panel_visual_text_box_height, NativePanelVisualColor,
+            native_panel_visual_text_box_height, NativePanelDrawPrimitive, NativePanelVisualColor,
             NativePanelVisualMascotEllipseRole, NativePanelVisualMascotRoundRectRole,
-            NativePanelVisualMascotTextRole, NativePanelVisualPrimitive,
-            NativePanelVisualTextAlignment, NativePanelVisualTextRole, NativePanelVisualTextWeight,
+            NativePanelVisualMascotTextRole, NativePanelVisualTextAlignment,
+            NativePanelVisualTextRole, NativePanelVisualTextWeight,
         },
     },
 };
@@ -37,7 +37,7 @@ fn compact_visual_plan_draws_pill_and_shoulders_without_canvas_block() {
     assert!(!plan.hidden);
     assert!(plan.primitives.iter().any(|primitive| matches!(
         primitive,
-        NativePanelVisualPrimitive::RoundRect {
+        NativePanelDrawPrimitive::RoundRect {
             frame,
             radius,
             ..
@@ -46,7 +46,7 @@ fn compact_visual_plan_draws_pill_and_shoulders_without_canvas_block() {
     )));
     assert!(plan.primitives.iter().any(|primitive| matches!(
         primitive,
-        NativePanelVisualPrimitive::CompactShoulder {
+        NativePanelDrawPrimitive::CompactShoulder {
             frame,
             side: crate::native_panel_ui::visual_primitives::NativePanelVisualShoulderSide::Left,
             progress,
@@ -55,7 +55,7 @@ fn compact_visual_plan_draws_pill_and_shoulders_without_canvas_block() {
     )));
     assert!(plan.primitives.iter().any(|primitive| matches!(
         primitive,
-        NativePanelVisualPrimitive::CompactShoulder {
+        NativePanelDrawPrimitive::CompactShoulder {
             frame,
             side: crate::native_panel_ui::visual_primitives::NativePanelVisualShoulderSide::Right,
             progress,
@@ -64,7 +64,7 @@ fn compact_visual_plan_draws_pill_and_shoulders_without_canvas_block() {
     )));
     assert!(!plan.primitives.iter().any(|primitive| matches!(
         primitive,
-        NativePanelVisualPrimitive::RoundRect { frame, .. } if *frame == input.content_frame
+        NativePanelDrawPrimitive::RoundRect { frame, .. } if *frame == input.content_frame
     )));
 }
 
@@ -76,12 +76,12 @@ fn compact_visual_plan_does_not_draw_completion_glow_as_large_panel_block() {
 
     assert!(plan.primitives.iter().any(|primitive| matches!(
         primitive,
-        NativePanelVisualPrimitive::CompletionGlow { frame, opacity }
+        NativePanelDrawPrimitive::CompletionGlow { frame, opacity }
             if *frame == input.compact_bar_frame && *opacity > 0.0
     )));
     assert!(!plan.primitives.iter().any(|primitive| matches!(
         primitive,
-        NativePanelVisualPrimitive::RoundRect { frame, .. }
+        NativePanelDrawPrimitive::RoundRect { frame, .. }
             if frame.width > input.compact_bar_frame.width
                 || frame.height > input.compact_bar_frame.height
     )));
@@ -98,14 +98,14 @@ fn compact_visual_plan_places_mascot_headline_and_count_text() {
 
     assert!(plan.primitives.iter().any(|primitive| matches!(
             primitive,
-            NativePanelVisualPrimitive::MascotDot { center, radius, .. }
+            NativePanelDrawPrimitive::MascotDot { center, radius, .. }
                 if (center.x - (input.compact_bar_frame.x + 22.0)).abs() < 0.001
                     && (center.y - (input.compact_bar_frame.y + input.compact_bar_frame.height / 2.0)).abs() < 0.001
                     && (*radius - 11.0).abs() < 0.001
         )));
     assert!(plan.primitives.iter().any(|primitive| matches!(
             primitive,
-            NativePanelVisualPrimitive::Text {
+            NativePanelDrawPrimitive::Text {
                 origin,
                 max_width,
                 text,
@@ -123,7 +123,7 @@ fn compact_visual_plan_places_mascot_headline_and_count_text() {
         )));
     assert!(plan.primitives.iter().any(|primitive| matches!(
             primitive,
-            NativePanelVisualPrimitive::Text { origin, text, size, weight, alignment, .. }
+            NativePanelDrawPrimitive::Text { origin, text, size, weight, alignment, .. }
                 if text == "1"
                     && (origin.x - (input.compact_bar_frame.x + 197.0)).abs() < 0.001
                     && *size == 15
@@ -132,7 +132,7 @@ fn compact_visual_plan_places_mascot_headline_and_count_text() {
         )));
     assert!(plan.primitives.iter().any(|primitive| matches!(
             primitive,
-            NativePanelVisualPrimitive::Text { origin, text, size, weight, alignment, .. }
+            NativePanelDrawPrimitive::Text { origin, text, size, weight, alignment, .. }
                 if text == "/"
                     && (origin.x - (input.compact_bar_frame.x + 217.0)).abs() < 0.001
                     && *size == 15
@@ -141,7 +141,7 @@ fn compact_visual_plan_places_mascot_headline_and_count_text() {
         )));
     assert!(plan.primitives.iter().any(|primitive| matches!(
             primitive,
-            NativePanelVisualPrimitive::Text { origin, text, size, weight, alignment, .. }
+            NativePanelDrawPrimitive::Text { origin, text, size, weight, alignment, .. }
                 if text == "3"
                     && (origin.x - (input.compact_bar_frame.x + 229.0)).abs() < 0.001
                     && *size == 15
@@ -158,10 +158,10 @@ fn compact_visual_plan_omits_mascot_primitives_when_mascot_is_hidden() {
 
     assert!(!plan.primitives.iter().any(|primitive| matches!(
         primitive,
-        NativePanelVisualPrimitive::MascotDot { .. }
-            | NativePanelVisualPrimitive::MascotEllipse { .. }
-            | NativePanelVisualPrimitive::MascotRoundRect { .. }
-            | NativePanelVisualPrimitive::MascotText { .. }
+        NativePanelDrawPrimitive::MascotDot { .. }
+            | NativePanelDrawPrimitive::MascotEllipse { .. }
+            | NativePanelDrawPrimitive::MascotRoundRect { .. }
+            | NativePanelDrawPrimitive::MascotText { .. }
     )));
 }
 
@@ -238,7 +238,7 @@ fn expanded_visual_plan_uses_settings_icon_color_for_debug_mode() {
         .primitives
         .iter()
         .find_map(|primitive| match primitive {
-            NativePanelVisualPrimitive::Text {
+            NativePanelDrawPrimitive::Text {
                 role: NativePanelVisualTextRole::ActionButtonSettings,
                 color,
                 ..
@@ -250,7 +250,7 @@ fn expanded_visual_plan_uses_settings_icon_color_for_debug_mode() {
         .primitives
         .iter()
         .find_map(|primitive| match primitive {
-            NativePanelVisualPrimitive::Text {
+            NativePanelDrawPrimitive::Text {
                 role: NativePanelVisualTextRole::ActionButtonQuit,
                 color,
                 ..
@@ -264,14 +264,14 @@ fn expanded_visual_plan_uses_settings_icon_color_for_debug_mode() {
 }
 
 fn compact_bar_text_and_action_primitives(
-    plan: &NativePanelVisualPlan,
-) -> Vec<NativePanelVisualPrimitive> {
+    plan: &NativePanelDrawPlan,
+) -> Vec<NativePanelDrawPrimitive> {
     plan.primitives
         .iter()
         .filter(|primitive| {
             matches!(
                 primitive,
-                NativePanelVisualPrimitive::Text {
+                NativePanelDrawPrimitive::Text {
                     role: NativePanelVisualTextRole::CompactHeadline
                         | NativePanelVisualTextRole::CompactActiveCount
                         | NativePanelVisualTextRole::CompactActiveCountNext
@@ -314,7 +314,7 @@ fn compact_visual_plan_uses_shared_active_count_marquee_frame() {
         .primitives
         .iter()
         .find_map(|primitive| match primitive {
-            NativePanelVisualPrimitive::Text { origin, text, .. } if text == "2" => Some(*origin),
+            NativePanelDrawPrimitive::Text { origin, text, .. } if text == "2" => Some(*origin),
             _ => None,
         })
         .expect("current active count digit");
@@ -322,7 +322,7 @@ fn compact_visual_plan_uses_shared_active_count_marquee_frame() {
         .primitives
         .iter()
         .find_map(|primitive| match primitive {
-            NativePanelVisualPrimitive::Text { origin, text, .. } if text == "3" => Some(*origin),
+            NativePanelDrawPrimitive::Text { origin, text, .. } if text == "3" => Some(*origin),
             _ => None,
         })
         .expect("next active count digit");
@@ -349,7 +349,7 @@ fn compact_visual_plan_positions_active_count_marquee_in_slot() {
         },
     );
 
-    let NativePanelVisualPrimitive::Text {
+    let NativePanelDrawPrimitive::Text {
         origin,
         max_width,
         alignment,
@@ -382,7 +382,7 @@ fn compact_visual_plan_clips_headline_to_single_line() {
 
     assert!(plan.primitives.iter().any(|primitive| matches!(
         primitive,
-        NativePanelVisualPrimitive::Text { text, size, .. }
+        NativePanelDrawPrimitive::Text { text, size, .. }
             if *size == 13
                 && !text.contains('\n')
                 && text.starts_with("apps/desktop")
@@ -443,7 +443,7 @@ fn compact_visual_plan_places_mascot_face_in_mac_coordinate_order() {
         .primitives
         .iter()
         .find_map(|primitive| match primitive {
-            NativePanelVisualPrimitive::MascotDot { center, .. } => Some(*center),
+            NativePanelDrawPrimitive::MascotDot { center, .. } => Some(*center),
             _ => None,
         })
         .expect("mascot primitive");
@@ -454,7 +454,7 @@ fn compact_visual_plan_places_mascot_face_in_mac_coordinate_order() {
         .primitives
         .iter()
         .filter_map(|primitive| match primitive {
-            NativePanelVisualPrimitive::MascotEllipse { frame, color, .. }
+            NativePanelDrawPrimitive::MascotEllipse { frame, color, .. }
                 if *color == face_color =>
             {
                 Some(frame.y + frame.height / 2.0)
@@ -467,7 +467,7 @@ fn compact_visual_plan_places_mascot_face_in_mac_coordinate_order() {
     assert!(eye_centers.iter().all(|eye_y| *eye_y > mascot_center.y));
     assert!(plan.primitives.iter().any(|primitive| matches!(
         primitive,
-        NativePanelVisualPrimitive::MascotRoundRect { role, frame, color, .. }
+        NativePanelDrawPrimitive::MascotRoundRect { role, frame, color, .. }
             if *role == NativePanelVisualMascotRoundRectRole::Mouth
                 && *color == face_color
                 && frame.y + frame.height / 2.0 < mascot_center.y
@@ -481,7 +481,7 @@ fn compact_visual_plan_carries_shared_mascot_body_style() {
     input.mascot_pose = SceneMascotPose::Sleepy;
     let plan = resolve_native_panel_visual_plan(&input);
 
-    let NativePanelVisualPrimitive::MascotDot {
+    let NativePanelDrawPrimitive::MascotDot {
         frame,
         corner_radius,
         fill,
@@ -491,7 +491,7 @@ fn compact_visual_plan_carries_shared_mascot_body_style() {
     } = plan
         .primitives
         .iter()
-        .find(|primitive| matches!(primitive, NativePanelVisualPrimitive::MascotDot { .. }))
+        .find(|primitive| matches!(primitive, NativePanelDrawPrimitive::MascotDot { .. }))
         .expect("mascot primitive")
     else {
         panic!("mascot primitive should be MascotDot");
@@ -514,7 +514,7 @@ fn compact_visual_plan_draws_mac_sleepy_and_wake_angry_mascot_details() {
 
     assert!(sleepy_plan.primitives.iter().any(|primitive| matches!(
         primitive,
-        NativePanelVisualPrimitive::MascotText { role, text, .. }
+        NativePanelDrawPrimitive::MascotText { role, text, .. }
             if *role == NativePanelVisualMascotTextRole::SleepLabel && text == "Z"
     )));
 
@@ -526,7 +526,7 @@ fn compact_visual_plan_draws_mac_sleepy_and_wake_angry_mascot_details() {
 
     assert!(wake_plan.primitives.iter().any(|primitive| matches!(
         primitive,
-        NativePanelVisualPrimitive::MascotDot { scale_x, scale_y, .. }
+        NativePanelDrawPrimitive::MascotDot { scale_x, scale_y, .. }
             if *scale_x > 1.04 && *scale_y < 0.97
     )));
 }
@@ -539,7 +539,7 @@ fn compact_visual_plan_places_completion_badge_on_mascot_and_keeps_active_count(
         .primitives
         .iter()
         .find_map(|primitive| match primitive {
-            NativePanelVisualPrimitive::MascotDot { center, .. } => Some(*center),
+            NativePanelDrawPrimitive::MascotDot { center, .. } => Some(*center),
             _ => None,
         })
         .expect("mascot primitive");
@@ -550,28 +550,28 @@ fn compact_visual_plan_places_completion_badge_on_mascot_and_keeps_active_count(
 
     assert!(plan.primitives.iter().any(|primitive| matches!(
         primitive,
-        NativePanelVisualPrimitive::Text { origin, text, size, .. }
+        NativePanelDrawPrimitive::Text { origin, text, size, .. }
             if text == "1"
                 && (origin.x - (input.compact_bar_frame.x + 184.0)).abs() < 0.001
                 && *size == 15
     )));
     assert!(plan.primitives.iter().any(|primitive| matches!(
         primitive,
-        NativePanelVisualPrimitive::Text { origin, text, size, .. }
+        NativePanelDrawPrimitive::Text { origin, text, size, .. }
             if text == "/"
                 && (origin.x - (input.compact_bar_frame.x + 204.0)).abs() < 0.001
                 && *size == 15
     )));
     assert!(plan.primitives.iter().any(|primitive| matches!(
         primitive,
-        NativePanelVisualPrimitive::Text { origin, text, size, .. }
+        NativePanelDrawPrimitive::Text { origin, text, size, .. }
             if text == "3"
                 && (origin.x - (input.compact_bar_frame.x + 216.0)).abs() < 0.001
                 && *size == 15
     )));
     assert!(plan.primitives.iter().any(|primitive| matches!(
             primitive,
-            NativePanelVisualPrimitive::MascotRoundRect {
+            NativePanelDrawPrimitive::MascotRoundRect {
                 role,
                 frame,
                 radius,
@@ -587,7 +587,7 @@ fn compact_visual_plan_places_completion_badge_on_mascot_and_keeps_active_count(
         )));
     assert!(plan.primitives.iter().any(|primitive| matches!(
             primitive,
-            NativePanelVisualPrimitive::MascotRoundRect {
+            NativePanelDrawPrimitive::MascotRoundRect {
                 role,
                 frame,
                 radius,
@@ -603,7 +603,7 @@ fn compact_visual_plan_places_completion_badge_on_mascot_and_keeps_active_count(
         )));
     assert!(plan.primitives.iter().any(|primitive| matches!(
         primitive,
-        NativePanelVisualPrimitive::MascotText { role, origin, text, size, .. }
+        NativePanelDrawPrimitive::MascotText { role, origin, text, size, .. }
             if *role == NativePanelVisualMascotTextRole::CompletionBadgeLabel
                 && text == "2"
                 && (origin.x - (badge_anchor.x + 10.0)).abs() < 0.001
@@ -622,13 +622,13 @@ fn compact_visual_plan_keeps_completion_badge_across_non_complete_mascot_poses()
 
     assert!(plan.primitives.iter().any(|primitive| matches!(
             primitive,
-            NativePanelVisualPrimitive::MascotRoundRect { role, color, .. }
+            NativePanelDrawPrimitive::MascotRoundRect { role, color, .. }
                 if *role == NativePanelVisualMascotRoundRectRole::MessageBubble
                     && *color == crate::native_panel_ui::visual_primitives::NativePanelVisualColor::rgb(102, 222, 145)
         )));
     assert!(plan.primitives.iter().any(|primitive| matches!(
         primitive,
-        NativePanelVisualPrimitive::MascotText { role, text, size, .. }
+        NativePanelDrawPrimitive::MascotText { role, text, size, .. }
             if *role == NativePanelVisualMascotTextRole::CompletionBadgeLabel
                 && text == "2" && *size == 8
     )));
@@ -643,13 +643,13 @@ fn expanded_visual_plan_hides_completion_badge_even_when_completion_count_is_cac
 
     assert!(!plan.primitives.iter().any(|primitive| matches!(
             primitive,
-            NativePanelVisualPrimitive::MascotRoundRect { role, color, .. }
+            NativePanelDrawPrimitive::MascotRoundRect { role, color, .. }
                 if *role == NativePanelVisualMascotRoundRectRole::CompletionBadgeFill
                     && *color == crate::native_panel_ui::visual_primitives::NativePanelVisualColor::rgb(102, 222, 145)
         )));
     assert!(!plan.primitives.iter().any(|primitive| matches!(
         primitive,
-        NativePanelVisualPrimitive::MascotText { role, text, size, .. }
+        NativePanelDrawPrimitive::MascotText { role, text, size, .. }
             if *role == NativePanelVisualMascotTextRole::CompletionBadgeLabel
                 && text == "2" && *size == 8
     )));
@@ -668,10 +668,10 @@ fn status_visual_plan_keeps_compact_mascot_and_counts_without_action_buttons() {
     assert!(plan
         .primitives
         .iter()
-        .any(|primitive| matches!(primitive, NativePanelVisualPrimitive::MascotDot { .. })));
+        .any(|primitive| matches!(primitive, NativePanelDrawPrimitive::MascotDot { .. })));
     assert!(plan.primitives.iter().any(|primitive| matches!(
         primitive,
-        NativePanelVisualPrimitive::Text {
+        NativePanelDrawPrimitive::Text {
             role: NativePanelVisualTextRole::CompactActiveCount,
             text,
             ..
@@ -679,7 +679,7 @@ fn status_visual_plan_keeps_compact_mascot_and_counts_without_action_buttons() {
     )));
     assert!(plan.primitives.iter().any(|primitive| matches!(
         primitive,
-        NativePanelVisualPrimitive::Text {
+        NativePanelDrawPrimitive::Text {
             role: NativePanelVisualTextRole::CompactTotalCount,
             text,
             ..
@@ -687,7 +687,7 @@ fn status_visual_plan_keeps_compact_mascot_and_counts_without_action_buttons() {
     )));
     assert!(!plan.primitives.iter().any(|primitive| matches!(
         primitive,
-        NativePanelVisualPrimitive::Text {
+        NativePanelDrawPrimitive::Text {
             role: NativePanelVisualTextRole::ActionButtonSettings
                 | NativePanelVisualTextRole::ActionButtonQuit,
             ..

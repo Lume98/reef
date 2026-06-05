@@ -2,8 +2,8 @@ use reef_core::{
     color::Color,
     geometry::{Point, Rect, Size},
 };
+use reef_draw::primitive::{DrawPrimitive, TextAlignment, TextWeight};
 use reef_layout::Constraints;
-use reef_render::primitive::{FontWeight, TextAlignment, VisualPrimitive};
 use reef_view::widget_host::{PaintContext, Widget};
 
 use crate::card::{
@@ -33,7 +33,7 @@ impl Widget for CardSettingsPanel {
     fn paint(&self, rect: Rect, ctx: &mut PaintContext) {
         if !self.title.is_empty() {
             let y = rect.y + rect.height - 24.0 + self.content_translate_y;
-            ctx.primitives.push(VisualPrimitive::Text {
+            ctx.primitives.push(DrawPrimitive::Text {
                 origin: Point {
                     x: rect.x + theme::HEADER_PAD_X,
                     y,
@@ -42,7 +42,7 @@ impl Widget for CardSettingsPanel {
                 text: self.title.clone(),
                 color: Color::from(theme::TEXT_TITLE),
                 size: 12,
-                weight: FontWeight::Semibold,
+                weight: TextWeight::Semibold,
                 alignment: TextAlignment::Left,
                 alpha: self.content_alpha,
             });
@@ -53,7 +53,7 @@ impl Widget for CardSettingsPanel {
             let w = theme::BADGE_WIDTH;
             let bx = rect.x + rect.width - theme::HEADER_PAD_X - w;
             let by = title_y - 3.0;
-            ctx.primitives.push(VisualPrimitive::RoundRect {
+            ctx.primitives.push(DrawPrimitive::RoundRect {
                 frame: Rect {
                     x: bx,
                     y: by,
@@ -64,7 +64,7 @@ impl Widget for CardSettingsPanel {
                 color: Color::from(theme::BADGE_BG_DEFAULT),
                 alpha: self.content_alpha,
             });
-            ctx.primitives.push(VisualPrimitive::Text {
+            ctx.primitives.push(DrawPrimitive::Text {
                 origin: Point {
                     x: bx + 7.0,
                     y: by + 2.0,
@@ -73,7 +73,7 @@ impl Widget for CardSettingsPanel {
                 text: version.clone(),
                 color: Color::from(theme::BADGE_FG_DEFAULT),
                 size: 10,
-                weight: FontWeight::Normal,
+                weight: TextWeight::Normal,
                 alignment: TextAlignment::Center,
                 alpha: self.content_alpha,
             });
@@ -91,7 +91,7 @@ impl Widget for CardSettingsPanel {
                 height: row_h,
             };
 
-            ctx.primitives.push(VisualPrimitive::RoundRect {
+            ctx.primitives.push(DrawPrimitive::RoundRect {
                 frame: row_frame,
                 radius: theme::SETTINGS_ROW_RADIUS,
                 color: settings_row_border_color(row.active),
@@ -103,13 +103,13 @@ impl Widget for CardSettingsPanel {
                 width: row_frame.width - 2.0,
                 height: row_frame.height - 2.0,
             };
-            ctx.primitives.push(VisualPrimitive::RoundRect {
+            ctx.primitives.push(DrawPrimitive::RoundRect {
                 frame: inner,
                 radius: theme::SETTINGS_ROW_RADIUS - 1.0,
                 color: settings_row_fill_color(row.active),
                 alpha: self.content_alpha,
             });
-            ctx.primitives.push(VisualPrimitive::Text {
+            ctx.primitives.push(DrawPrimitive::Text {
                 origin: Point {
                     x: inner.x + 11.0,
                     y: inner.y + (inner.height - 16.0) / 2.0,
@@ -118,7 +118,7 @@ impl Widget for CardSettingsPanel {
                 text: row.title.clone(),
                 color: Color::from(theme::TEXT_TITLE),
                 size: 11,
-                weight: FontWeight::Normal,
+                weight: TextWeight::Normal,
                 alignment: TextAlignment::Left,
                 alpha: self.content_alpha,
             });
@@ -127,7 +127,7 @@ impl Widget for CardSettingsPanel {
             let badge_h = 18.0;
             let badge_x = inner.x + inner.width - badge_w - 9.0;
             let badge_y = inner.y + (inner.height - badge_h) / 2.0;
-            ctx.primitives.push(VisualPrimitive::RoundRect {
+            ctx.primitives.push(DrawPrimitive::RoundRect {
                 frame: Rect {
                     x: badge_x,
                     y: badge_y,
@@ -138,7 +138,7 @@ impl Widget for CardSettingsPanel {
                 color: settings_value_badge_bg(row.active),
                 alpha: self.content_alpha,
             });
-            ctx.primitives.push(VisualPrimitive::Text {
+            ctx.primitives.push(DrawPrimitive::Text {
                 origin: Point {
                     x: badge_x + 9.0,
                     y: badge_y + 2.0,
@@ -147,7 +147,7 @@ impl Widget for CardSettingsPanel {
                 text: row.value.clone(),
                 color: settings_value_badge_fg(row.active),
                 size: 10,
-                weight: FontWeight::Normal,
+                weight: TextWeight::Normal,
                 alignment: TextAlignment::Center,
                 alpha: self.content_alpha,
             });

@@ -2,8 +2,8 @@ use reef_core::{
     color::Color,
     geometry::{Rect, Size},
 };
+use reef_draw::primitive::DrawPrimitive;
 use reef_layout::Constraints;
-use reef_render::primitive::VisualPrimitive;
 use reef_view::widget_host::{PaintContext, Widget};
 
 /// Compact bar background layer: fill plus border.
@@ -23,13 +23,13 @@ impl Widget for CompactBarBackground {
     }
 
     fn paint(&self, rect: Rect, ctx: &mut PaintContext) {
-        ctx.primitives.push(VisualPrimitive::RoundRect {
+        ctx.primitives.push(DrawPrimitive::RoundRect {
             frame: rect,
             radius: self.radius,
             color: self.fill_color,
             alpha: 1.0,
         });
-        ctx.primitives.push(VisualPrimitive::RoundRect {
+        ctx.primitives.push(DrawPrimitive::RoundRect {
             frame: rect,
             radius: self.radius,
             color: self.border_color,

@@ -1,6 +1,6 @@
 use reef_core::geometry::{Point, Rect, Size};
+use reef_draw::primitive::{DrawPrimitive, TextAlignment, TextWeight};
 use reef_layout::Constraints;
-use reef_render::primitive::{FontWeight, TextAlignment, VisualPrimitive};
 use reef_view::widget_host::{PaintContext, Widget};
 
 use crate::card::{badge_background_color, badge_foreground_color, Badge, CardStyle};
@@ -37,7 +37,7 @@ impl Widget for CardBadges {
             let w = 64.0;
             let bx = right - w;
             let by = title_y - 3.0;
-            ctx.primitives.push(VisualPrimitive::RoundRect {
+            ctx.primitives.push(DrawPrimitive::RoundRect {
                 frame: Rect {
                     x: bx,
                     y: by,
@@ -48,7 +48,7 @@ impl Widget for CardBadges {
                 color: bg,
                 alpha: self.content_alpha,
             });
-            ctx.primitives.push(VisualPrimitive::Text {
+            ctx.primitives.push(DrawPrimitive::Text {
                 origin: Point {
                     x: bx + 7.0,
                     y: by + 2.0,
@@ -57,7 +57,7 @@ impl Widget for CardBadges {
                 text: badge.text.clone(),
                 color: fg,
                 size: 10,
-                weight: FontWeight::Normal,
+                weight: TextWeight::Normal,
                 alignment: TextAlignment::Center,
                 alpha: self.content_alpha,
             });

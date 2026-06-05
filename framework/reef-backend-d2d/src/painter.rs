@@ -1,7 +1,7 @@
 use reef_core::geometry::Rect;
-use reef_render::{
-    primitive::{PathSegment, VisualPrimitive},
-    render_backend::RenderBackend,
+use reef_draw::{
+    draw_backend::DrawBackend,
+    primitive::{DrawPrimitive, PathSegment},
 };
 
 use crate::dpi::{DpiScale, PhysicalRect};
@@ -29,7 +29,7 @@ impl Direct2DPainter {
     #[cfg(target_os = "windows")]
     pub fn render_to_window(
         &mut self,
-        primitives: &[VisualPrimitive],
+        primitives: &[DrawPrimitive],
         window_rect: Rect,
     ) -> Result<(), String> {
         let hwnd = self.hwnd.ok_or("No window handle set")?;
@@ -69,26 +69,26 @@ impl Direct2DPainter {
     fn draw_primitive(
         &self,
         target: &windows::Win32::Graphics::Direct2D::ID2D1DCRenderTarget,
-        primitive: &VisualPrimitive,
+        primitive: &DrawPrimitive,
     ) -> Result<(), String> {
         use windows::Win32::Graphics::Direct2D::{
             D2D1_ANTIALIAS_MODE_PER_PRIMITIVE, D2D1_ROUNDED_RECT,
         };
 
         match primitive {
-            VisualPrimitive::ClipStart { frame } => {
+            DrawPrimitive::ClipStart { frame } => {
                 unsafe {
                     target.PushAxisAlignedClip(&rect_f(*frame), D2D1_ANTIALIAS_MODE_PER_PRIMITIVE);
                 }
                 Ok(())
             }
-            VisualPrimitive::ClipEnd => {
+            DrawPrimitive::ClipEnd => {
                 unsafe {
                     target.PopAxisAlignedClip();
                 }
                 Ok(())
             }
-            VisualPrimitive::RoundRect {
+            DrawPrimitive::RoundRect {
                 frame,
                 radius,
                 color,
@@ -111,7 +111,7 @@ impl Direct2DPainter {
                 }
                 Ok(())
             }
-            VisualPrimitive::Rect {
+            DrawPrimitive::Rect {
                 frame,
                 color,
                 alpha,
@@ -126,7 +126,7 @@ impl Direct2DPainter {
                 }
                 Ok(())
             }
-            VisualPrimitive::Ellipse {
+            DrawPrimitive::Ellipse {
                 frame,
                 color,
                 alpha,
@@ -141,7 +141,7 @@ impl Direct2DPainter {
                 }
                 Ok(())
             }
-            VisualPrimitive::StrokeLine {
+            DrawPrimitive::StrokeLine {
                 from,
                 to,
                 color,
@@ -158,7 +158,7 @@ impl Direct2DPainter {
                 }
                 Ok(())
             }
-            VisualPrimitive::Text {
+            DrawPrimitive::Text {
                 origin,
                 text,
                 color,
@@ -190,11 +190,11 @@ impl Direct2DPainter {
                 }
                 Ok(())
             }
-            VisualPrimitive::Image { .. } => {
+            DrawPrimitive::Image { .. } => {
                 // Image rendering requires bitmap loading - skip for now
                 Ok(())
             }
-            VisualPrimitive::StrokedRoundRect {
+            DrawPrimitive::StrokedRoundRect {
                 frame,
                 radius,
                 fill,
@@ -228,11 +228,11 @@ impl Direct2DPainter {
                 }
                 Ok(())
             }
-            VisualPrimitive::NineSliceImage { .. } => {
+            DrawPrimitive::NineSliceImage { .. } => {
                 // Nine-slice image rendering requires bitmap loading - placeholder
                 Ok(())
             }
-            VisualPrimitive::BezierPath {
+            DrawPrimitive::Path {
                 segments,
                 fill,
                 alpha,
@@ -287,7 +287,7 @@ impl Direct2DPainter {
                 }
                 Ok(())
             }
-            VisualPrimitive::SpriteImage { .. } => {
+            DrawPrimitive::SpriteImage { .. } => {
                 // Sprite image rendering requires bitmap loading - placeholder
                 Ok(())
             }
@@ -329,19 +329,19 @@ impl Direct2DPainter {
     #[cfg(not(target_os = "windows"))]
     pub fn render_to_window(
         &mut self,
-        _primitives: &[VisualPrimitive],
+        _primitives: &[DrawPrimitive],
         _window_rect: Rect,
     ) -> Result<(), String> {
         Ok(())
     }
 }
 
-impl RenderBackend for Direct2DPainter {
+impl DrawBackend for Direct2DPainter {
     type Error = String;
 
     fn submit_frame(
         &mut self,
-        submission: &reef_render::render_backend::FrameSubmission,
+        submission: &reef_draw::draw_backend::FrameSubmission,
     ) -> Result<(), Self::Error> {
         if submission.hidden {
             return Ok(());
@@ -350,16 +350,16 @@ impl RenderBackend for Direct2DPainter {
     }
 }
 
-pub fn resolve_paint_operations(plan: &reef_render::primitive::VisualPlan) -> Vec<PaintOperation> {
+pub fn resolve_paint_operations(plan: &reef_draw::primitive::DrawPlan) -> Vec<PaintOperation> {
     if plan.hidden {
         return Vec::new();
     }
     plan.primitives
         .iter()
         .map(|p| match p {
-            VisualPrimitive::ClipStart { frame } => PaintOperation::PushClip { frame: *frame },
-            VisualPrimitive::ClipEnd => PaintOperation::PopClip,
-            VisualPrimitive::RoundRect {
+            DrawPrimitive::ClipStart { frame } => PaintOperation::PushClip { frame: *frame },
+            DrawPrimitive::ClipEnd => PaintOperation::PopClip,
+            DrawPrimitive::RoundRect {
                 frame,
                 radius,
                 color,
@@ -370,7 +370,7 @@ pub fn resolve_paint_operations(plan: &reef_render::primitive::VisualPlan) -> Ve
                 color: *color,
                 alpha: *alpha,
             },
-            VisualPrimitive::Rect {
+            DrawPrimitive::Rect {
                 frame,
                 color,
                 alpha,
@@ -379,7 +379,7 @@ pub fn resolve_paint_operations(plan: &reef_render::primitive::VisualPlan) -> Ve
                 color: *color,
                 alpha: *alpha,
             },
-            VisualPrimitive::Ellipse {
+            DrawPrimitive::Ellipse {
                 frame,
                 color,
                 alpha,
@@ -388,7 +388,7 @@ pub fn resolve_paint_operations(plan: &reef_render::primitive::VisualPlan) -> Ve
                 color: *color,
                 alpha: *alpha,
             },
-            VisualPrimitive::StrokeLine {
+            DrawPrimitive::StrokeLine {
                 from,
                 to,
                 color,
@@ -401,7 +401,7 @@ pub fn resolve_paint_operations(plan: &reef_render::primitive::VisualPlan) -> Ve
                 width: *width,
                 alpha: *alpha,
             },
-            VisualPrimitive::Text {
+            DrawPrimitive::Text {
                 origin,
                 max_width,
                 text,
@@ -420,7 +420,7 @@ pub fn resolve_paint_operations(plan: &reef_render::primitive::VisualPlan) -> Ve
                 alignment: *alignment,
                 alpha: *alpha,
             },
-            VisualPrimitive::Image {
+            DrawPrimitive::Image {
                 key,
                 source_rect,
                 frame,
@@ -431,7 +431,7 @@ pub fn resolve_paint_operations(plan: &reef_render::primitive::VisualPlan) -> Ve
                 frame: *frame,
                 opacity: *opacity,
             },
-            VisualPrimitive::StrokedRoundRect {
+            DrawPrimitive::StrokedRoundRect {
                 frame,
                 radius,
                 fill,
@@ -446,7 +446,7 @@ pub fn resolve_paint_operations(plan: &reef_render::primitive::VisualPlan) -> Ve
                 stroke_width: *stroke_width,
                 alpha: *alpha,
             },
-            VisualPrimitive::NineSliceImage {
+            DrawPrimitive::NineSliceImage {
                 key,
                 frame,
                 slice_left,
@@ -463,16 +463,16 @@ pub fn resolve_paint_operations(plan: &reef_render::primitive::VisualPlan) -> Ve
                 slice_bottom: *slice_bottom,
                 opacity: *opacity,
             },
-            VisualPrimitive::BezierPath {
+            DrawPrimitive::Path {
                 segments,
                 fill,
                 alpha,
-            } => PaintOperation::FillBezierPath {
+            } => PaintOperation::FillPath {
                 segments: segments.clone(),
                 fill: *fill,
                 alpha: *alpha,
             },
-            VisualPrimitive::SpriteImage {
+            DrawPrimitive::SpriteImage {
                 key,
                 source_rect,
                 frame,
@@ -522,8 +522,8 @@ pub enum PaintOperation {
         text: String,
         color: reef_core::color::Color,
         size: i32,
-        weight: reef_render::primitive::FontWeight,
-        alignment: reef_render::primitive::TextAlignment,
+        weight: reef_draw::primitive::TextWeight,
+        alignment: reef_draw::primitive::TextAlignment,
         alpha: f64,
     },
     DrawImage {
@@ -549,8 +549,8 @@ pub enum PaintOperation {
         slice_bottom: f64,
         opacity: f64,
     },
-    FillBezierPath {
-        segments: Vec<reef_render::primitive::PathSegment>,
+    FillPath {
+        segments: Vec<reef_draw::primitive::PathSegment>,
         fill: reef_core::color::Color,
         alpha: f64,
     },
@@ -567,9 +567,9 @@ mod tests {
     use super::*;
     use reef_core::{
         color::Color,
-        geometry::{Point, Rect},
+        geometry::{Point, Rect, Size},
     };
-    use reef_render::primitive::{FontWeight, TextAlignment, VisualPrimitive};
+    use reef_draw::primitive::DrawPrimitive;
 
     #[test]
     fn painter_handles_empty_plan() {
@@ -579,10 +579,12 @@ mod tests {
 
     #[test]
     fn resolve_paint_operations_maps_all_variants() {
-        let plan = reef_render::primitive::VisualPlan {
-            hidden: false,
-            primitives: vec![
-                VisualPrimitive::ClipStart {
+        let mut plan = reef_draw::primitive::DrawPlan::with_viewport(Size {
+            width: 100.0,
+            height: 100.0,
+        });
+        plan.primitives = vec![
+                DrawPrimitive::ClipStart {
                     frame: Rect {
                         x: 0.0,
                         y: 0.0,
@@ -590,8 +592,8 @@ mod tests {
                         height: 50.0,
                     },
                 },
-                VisualPrimitive::ClipEnd,
-                VisualPrimitive::RoundRect {
+                DrawPrimitive::ClipEnd,
+                DrawPrimitive::RoundRect {
                     frame: Rect {
                         x: 0.0,
                         y: 0.0,
@@ -602,7 +604,7 @@ mod tests {
                     color: Color::rgb(18, 18, 22),
                     alpha: 1.0,
                 },
-                VisualPrimitive::Rect {
+                DrawPrimitive::Rect {
                     frame: Rect {
                         x: 5.0,
                         y: 5.0,
@@ -612,7 +614,7 @@ mod tests {
                     color: Color::BLACK,
                     alpha: 0.5,
                 },
-                VisualPrimitive::Ellipse {
+                DrawPrimitive::Ellipse {
                     frame: Rect {
                         x: 10.0,
                         y: 10.0,
@@ -622,14 +624,14 @@ mod tests {
                     color: Color::WHITE,
                     alpha: 1.0,
                 },
-                VisualPrimitive::StrokeLine {
+                DrawPrimitive::StrokeLine {
                     from: Point { x: 0.0, y: 0.0 },
                     to: Point { x: 100.0, y: 100.0 },
                     color: Color::WHITE,
                     width: 1.0,
                     alpha: 1.0,
                 },
-                VisualPrimitive::Image {
+                DrawPrimitive::Image {
                     key: "test.png".to_string(),
                     source_rect: Rect {
                         x: 0.0,
@@ -645,18 +647,19 @@ mod tests {
                     },
                     opacity: 1.0,
                 },
-            ],
-        };
+        ];
         let ops = resolve_paint_operations(&plan);
         assert_eq!(ops.len(), 7);
     }
 
     #[test]
     fn resolve_paint_operations_returns_empty_for_hidden() {
-        let plan = reef_render::primitive::VisualPlan {
-            hidden: true,
-            primitives: vec![VisualPrimitive::ClipEnd],
-        };
+        let mut plan = reef_draw::primitive::DrawPlan::with_viewport(Size {
+            width: 1.0,
+            height: 1.0,
+        });
+        plan.hidden = true;
+        plan.primitives = vec![DrawPrimitive::ClipEnd];
         assert!(resolve_paint_operations(&plan).is_empty());
     }
 }

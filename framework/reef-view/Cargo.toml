@@ -8,5 +8,5 @@ authors = ["Jason Young"]
 [dependencies]
 reef-core = { path = "../reef-core" }
 reef-layout = { path = "../reef-layout" }
-reef-render = { path = "../reef-render" }
+reef-draw = { path = "../reef-draw" }
 

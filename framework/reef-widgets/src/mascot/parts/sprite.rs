@@ -1,6 +1,6 @@
 use reef_core::geometry::{Point, Rect, Size};
+use reef_draw::primitive::DrawPrimitive;
 use reef_layout::Constraints;
-use reef_render::primitive::VisualPrimitive;
 use reef_view::widget_host::{PaintContext, Widget};
 
 /// Pre-parsed sprite animation manifest with tile layout.
@@ -119,7 +119,7 @@ impl Widget for SpriteMascot {
 
     fn paint(&self, _rect: Rect, ctx: &mut PaintContext) {
         if let Some((_anim, _frame_index, src, dest)) = self.resolve_frame() {
-            ctx.primitives.push(VisualPrimitive::NineSliceImage {
+            ctx.primitives.push(DrawPrimitive::NineSliceImage {
                 key: self.sheet.path.clone(),
                 frame: dest,
                 slice_left: src.x,

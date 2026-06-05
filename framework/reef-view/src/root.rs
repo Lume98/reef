@@ -1,5 +1,5 @@
 use reef_core::geometry::{Point, Size};
-use reef_render::primitive::VisualPlan;
+use reef_draw::primitive::DrawPlan;
 
 use crate::widget_host::{Widget, WidgetHost};
 
@@ -31,11 +31,11 @@ impl WidgetRoot {
         &mut self.host
     }
 
-    pub fn render_current(&mut self) -> VisualPlan {
+    pub fn render_current(&mut self) -> DrawPlan {
         self.host.render()
     }
 
-    pub fn render<W: Widget + 'static>(&mut self, widget: W) -> VisualPlan {
+    pub fn render<W: Widget + 'static>(&mut self, widget: W) -> DrawPlan {
         self.set_root(widget);
         self.render_current()
     }
@@ -57,8 +57,8 @@ mod tests {
         color::Color,
         geometry::{Rect, Size},
     };
+    use reef_draw::primitive::DrawPrimitive;
     use reef_layout::Constraints;
-    use reef_render::primitive::VisualPrimitive;
 
     struct TestWidget;
 
@@ -71,7 +71,7 @@ mod tests {
         }
 
         fn paint(&self, rect: Rect, ctx: &mut PaintContext) {
-            ctx.primitives.push(VisualPrimitive::RoundRect {
+            ctx.primitives.push(DrawPrimitive::RoundRect {
                 frame: rect,
                 radius: 24.0,
                 color: Color::BLACK,

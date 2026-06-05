@@ -2,8 +2,8 @@ use reef_core::{
     color::Color,
     geometry::{Rect, Size},
 };
+use reef_draw::primitive::DrawPrimitive;
 use reef_layout::Constraints;
-use reef_render::primitive::VisualPrimitive;
 use reef_theme::progress_bar as theme;
 use reef_view::widget_host::{PaintContext, Widget};
 
@@ -43,7 +43,7 @@ impl Widget for ProgressBar {
     }
 
     fn paint(&self, rect: Rect, ctx: &mut PaintContext) {
-        ctx.primitives.push(VisualPrimitive::RoundRect {
+        ctx.primitives.push(DrawPrimitive::RoundRect {
             frame: rect,
             radius: self.radius,
             color: self.track_color,
@@ -56,7 +56,7 @@ impl Widget for ProgressBar {
             width: rect.width * self.value.clamp(0.0, 1.0),
             height: rect.height,
         };
-        ctx.primitives.push(VisualPrimitive::RoundRect {
+        ctx.primitives.push(DrawPrimitive::RoundRect {
             frame: filled,
             radius: self.radius,
             color: self.fill_color,

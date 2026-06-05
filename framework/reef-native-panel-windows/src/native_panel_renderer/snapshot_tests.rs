@@ -7,7 +7,7 @@ mod snapshot_tests {
     use crate::native_panel_core::{PanelPoint, PanelRect};
     use crate::native_panel_renderer::snapshot_testing::{RenderSnapshot, SnapshotMetadata};
     use crate::native_panel_renderer::visual_primitives::{
-        NativePanelVisualColor, NativePanelVisualPlan, NativePanelVisualPrimitive,
+        NativePanelDrawPlan, NativePanelDrawPrimitive, NativePanelVisualColor,
         NativePanelVisualTextAlignment, NativePanelVisualTextRole, NativePanelVisualTextWeight,
     };
     use insta::assert_yaml_snapshot;
@@ -178,10 +178,10 @@ mod snapshot_tests {
 
     #[test]
     fn test_empty_state() {
-        let plan = NativePanelVisualPlan {
+        let plan = NativePanelDrawPlan {
             hidden: false,
             primitives: vec![
-                NativePanelVisualPrimitive::RoundRect {
+                NativePanelDrawPrimitive::RoundRect {
                     frame: PanelRect {
                         x: 0.0,
                         y: 0.0,
@@ -191,7 +191,7 @@ mod snapshot_tests {
                     radius: 16.0,
                     color: NativePanelVisualColor::rgb(12, 12, 15),
                 },
-                NativePanelVisualPrimitive::Text {
+                NativePanelDrawPrimitive::Text {
                     role: NativePanelVisualTextRole::CardTitle,
                     origin: PanelPoint { x: 200.0, y: 90.0 },
                     max_width: 300.0,
@@ -219,12 +219,12 @@ mod snapshot_tests {
 
     // ============ 测试数据生成器 ============
 
-    fn create_compact_plan() -> NativePanelVisualPlan {
-        NativePanelVisualPlan {
+    fn create_compact_plan() -> NativePanelDrawPlan {
+        NativePanelDrawPlan {
             hidden: false,
             primitives: vec![
                 // 背景胶囊
-                NativePanelVisualPrimitive::RoundRect {
+                NativePanelDrawPrimitive::RoundRect {
                     frame: PanelRect {
                         x: 0.0,
                         y: 0.0,
@@ -235,7 +235,7 @@ mod snapshot_tests {
                     color: NativePanelVisualColor::rgb(18, 18, 22),
                 },
                 // 标题文本
-                NativePanelVisualPrimitive::Text {
+                NativePanelDrawPrimitive::Text {
                     role: NativePanelVisualTextRole::CompactHeadline,
                     origin: PanelPoint { x: 52.0, y: 15.0 },
                     max_width: 156.0,
@@ -247,7 +247,7 @@ mod snapshot_tests {
                     alpha: 1.0,
                 },
                 // 活跃计数
-                NativePanelVisualPrimitive::Text {
+                NativePanelDrawPrimitive::Text {
                     role: NativePanelVisualTextRole::CompactActiveCount,
                     origin: PanelPoint { x: 168.0, y: 14.0 },
                     max_width: 24.0,
@@ -262,12 +262,12 @@ mod snapshot_tests {
         }
     }
 
-    fn create_expanded_plan() -> NativePanelVisualPlan {
-        NativePanelVisualPlan {
+    fn create_expanded_plan() -> NativePanelDrawPlan {
+        NativePanelDrawPlan {
             hidden: false,
             primitives: vec![
                 // Expanded 背景
-                NativePanelVisualPrimitive::RoundRect {
+                NativePanelDrawPrimitive::RoundRect {
                     frame: PanelRect {
                         x: 0.0,
                         y: 0.0,
@@ -278,7 +278,7 @@ mod snapshot_tests {
                     color: NativePanelVisualColor::rgb(12, 12, 15),
                 },
                 // 分隔线
-                NativePanelVisualPrimitive::Rect {
+                NativePanelDrawPrimitive::Rect {
                     frame: PanelRect {
                         x: 20.0,
                         y: 52.0,
@@ -288,7 +288,7 @@ mod snapshot_tests {
                     color: NativePanelVisualColor::rgb(62, 62, 70),
                 },
                 // 卡片
-                NativePanelVisualPrimitive::RoundRect {
+                NativePanelDrawPrimitive::RoundRect {
                     frame: PanelRect {
                         x: 20.0,
                         y: 70.0,
@@ -302,13 +302,13 @@ mod snapshot_tests {
         }
     }
 
-    fn create_expanding_plan(progress: f64) -> NativePanelVisualPlan {
+    fn create_expanding_plan(progress: f64) -> NativePanelDrawPlan {
         let width = 208.0 + (400.0 - 208.0) * progress;
         let height = 44.0 + (300.0 - 44.0) * progress;
 
-        NativePanelVisualPlan {
+        NativePanelDrawPlan {
             hidden: false,
-            primitives: vec![NativePanelVisualPrimitive::RoundRect {
+            primitives: vec![NativePanelDrawPrimitive::RoundRect {
                 frame: PanelRect {
                     x: 0.0,
                     y: 0.0,
@@ -321,10 +321,10 @@ mod snapshot_tests {
         }
     }
 
-    fn create_card_plan(card_count: usize) -> NativePanelVisualPlan {
+    fn create_card_plan(card_count: usize) -> NativePanelDrawPlan {
         let mut primitives = vec![
             // Expanded 背景
-            NativePanelVisualPrimitive::RoundRect {
+            NativePanelDrawPrimitive::RoundRect {
                 frame: PanelRect {
                     x: 0.0,
                     y: 0.0,
@@ -339,7 +339,7 @@ mod snapshot_tests {
         // 添加多个卡片
         for i in 0..card_count {
             let y_offset = 70.0 + (i as f64 * 80.0);
-            primitives.push(NativePanelVisualPrimitive::RoundRect {
+            primitives.push(NativePanelDrawPrimitive::RoundRect {
                 frame: PanelRect {
                     x: 20.0,
                     y: y_offset,
@@ -350,7 +350,7 @@ mod snapshot_tests {
                 color: NativePanelVisualColor::rgb(24, 24, 27),
             });
 
-            primitives.push(NativePanelVisualPrimitive::Text {
+            primitives.push(NativePanelDrawPrimitive::Text {
                 role: NativePanelVisualTextRole::CardTitle,
                 origin: PanelPoint {
                     x: 30.0,
@@ -366,7 +366,7 @@ mod snapshot_tests {
             });
         }
 
-        NativePanelVisualPlan {
+        NativePanelDrawPlan {
             hidden: false,
             primitives,
         }

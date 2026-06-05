@@ -55,8 +55,7 @@ use crate::{
         },
         transition::NativePanelTransitionRequest,
         visual::{
-            resolve_native_panel_visual_plan, NativePanelVisualPrimitive,
-            NativePanelVisualTextWeight,
+            resolve_native_panel_visual_plan, NativePanelDrawPrimitive, NativePanelVisualTextWeight,
         },
     },
     native_panel_scene::{

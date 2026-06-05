@@ -2,8 +2,8 @@ use reef_core::{
     color::Color,
     geometry::{Point, Rect, Size},
 };
+use reef_draw::primitive::{DrawPrimitive, TextAlignment, TextWeight};
 use reef_layout::Constraints;
-use reef_render::primitive::{FontWeight, TextAlignment, VisualPrimitive};
 use reef_theme::mascot as theme;
 use reef_view::widget_host::{PaintContext, Widget};
 
@@ -25,7 +25,7 @@ impl Widget for CompletionBadgeLabel {
 
     fn paint(&self, _rect: Rect, ctx: &mut PaintContext) {
         let label = self.count.to_string();
-        ctx.primitives.push(VisualPrimitive::Text {
+        ctx.primitives.push(DrawPrimitive::Text {
             origin: Point {
                 x: self.frame.x + 4.0,
                 y: self.frame.y + 3.0,
@@ -34,7 +34,7 @@ impl Widget for CompletionBadgeLabel {
             text: label,
             color: Color::from(theme::BADGE_LABEL),
             size: 11,
-            weight: FontWeight::Semibold,
+            weight: TextWeight::Semibold,
             alignment: TextAlignment::Center,
             alpha: self.alpha,
         });

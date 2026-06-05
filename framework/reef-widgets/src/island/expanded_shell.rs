@@ -2,8 +2,8 @@ use reef_core::{
     color::Color,
     geometry::{Rect, Size},
 };
+use reef_draw::primitive::DrawPrimitive;
 use reef_layout::Constraints;
-use reef_render::primitive::VisualPrimitive;
 use reef_theme::shell as theme;
 use reef_view::widget_host::{PaintContext, Widget};
 
@@ -51,14 +51,14 @@ impl Widget for ExpandedShell {
 
     fn paint(&self, rect: Rect, ctx: &mut PaintContext) {
         // Fill
-        ctx.primitives.push(VisualPrimitive::RoundRect {
+        ctx.primitives.push(DrawPrimitive::RoundRect {
             frame: rect,
             radius: self.radius,
             color: self.fill_color,
             alpha: self.alpha,
         });
         // Border
-        ctx.primitives.push(VisualPrimitive::RoundRect {
+        ctx.primitives.push(DrawPrimitive::RoundRect {
             frame: rect,
             radius: self.radius,
             color: self.border_color,
@@ -66,7 +66,7 @@ impl Widget for ExpandedShell {
         });
         // Separator line
         if let Some(y) = self.separator_y {
-            ctx.primitives.push(VisualPrimitive::Rect {
+            ctx.primitives.push(DrawPrimitive::Rect {
                 frame: Rect {
                     x: rect.x + 12.0,
                     y: rect.y + y,

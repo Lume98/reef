@@ -3,10 +3,10 @@
 use super::super::{
     compact_digit_y, extend_visible_content_primitives,
     native_panel_visual_card_input_from_scene_card_with_height, resolve_native_panel_visual_plan,
-    NativePanelVisualActionButtonInput, NativePanelVisualCardBadgeInput,
-    NativePanelVisualCardBodyLineInput, NativePanelVisualCardBodyRole, NativePanelVisualCardInput,
-    NativePanelVisualCardRowInput, NativePanelVisualCardStyle, NativePanelVisualDisplayMode,
-    NativePanelVisualPlan, NativePanelVisualPlanInput,
+    NativePanelDrawPlan, NativePanelDrawPlanInput, NativePanelVisualActionButtonInput,
+    NativePanelVisualCardBadgeInput, NativePanelVisualCardBodyLineInput,
+    NativePanelVisualCardBodyRole, NativePanelVisualCardInput, NativePanelVisualCardRowInput,
+    NativePanelVisualCardStyle, NativePanelVisualDisplayMode,
 };
 use super::common::*;
 use crate::{
@@ -18,10 +18,10 @@ use crate::{
     native_panel_ui::{
         descriptors::{NativePanelEdgeAction, NativePanelHostWindowState},
         visual_primitives::{
-            native_panel_visual_text_box_height, NativePanelVisualColor,
+            native_panel_visual_text_box_height, NativePanelDrawPrimitive, NativePanelVisualColor,
             NativePanelVisualMascotEllipseRole, NativePanelVisualMascotRoundRectRole,
-            NativePanelVisualMascotTextRole, NativePanelVisualPrimitive,
-            NativePanelVisualTextAlignment, NativePanelVisualTextRole, NativePanelVisualTextWeight,
+            NativePanelVisualMascotTextRole, NativePanelVisualTextAlignment,
+            NativePanelVisualTextRole, NativePanelVisualTextWeight,
         },
     },
 };
@@ -55,26 +55,26 @@ fn expanded_visual_plan_draws_question_pending_tone_distinct_from_approval() {
 
     assert!(plan.primitives.iter().any(|primitive| matches!(
             primitive,
-            NativePanelVisualPrimitive::RoundRect { color, .. }
+            NativePanelDrawPrimitive::RoundRect { color, .. }
                 if *color
                     == crate::native_panel_ui::visual_primitives::NativePanelVisualColor::rgb(87, 61, 39)
         )));
     assert!(plan.primitives.iter().any(|primitive| matches!(
             primitive,
-            NativePanelVisualPrimitive::RoundRect { color, .. }
+            NativePanelDrawPrimitive::RoundRect { color, .. }
                 if *color
                     == crate::native_panel_ui::visual_primitives::NativePanelVisualColor::rgb(74, 62, 103)
         )));
     assert!(plan.primitives.iter().any(|primitive| matches!(
             primitive,
-            NativePanelVisualPrimitive::Text { text, color, .. }
+            NativePanelDrawPrimitive::Text { text, color, .. }
                 if text == "?"
                     && *color
                         == crate::native_panel_ui::visual_primitives::NativePanelVisualColor::rgb(201, 176, 255)
         )));
     assert!(plan.primitives.iter().any(|primitive| matches!(
             primitive,
-            NativePanelVisualPrimitive::Text { text, color, .. }
+            NativePanelDrawPrimitive::Text { text, color, .. }
                 if text == "2"
                     && *color
                         == crate::native_panel_ui::visual_primitives::NativePanelVisualColor::rgb(201, 176, 255)
@@ -99,7 +99,7 @@ fn expanded_visual_plan_draws_pending_action_hint_as_bottom_pill() {
 
     assert!(plan.primitives.iter().any(|primitive| matches!(
             primitive,
-            NativePanelVisualPrimitive::RoundRect { frame, radius, color }
+            NativePanelDrawPrimitive::RoundRect { frame, radius, color }
                 if (frame.height - crate::native_panel_core::CARD_PENDING_ACTION_HEIGHT).abs() < 0.001
                     && (*radius - crate::native_panel_core::CARD_PENDING_ACTION_HEIGHT / 2.0).abs() < 0.001
                     && *color
@@ -107,7 +107,7 @@ fn expanded_visual_plan_draws_pending_action_hint_as_bottom_pill() {
         )));
     assert!(plan.primitives.iter().any(|primitive| matches!(
             primitive,
-            NativePanelVisualPrimitive::Text { text, color, size, .. }
+            NativePanelDrawPrimitive::Text { text, color, size, .. }
                 if text == "Allow / Deny in terminal"
                     && *size == 10
                     && *color
@@ -115,7 +115,7 @@ fn expanded_visual_plan_draws_pending_action_hint_as_bottom_pill() {
         )));
     assert!(!plan.primitives.iter().any(|primitive| matches!(
             primitive,
-            NativePanelVisualPrimitive::Text { text, color, .. }
+            NativePanelDrawPrimitive::Text { text, color, .. }
                 if text == "Allow / Deny in terminal"
                     && *color
                         == crate::native_panel_ui::visual_primitives::NativePanelVisualColor::rgb(104, 213, 145)
@@ -160,7 +160,7 @@ fn expanded_visual_plan_draws_tool_body_role_as_mac_style_pill() {
 
     assert!(plan.primitives.iter().any(|primitive| matches!(
             primitive,
-            NativePanelVisualPrimitive::RoundRect { frame, radius, color }
+            NativePanelDrawPrimitive::RoundRect { frame, radius, color }
                 if (frame.height - 22.0).abs() < 0.001
                     && (*radius - 5.0).abs() < 0.001
                     && *color
@@ -168,7 +168,7 @@ fn expanded_visual_plan_draws_tool_body_role_as_mac_style_pill() {
         )));
     assert!(plan.primitives.iter().any(|primitive| matches!(
             primitive,
-            NativePanelVisualPrimitive::RoundRect { frame, radius, color }
+            NativePanelDrawPrimitive::RoundRect { frame, radius, color }
                 if (frame.height - 20.0).abs() < 0.001
                     && (*radius - 4.0).abs() < 0.001
                     && *color
@@ -176,7 +176,7 @@ fn expanded_visual_plan_draws_tool_body_role_as_mac_style_pill() {
         )));
     assert!(plan.primitives.iter().any(|primitive| matches!(
             primitive,
-            NativePanelVisualPrimitive::Text { text, color, size, .. }
+            NativePanelDrawPrimitive::Text { text, color, size, .. }
                 if text == "Bash"
                     && *size == 9
                     && *color
@@ -184,7 +184,7 @@ fn expanded_visual_plan_draws_tool_body_role_as_mac_style_pill() {
         )));
     assert!(!plan.primitives.iter().any(|primitive| matches!(
         primitive,
-        NativePanelVisualPrimitive::Text { text, .. } if text == "Bash cargo test"
+        NativePanelDrawPrimitive::Text { text, .. } if text == "Bash cargo test"
     )));
 }
 
@@ -234,11 +234,11 @@ fn expanded_visual_plan_does_not_draw_card_text_outside_clipped_shell() {
 
     assert!(plan.primitives.iter().any(|primitive| matches!(
         primitive,
-        NativePanelVisualPrimitive::Text { text, .. } if text == "Reef UI"
+        NativePanelDrawPrimitive::Text { text, .. } if text == "Reef UI"
     )));
     assert!(!plan.primitives.iter().any(|primitive| matches!(
         primitive,
-        NativePanelVisualPrimitive::Text { text, .. }
+        NativePanelDrawPrimitive::Text { text, .. }
             if text.contains("第二次移出鼠标") || text.contains("已检查并修了")
     )));
 }
@@ -277,7 +277,7 @@ fn expanded_visual_plan_reveals_card_content_before_shell_is_mostly_open() {
         .primitives
         .iter()
         .find_map(|primitive| match primitive {
-            NativePanelVisualPrimitive::Text {
+            NativePanelDrawPrimitive::Text {
                 text,
                 origin,
                 color,
@@ -330,9 +330,9 @@ fn expanded_visual_plan_fades_removing_status_card_content_before_shell_exit() {
     let plan = resolve_native_panel_visual_plan(&input);
 
     assert!(!plan.primitives.iter().any(|primitive| {
-        matches!(primitive, NativePanelVisualPrimitive::Text { text, .. } if text == "Done")
+        matches!(primitive, NativePanelDrawPrimitive::Text { text, .. } if text == "Done")
     }));
     assert!(plan.primitives.iter().any(|primitive| {
-            matches!(primitive, NativePanelVisualPrimitive::RoundRect { frame, .. } if frame.height > 40.0)
+            matches!(primitive, NativePanelDrawPrimitive::RoundRect { frame, .. } if frame.height > 40.0)
         }));
 }

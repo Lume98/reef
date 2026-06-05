@@ -1,5 +1,5 @@
 use super::visual_primitives::{
-    NativePanelVisualPlan, NativePanelVisualPrimitive, NativePanelVisualTextAlignment,
+    NativePanelDrawPlan, NativePanelDrawPrimitive, NativePanelVisualTextAlignment,
     NativePanelVisualTextRole, NativePanelVisualTextWeight,
 };
 use crate::native_panel_core::{PanelPoint, PanelRect};
@@ -44,24 +44,24 @@ pub enum NativePanelRenderCommand {
         alignment: NativePanelVisualTextAlignment,
         alpha: f64,
     },
-    Primitive(NativePanelVisualPrimitive),
+    Primitive(NativePanelDrawPrimitive),
 }
 
 #[derive(Clone, Debug, Default, PartialEq)]
-pub struct NativePanelFrameSubmission {
+pub struct NativePanelDrawFrameSubmission {
     pub hidden: bool,
     pub commands: Vec<NativePanelRenderCommand>,
 }
 
-impl From<NativePanelVisualPrimitive> for NativePanelRenderCommand {
-    fn from(value: NativePanelVisualPrimitive) -> Self {
+impl From<NativePanelDrawPrimitive> for NativePanelRenderCommand {
+    fn from(value: NativePanelDrawPrimitive) -> Self {
         match value {
-            NativePanelVisualPrimitive::ClipStart { frame } => Self::ClipStart { frame },
-            NativePanelVisualPrimitive::ClipEnd => Self::ClipEnd,
-            NativePanelVisualPrimitive::CompletionGlow { frame, opacity } => {
+            NativePanelDrawPrimitive::ClipStart { frame } => Self::ClipStart { frame },
+            NativePanelDrawPrimitive::ClipEnd => Self::ClipEnd,
+            NativePanelDrawPrimitive::CompletionGlow { frame, opacity } => {
                 Self::CompletionGlow { frame, opacity }
             }
-            NativePanelVisualPrimitive::RoundRect {
+            NativePanelDrawPrimitive::RoundRect {
                 frame,
                 radius,
                 color,
@@ -70,9 +70,9 @@ impl From<NativePanelVisualPrimitive> for NativePanelRenderCommand {
                 radius,
                 color,
             },
-            NativePanelVisualPrimitive::Rect { frame, color } => Self::Rect { frame, color },
-            NativePanelVisualPrimitive::Ellipse { frame, color } => Self::Ellipse { frame, color },
-            NativePanelVisualPrimitive::StrokeLine {
+            NativePanelDrawPrimitive::Rect { frame, color } => Self::Rect { frame, color },
+            NativePanelDrawPrimitive::Ellipse { frame, color } => Self::Ellipse { frame, color },
+            NativePanelDrawPrimitive::StrokeLine {
                 from,
                 to,
                 color,
@@ -83,7 +83,7 @@ impl From<NativePanelVisualPrimitive> for NativePanelRenderCommand {
                 color,
                 width,
             },
-            NativePanelVisualPrimitive::Text {
+            NativePanelDrawPrimitive::Text {
                 role,
                 origin,
                 max_width,
@@ -109,16 +109,19 @@ impl From<NativePanelVisualPrimitive> for NativePanelRenderCommand {
     }
 }
 
-pub trait NativePanelRenderBackend {
+pub trait NativePanelDrawBackend {
     type Error;
 
-    fn submit_frame(&mut self, submission: &NativePanelFrameSubmission) -> Result<(), Self::Error>;
+    fn submit_frame(
+        &mut self,
+        submission: &NativePanelDrawFrameSubmission,
+    ) -> Result<(), Self::Error>;
 }
 
 pub fn native_panel_frame_submission_from_visual_plan(
-    plan: &NativePanelVisualPlan,
-) -> NativePanelFrameSubmission {
-    NativePanelFrameSubmission {
+    plan: &NativePanelDrawPlan,
+) -> NativePanelDrawFrameSubmission {
+    NativePanelDrawFrameSubmission {
         hidden: plan.hidden,
         commands: plan
             .primitives
@@ -131,10 +134,10 @@ pub fn native_panel_frame_submission_from_visual_plan(
 
 pub fn native_panel_submit_visual_plan<B>(
     backend: &mut B,
-    plan: &NativePanelVisualPlan,
+    plan: &NativePanelDrawPlan,
 ) -> Result<(), B::Error>
 where
-    B: NativePanelRenderBackend,
+    B: NativePanelDrawBackend,
 {
     let submission = native_panel_frame_submission_from_visual_plan(plan);
     backend.submit_frame(&submission)

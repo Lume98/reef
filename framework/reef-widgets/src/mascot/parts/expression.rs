@@ -2,8 +2,8 @@ use reef_core::{
     color::Color,
     geometry::{Point, Rect, Size},
 };
+use reef_draw::primitive::{DrawPrimitive, TextAlignment, TextWeight};
 use reef_layout::Constraints;
-use reef_render::primitive::{FontWeight, TextAlignment, VisualPrimitive};
 use reef_view::widget_host::{PaintContext, Widget};
 
 use crate::mascot::MascotPose;
@@ -41,7 +41,7 @@ impl Widget for MascotExpression {
         match self.pose {
             MascotPose::Approval => {
                 let mouth_y = cy + r * 0.1;
-                ctx.primitives.push(VisualPrimitive::Ellipse {
+                ctx.primitives.push(DrawPrimitive::Ellipse {
                     frame: Rect {
                         x: cx - r * 0.2,
                         y: mouth_y - eye_r,
@@ -54,7 +54,7 @@ impl Widget for MascotExpression {
             }
             MascotPose::WakeAngry => {
                 let mouth_w = r * 0.3;
-                ctx.primitives.push(VisualPrimitive::Rect {
+                ctx.primitives.push(DrawPrimitive::Rect {
                     frame: Rect {
                         x: cx - mouth_w / 2.0,
                         y: cy + r * 0.15,
@@ -69,7 +69,7 @@ impl Widget for MascotExpression {
         }
 
         if self.pose == MascotPose::Sleepy {
-            ctx.primitives.push(VisualPrimitive::Text {
+            ctx.primitives.push(DrawPrimitive::Text {
                 origin: Point {
                     x: cx - 3.0 * self.scale_x,
                     y: cy - r * self.scale_y - 14.0,
@@ -78,7 +78,7 @@ impl Widget for MascotExpression {
                 text: "Z".to_string(),
                 color: Color::from(theme::EYE_LID),
                 size: 12,
-                weight: FontWeight::Bold,
+                weight: TextWeight::Bold,
                 alignment: TextAlignment::Center,
                 alpha: 0.7,
             });

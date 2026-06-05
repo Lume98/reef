@@ -3,10 +3,10 @@
 use super::super::{
     compact_digit_y, extend_visible_content_primitives,
     native_panel_visual_card_input_from_scene_card_with_height, resolve_native_panel_visual_plan,
-    NativePanelVisualActionButtonInput, NativePanelVisualCardBadgeInput,
-    NativePanelVisualCardBodyLineInput, NativePanelVisualCardBodyRole, NativePanelVisualCardInput,
-    NativePanelVisualCardRowInput, NativePanelVisualCardStyle, NativePanelVisualDisplayMode,
-    NativePanelVisualPlan, NativePanelVisualPlanInput,
+    NativePanelDrawPlan, NativePanelDrawPlanInput, NativePanelVisualActionButtonInput,
+    NativePanelVisualCardBadgeInput, NativePanelVisualCardBodyLineInput,
+    NativePanelVisualCardBodyRole, NativePanelVisualCardInput, NativePanelVisualCardRowInput,
+    NativePanelVisualCardStyle, NativePanelVisualDisplayMode,
 };
 use super::common::*;
 use crate::{
@@ -18,10 +18,10 @@ use crate::{
     native_panel_ui::{
         descriptors::{NativePanelEdgeAction, NativePanelHostWindowState},
         visual_primitives::{
-            native_panel_visual_text_box_height, NativePanelVisualColor,
+            native_panel_visual_text_box_height, NativePanelDrawPrimitive, NativePanelVisualColor,
             NativePanelVisualMascotEllipseRole, NativePanelVisualMascotRoundRectRole,
-            NativePanelVisualMascotTextRole, NativePanelVisualPrimitive,
-            NativePanelVisualTextAlignment, NativePanelVisualTextRole, NativePanelVisualTextWeight,
+            NativePanelVisualMascotTextRole, NativePanelVisualTextAlignment,
+            NativePanelVisualTextRole, NativePanelVisualTextWeight,
         },
     },
 };
