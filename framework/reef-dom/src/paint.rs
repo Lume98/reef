@@ -1,4 +1,5 @@
 use crate::scene::SceneNode;
+use crate::opaque::get_opaque_plan;
 use reef_core::color::Color;
 use reef_core::geometry::{Rect, Size};
 use reef_draw::{DrawPlan, DrawPrimitive, TextAlignment, TextWeight};
@@ -32,6 +33,9 @@ fn paint_node(node: &SceneNode, out: &mut Vec<DrawPrimitive>) {
             for child in &node.children {
                 paint_node(child, out);
             }
+        }
+        "$opaque_draw_plan" => {
+            paint_opaque_draw_plan(node, out);
         }
         _ => {
             if node.clip_children {
@@ -285,6 +289,18 @@ fn paint_clipped_children(node: &SceneNode, out: &mut Vec<DrawPrimitive>) {
             paint_node(child, out);
         }
         out.push(DrawPrimitive::ClipEnd);
+    }
+}
+
+fn paint_opaque_draw_plan(node: &SceneNode, out: &mut Vec<DrawPrimitive>) {
+    if let Some(id) = node.prop_i32("__opaque_id") {
+        if let Some(prims) = get_opaque_plan(id) {
+            out.extend(prims);
+        }
+    }
+    // Also paint children (for hybrid opaque+VNode elements)
+    for child in &node.children {
+        paint_node(child, out);
     }
 }
 

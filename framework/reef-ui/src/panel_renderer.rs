@@ -4,13 +4,15 @@
 //! 零差异才切换到新管线。每个灵动岛组件可以独立控制迁移状态。
 
 use crate::native_panel_ui::render::{
-    resolve_native_panel_visual_plan, NativePanelPaintInput,
+    resolve_native_panel_visual_plan, resolve_native_panel_compact_bar_visual_plan,
+    NativePanelPaintInput,
 };
 use crate::scene_bridge::compare_draw_plans;
 use reef_core::geometry::Size;
+use reef_dom::opaque::{register_opaque_plan, clear_opaque_plans};
 use reef_dom::ReefRenderer;
 use reef_draw::primitive::DrawPlan;
-use reef_vnode::{ElementType, PropsMap, VElement, VNode};
+use reef_vnode::{ElementType, PropValue, PropsMap, VElement, VNode};
 
 /// 控制哪些灵动岛子组件使用新 VNode 管线渲染。
 #[derive(Clone, Debug)]
@@ -91,6 +93,9 @@ impl PanelRenderer {
         if !self.migrant.any() {
             return reference;
         }
+
+        // 清空上一帧的 opaque plans
+        reef_dom::opaque::clear_opaque_plans();
 
         // 有组件迁移 → 构建 VNode 树并渲染
         let vnode = self.build_migrant_vnode(input);
@@ -179,9 +184,19 @@ impl PanelRenderer {
 
     // ── 各组件 VNode 渲染（随迁移进度逐步实现）──
 
-    fn render_compact_bar_vnode(&self, _input: &NativePanelPaintInput) -> VNode {
-        // Phase 2: 替换为真实 Container/Label/Row 组件
-        make_opaque("$native_panel_compact_bar", vec![])
+    fn render_compact_bar_vnode(&self, input: &NativePanelPaintInput) -> VNode {
+        let plan = resolve_native_panel_compact_bar_visual_plan(input);
+        let opaque_id = register_opaque_plan(plan.primitives);
+        VNode::VElement(VElement {
+            ty: ElementType::Native("$opaque_draw_plan"),
+            props: {
+                let mut p = PropsMap::new();
+                p.insert("__opaque_id", opaque_id);
+                p
+            },
+            children: vec![],
+            key: None,
+        })
     }
 
     fn render_card_stack_vnode(&self, _input: &NativePanelPaintInput) -> VNode {
@@ -270,7 +285,16 @@ mod tests {
     }
 
     #[test]
-    fn panel_renderer_with_migration_fallback_on_mismatch() {
+    fn compact_bar_migration_identical_output() {
+        let mut input = make_input();
+        input.display_mode = NativePanelVisualDisplayMode::Compact;
+        input.headline_text = "Sessions".into();
+        input.active_count = "3".into();
+        input.total_count = "10".into();
+        input.compact_bar_frame = PanelRect { x: 0.0, y: 0.0, width: 200.0, height: 48.0 };
+
+        let reference = resolve_native_panel_visual_plan(&input);
+
         let mut pr = PanelRenderer::new(
             Size { width: 200.0, height: 48.0 },
             MigrantComponents {
@@ -278,10 +302,19 @@ mod tests {
                 ..MigrantComponents::none()
             },
         );
-        let input = make_input();
-        let plan = pr.render(&input);
-        // 迁移 stub 尚未实现 → 回退到参考管线
-        assert!(plan.hidden || !plan.primitives.is_empty() || plan.viewport.width >= 0.0);
+        let candidate = pr.render(&input);
+
+        let comparison = compare_draw_plans(&reference, &candidate);
+        if !comparison.is_identical() {
+            eprintln!("Compact bar migration: {} primitive differences", comparison.diffs.len());
+            for diff in &comparison.diffs[..comparison.diffs.len().min(5)] {
+                eprintln!("  diff[{}]: {} (expected: {}, actual: {})",
+                    diff.index, diff.field, diff.expected, diff.actual);
+            }
+        }
+        assert!(comparison.is_identical(),
+            "Compact bar migration produced {} primitive differences",
+            comparison.diffs.len());
     }
 
     #[test]
