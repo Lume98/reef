@@ -9,6 +9,7 @@ members = [
     "framework/reef-native-panel-core",
     "framework/reef-native-panel-windows",
     "framework/reef-draw",
+    "framework/reef-hooks",
     "framework/reef-theme",
     "framework/reef-view",
     "framework/reef-view-macros",

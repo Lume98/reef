@@ -2793,6 +2793,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "reef-hooks"
+version = "0.1.0"
+dependencies = [
+ "reef-core",
+ "reef-vnode",
+]
+
+[[package]]
 name = "reef-layout"
 version = "0.1.0"
 dependencies = [
