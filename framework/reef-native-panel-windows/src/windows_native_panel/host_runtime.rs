@@ -443,7 +443,7 @@ impl WindowsNativePanelRuntime {
                 panel_expanded: self.panel_state.expanded,
                 settings_active: self.panel_state.surface_mode == ExpandedSurface::Settings,
             },
-            reef_widgets::prelude::DynamicIslandGesture::Click,
+            crate::page::DynamicIslandGesture::Click,
             |context, gesture| {
                 resolve_dynamic_island_gesture_effect(
                     context.snapshot,
@@ -493,7 +493,7 @@ impl WindowsNativePanelRuntime {
             self.panel_state.expanded,
             self.panel_state.surface_mode == ExpandedSurface::Settings,
             &target_key,
-            reef_widgets::prelude::DynamicIslandGesture::Click,
+            crate::page::DynamicIslandGesture::Click,
         )
         .map(map_dynamic_island_runtime_effect) else {
             return Ok(None);
@@ -538,7 +538,7 @@ impl WindowsNativePanelRuntime {
                     panel_expanded: self.panel_state.expanded,
                     settings_active: self.panel_state.surface_mode == ExpandedSurface::Settings,
                 },
-                reef_widgets::prelude::DynamicIslandGesture::Swipe,
+                crate::page::DynamicIslandGesture::Swipe,
                 |context, gesture| {
                     resolve_dynamic_island_gesture_effect(
                         context.snapshot,

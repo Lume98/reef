@@ -4,9 +4,8 @@ use reef_widgets::island_widget::{
     IslandPendingApprovalInput, IslandPendingQuestionInput, IslandSessionInput,
     IslandWidgetContentInput,
 };
-use reef_widgets::prelude::{
-    DisplayMode, DynamicIsland, DynamicIslandGesture, DynamicIslandTarget,
-};
+use reef_widgets::prelude::DisplayMode;
+pub use reef_widgets::prelude::{DynamicIsland, DynamicIslandGesture, DynamicIslandTarget};
 
 use crate::native_panel_core::PanelHitTarget;
 use crate::panel::ui::{

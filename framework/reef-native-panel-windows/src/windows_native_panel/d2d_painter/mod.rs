@@ -45,14 +45,14 @@ pub(super) fn directwrite_text_requests_from_paint_plan(
     }
     let mut requests = Vec::new();
     for primitive in &plan.primitives {
-        if let Some(request) = directwrite_text_request_from_legacy_primitive(primitive) {
+        if let Some(request) = directwrite_text_request_from_native_panel_primitive(primitive) {
             requests.push(request);
         }
     }
     requests
 }
 
-fn directwrite_text_request_from_legacy_primitive(
+fn directwrite_text_request_from_native_panel_primitive(
     primitive: &reef_ui::native_panel_ui::visual::NativePanelVisualPrimitive,
 ) -> Option<WindowsDirectWriteTextLayoutRequest> {
     match primitive {

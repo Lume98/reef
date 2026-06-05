@@ -1,6 +1,7 @@
 //! Reef 原生面板 Windows 适配层。
 //!
-//! 当前对外提供 source-based standalone facade；底层 Win32 host 仍在持续迁移。
+//! 当前对外提供 snapshot preview standalone facade；Win32 host 的绘制入口只接受
+//! `NativePanelVisualPlan` 协议，旧 widget `VisualPlan` 仍保留在 core/source facade 边界之外。
 
 extern crate self as reef_native_panel_windows;
 
@@ -10,10 +11,7 @@ pub use reef_native_panel_core::native_panel_scene;
 pub use reef_native_panel_core::native_panel_ui;
 
 use echoisland_runtime::RuntimeSnapshot;
-use reef_core::geometry::Size;
-use reef_native_panel_core::{DynamicIslandSource, DynamicIslandViewState};
-use reef_render::primitive::VisualPlan;
-use reef_view::create_root;
+use reef_native_panel_core::DynamicIslandSource;
 
 pub mod direct2d;
 pub mod directwrite;
@@ -64,37 +62,13 @@ mod panel_scene_service;
 mod updater_service;
 mod windows_native_panel;
 
-pub fn render_dynamic_island_initial_plan<S>(source: &S) -> VisualPlan
-where
-    S: DynamicIslandSource,
-    S::Action: 'static,
-{
-    let state = DynamicIslandViewState::default();
-    let island = source.build(state);
-    let widget = island.to_widget();
-    let mut root = create_root(Size {
-        width: widget.width.max(1.0),
-        height: widget.expanded_height.max(widget.compact_height).max(1.0),
-    });
-    root.set_root(island);
-    root.render_current()
-}
-
-pub fn run_dynamic_island_standalone<S>(source: S) -> Result<(), String>
-where
-    S: DynamicIslandSource,
-    S::Action: 'static,
-{
-    let _ = render_dynamic_island_initial_plan(&source);
+pub fn run_dynamic_island_preview_standalone() -> Result<(), String> {
     #[cfg(target_os = "windows")]
     {
         // The migrated Windows host currently carries a placeholder mascot sprite asset.
         // Force the stable vector mascot path for the standalone example to avoid a white block
         // where the assistant should be rendered.
         std::env::set_var("ECHOISLAND_MASCOT_SPRITE", "0");
-        // The current standalone host still renders from the snapshot-backed runtime path.
-        // We use the framework preview snapshot to keep the window alive until the source-based
-        // host fully replaces the legacy runtime.
         let snapshot = reef_native_panel_core::preview_host::dynamic_island_ui_preview_snapshot();
         native_window::show_without_app(&snapshot)?;
         loop {
@@ -106,6 +80,16 @@ where
     {
         Ok(())
     }
+}
+
+#[deprecated(
+    note = "Windows standalone rendering is snapshot-backed; use run_dynamic_island_preview_standalone instead"
+)]
+pub fn run_dynamic_island_standalone<S>(_source: S) -> Result<(), String>
+where
+    S: DynamicIslandSource,
+{
+    run_dynamic_island_preview_standalone()
 }
 
 pub fn create_native_panel() -> Result<(), String> {

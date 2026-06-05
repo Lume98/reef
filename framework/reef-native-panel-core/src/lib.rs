@@ -40,9 +40,9 @@ pub use dynamic_island_interaction::{
 pub use dynamic_island_page::{
     build_dynamic_island_page_model, dynamic_island_page, dynamic_island_target_for_hit_target,
     resolve_dynamic_island_effect, resolve_dynamic_island_source_gesture_effect,
-    resolve_dynamic_island_source_target_effect, DynamicIslandPageModel,
-    DynamicIslandRuntimeAction, DynamicIslandRuntimeEffect, DynamicIslandViewState,
-    RuntimeSnapshotDynamicIslandSource,
+    resolve_dynamic_island_source_target_effect, DynamicIsland, DynamicIslandGesture,
+    DynamicIslandPageModel, DynamicIslandRuntimeAction, DynamicIslandRuntimeEffect,
+    DynamicIslandTarget, DynamicIslandViewState, RuntimeSnapshotDynamicIslandSource,
 };
 pub use dynamic_island_source::DynamicIslandSource;
 pub use host_platform::NativePanelHostPlatform;

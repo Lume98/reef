@@ -1,9 +1,7 @@
 use reef_core::geometry::Size;
-use reef_native_panel_core::{DynamicIslandSource, DynamicIslandViewState};
+use reef_native_panel_core::{DynamicIsland, DynamicIslandSource, DynamicIslandViewState};
 use reef_view::create_root;
-use reef_widgets::prelude::{
-    Card, CardStyle, CompactBar, DisplayMode, DynamicIsland, MascotPose, MascotWidget,
-};
+use reef_widgets::prelude::{Card, CardStyle, CompactBar, DisplayMode, MascotPose, MascotWidget};
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 enum DemoAction {
@@ -98,13 +96,13 @@ fn main() -> Result<(), String> {
         widget.mode
     );
 
-    reef_native_panel_windows::run_dynamic_island_standalone(source)
+    reef_native_panel_windows::run_dynamic_island_preview_standalone()
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use reef_widgets::prelude::DynamicIslandGesture;
+    use reef_native_panel_core::DynamicIslandGesture;
 
     #[test]
     fn demo_source_builds_visible_island() {

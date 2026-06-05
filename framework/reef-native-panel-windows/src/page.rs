@@ -1,6 +1,7 @@
 pub use reef_native_panel_core::dynamic_island_page::{
-    DynamicIslandPageModel, DynamicIslandRuntimeAction, DynamicIslandRuntimeEffect,
-    DynamicIslandViewState, RuntimeSnapshotDynamicIslandSource,
+    DynamicIsland, DynamicIslandGesture, DynamicIslandPageModel, DynamicIslandRuntimeAction,
+    DynamicIslandRuntimeEffect, DynamicIslandTarget, DynamicIslandViewState,
+    RuntimeSnapshotDynamicIslandSource,
 };
 
 pub fn build_dynamic_island_page_model(
@@ -19,7 +20,7 @@ pub fn build_dynamic_island_page_model(
 
 pub fn dynamic_island_page(
     model: &DynamicIslandPageModel,
-) -> reef_widgets::prelude::DynamicIsland<DynamicIslandRuntimeAction> {
+) -> DynamicIsland<DynamicIslandRuntimeAction> {
     reef_native_panel_core::dynamic_island_page::dynamic_island_page(model)
 }
 
@@ -27,7 +28,7 @@ pub fn resolve_dynamic_island_gesture_effect(
     snapshot: &echoisland_runtime::RuntimeSnapshot,
     panel_expanded: bool,
     settings_active: bool,
-    gesture: reef_widgets::prelude::DynamicIslandGesture,
+    gesture: DynamicIslandGesture,
 ) -> Option<DynamicIslandRuntimeEffect> {
     let model = build_dynamic_island_page_model(snapshot, panel_expanded, settings_active);
     let action = dynamic_island_page(&model)
@@ -40,8 +41,8 @@ pub fn resolve_dynamic_island_target_effect(
     snapshot: &echoisland_runtime::RuntimeSnapshot,
     panel_expanded: bool,
     settings_active: bool,
-    target: &reef_widgets::prelude::DynamicIslandTarget,
-    gesture: reef_widgets::prelude::DynamicIslandGesture,
+    target: &DynamicIslandTarget,
+    gesture: DynamicIslandGesture,
 ) -> Option<DynamicIslandRuntimeEffect> {
     let _ = (snapshot, panel_expanded, settings_active, target, gesture);
     None
@@ -49,7 +50,7 @@ pub fn resolve_dynamic_island_target_effect(
 
 pub fn dynamic_island_target_for_hit_target(
     target: &reef_native_panel_core::native_panel_core::PanelHitTarget,
-) -> Option<reef_widgets::prelude::DynamicIslandTarget> {
+) -> Option<DynamicIslandTarget> {
     reef_native_panel_core::dynamic_island_page::dynamic_island_target_for_hit_target(target)
 }
 
@@ -63,7 +64,7 @@ pub fn resolve_dynamic_island_effect(
 pub fn resolve_dynamic_island_source_gesture_effect<S>(
     source: &S,
     state: DynamicIslandViewState,
-    gesture: reef_widgets::prelude::DynamicIslandGesture,
+    gesture: DynamicIslandGesture,
 ) -> Option<S::Effect>
 where
     S: reef_native_panel_core::DynamicIslandSource,
@@ -76,8 +77,8 @@ where
 pub fn resolve_dynamic_island_source_target_effect<S>(
     source: &S,
     state: DynamicIslandViewState,
-    target: &reef_widgets::prelude::DynamicIslandTarget,
-    gesture: reef_widgets::prelude::DynamicIslandGesture,
+    target: &DynamicIslandTarget,
+    gesture: DynamicIslandGesture,
 ) -> Option<S::Effect>
 where
     S: reef_native_panel_core::DynamicIslandSource,
