@@ -8,6 +8,7 @@ use echoisland_runtime::{
 use super::PanelReminderState;
 
 #[derive(Clone, Debug)]
+#[allow(clippy::large_enum_variant)]
 pub enum StatusQueuePayload {
     Approval(PendingPermissionView),
     Question(PendingQuestionView),

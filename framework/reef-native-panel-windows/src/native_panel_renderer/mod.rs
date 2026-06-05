@@ -7,7 +7,7 @@
 #![allow(dead_code, unused_imports)]
 
 // UI 计算来自 reef-ui；本 crate 只保留运行时、宿主和平台协调。
-pub(crate) use reef_ui::native_panel_ui::{
+pub(crate) use reef_ui::panel::ui::{
     descriptor as descriptors, presentation as action_button_visual_spec,
     presentation as card_visual_spec, presentation as completion_glow_visual_spec,
     presentation as mascot_sprite_spec, presentation as mascot_visual_spec,

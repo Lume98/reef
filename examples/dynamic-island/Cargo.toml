@@ -7,9 +7,6 @@ authors = ["Jason Young"]
 
 [dependencies]
 echoisland-runtime = { path = "../../echoisland-runtime" }
-reef-core = { path = "../../framework/reef-core" }
-reef-view = { path = "../../framework/reef-view" }
-reef-widgets = { path = "../../framework/reef-widgets" }
-reef-native-panel-core = { path = "../../framework/reef-native-panel-core" }
+chrono = { version = "0.4", features = ["serde"] }
+reef-ui = { path = "../../framework/reef-ui" }
 reef-native-panel-windows = { path = "../../framework/reef-native-panel-windows" }
-

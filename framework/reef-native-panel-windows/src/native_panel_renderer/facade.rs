@@ -163,7 +163,7 @@ pub(crate) mod presentation {
         NativePanelActionButtonCommand, NativePanelCardStackCommand, NativePanelCompactBarCommand,
     };
     pub(crate) use super::super::visual_primitives::NativePanelVisualColor;
-    pub(crate) use reef_ui::native_panel_ui::visual::{
+    pub(crate) use reef_ui::panel::ui::visual::{
         native_panel_visual_card_input_from_scene_card,
         native_panel_visual_card_input_from_scene_card_with_height,
         resolve_native_panel_compact_bar_visual_plan, resolve_native_panel_visual_plan,
@@ -289,7 +289,7 @@ pub(crate) mod transition {
 
 // 视觉计划和底层 primitive 工具。
 pub(crate) mod visual {
-    pub(crate) use reef_ui::native_panel_ui::visual::{
+    pub(crate) use reef_ui::panel::ui::visual::{
         native_panel_visual_text_box_height, native_panel_visual_text_box_height_for_role,
         resolve_native_panel_compact_bar_visual_plan, resolve_native_panel_visual_plan,
         NativePanelVisualColor, NativePanelVisualShoulderSide, NativePanelVisualTextAlignment,

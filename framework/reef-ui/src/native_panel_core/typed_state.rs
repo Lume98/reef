@@ -71,6 +71,7 @@ pub struct PanelRenderLayerStyle<Stage> {
 
 impl PanelRenderLayerStyle<InputStage> {
     /// 创建输入阶段实例
+    #[allow(clippy::too_many_arguments)]
     pub fn new_input(
         shell_visible: bool,
         separator_visibility: f64,

@@ -65,7 +65,7 @@ impl WindowsNativePanelRuntime {
     pub(super) fn advance_animation_frame_at_impl(
         &mut self,
         now: Instant,
-    ) -> Result<Option<reef_ui::native_panel_ui::render::NativePanelAnimationFrame>, String> {
+    ) -> Result<Option<reef_ui::panel::ui::render::NativePanelAnimationFrame>, String> {
         if let Some(request) = self.last_transition_request.take() {
             if request != NativePanelTransitionRequest::Close {
                 self.hover_close_in_progress = false;
@@ -117,7 +117,7 @@ impl WindowsNativePanelRuntime {
 
     pub(super) fn apply_animation_frame_impl(
         &mut self,
-        frame: reef_ui::native_panel_ui::render::NativePanelAnimationFrame,
+        frame: reef_ui::panel::ui::render::NativePanelAnimationFrame,
     ) -> Result<(), String> {
         self.host.apply_timeline_descriptor(frame.plan.timeline)?;
         self.last_animation_descriptor = Some(frame.plan.timeline.animation);
@@ -140,7 +140,7 @@ impl WindowsNativePanelRuntime {
     pub(super) fn resolve_animation_target_impl(
         &self,
         request: NativePanelTransitionRequest,
-    ) -> reef_ui::native_panel_ui::render::NativePanelAnimationTarget {
+    ) -> reef_ui::panel::ui::render::NativePanelAnimationTarget {
         let start_height = self
             .host
             .renderer
@@ -153,7 +153,7 @@ impl WindowsNativePanelRuntime {
                 self.resolved_expanded_target_height_impl()
             }
         };
-        reef_ui::native_panel_ui::render::NativePanelAnimationTarget {
+        reef_ui::panel::ui::render::NativePanelAnimationTarget {
             request,
             start_height,
             target_height,

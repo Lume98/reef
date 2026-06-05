@@ -9,7 +9,7 @@ use crate::{
         build_panel_scene, PanelScene, PanelSceneBuildInput, SceneCard, SceneMascotPose,
     },
 };
-use reef_ui::native_panel_ui::descriptor::NativePanelRuntimeInputDescriptor;
+use reef_ui::panel::ui::descriptor::NativePanelRuntimeInputDescriptor;
 
 pub(crate) fn test_runtime_snapshot(status: &str) -> RuntimeSnapshot {
     test_runtime_snapshot_with_counts(status, "codex", 0, 0)

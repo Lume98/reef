@@ -1,5 +1,5 @@
-use reef_native_panel_core::native_panel_core::PanelPoint;
-use reef_ui::native_panel_ui::descriptor::{NativePanelInteractionPlan, NativePanelPointerRegion};
+use reef_ui::panel::core::PanelPoint;
+use reef_ui::panel::ui::descriptor::{NativePanelInteractionPlan, NativePanelPointerRegion};
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum WindowsNativePanelHitTest {
@@ -20,10 +20,8 @@ pub fn resolve_windows_native_panel_hit_test(
 
 #[cfg(test)]
 mod tests {
-    use reef_native_panel_core::native_panel_core::PanelRect;
-    use reef_ui::native_panel_ui::descriptor::{
-        NativePanelPointerRegion, NativePanelPointerRegionKind,
-    };
+    use reef_ui::panel::core::PanelRect;
+    use reef_ui::panel::ui::descriptor::{NativePanelPointerRegion, NativePanelPointerRegionKind};
 
     use super::{resolve_windows_native_panel_hit_test, WindowsNativePanelHitTest};
 
@@ -42,7 +40,7 @@ mod tests {
         assert_eq!(
             resolve_windows_native_panel_hit_test(
                 &regions,
-                reef_native_panel_core::native_panel_core::PanelPoint { x: 40.0, y: 20.0 }
+                reef_ui::panel::core::PanelPoint { x: 40.0, y: 20.0 }
             ),
             WindowsNativePanelHitTest::Client
         );
@@ -63,7 +61,7 @@ mod tests {
         assert_eq!(
             resolve_windows_native_panel_hit_test(
                 &regions,
-                reef_native_panel_core::native_panel_core::PanelPoint { x: 4.0, y: 4.0 }
+                reef_ui::panel::core::PanelPoint { x: 4.0, y: 4.0 }
             ),
             WindowsNativePanelHitTest::Transparent
         );

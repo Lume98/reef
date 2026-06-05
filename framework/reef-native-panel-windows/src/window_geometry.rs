@@ -1,7 +1,5 @@
-use reef_native_panel_core::native_panel_core::{
-    resolve_native_panel_host_frame, PanelAnimationDescriptor, PanelRect,
-};
-use reef_ui::native_panel_ui::descriptor::NativePanelPointerRegion;
+use reef_ui::panel::core::{resolve_native_panel_host_frame, PanelAnimationDescriptor, PanelRect};
+use reef_ui::panel::ui::descriptor::NativePanelPointerRegion;
 
 pub fn resolve_windows_panel_window_frame(
     descriptor: PanelAnimationDescriptor,
@@ -9,10 +7,8 @@ pub fn resolve_windows_panel_window_frame(
     compact_width: f64,
     expanded_width: f64,
 ) -> PanelRect {
-    let host_compact_width =
-        compact_width.max(reef_native_panel_core::native_panel_core::DEFAULT_PANEL_CANVAS_WIDTH);
-    let host_expanded_width =
-        expanded_width.max(reef_native_panel_core::native_panel_core::DEFAULT_PANEL_CANVAS_WIDTH);
+    let host_compact_width = compact_width.max(reef_ui::panel::core::DEFAULT_PANEL_CANVAS_WIDTH);
+    let host_expanded_width = expanded_width.max(reef_ui::panel::core::DEFAULT_PANEL_CANVAS_WIDTH);
     let mut frame = resolve_native_panel_host_frame(
         descriptor,
         screen_frame,
@@ -72,11 +68,11 @@ fn windows_client_pointer_region_frame(panel_frame: PanelRect, frame: PanelRect)
 #[cfg(test)]
 mod tests {
     use super::{resolve_windows_panel_window_frame, windows_client_pointer_regions};
-    use reef_native_panel_core::native_panel_core::{
+    use reef_ui::panel::core::{
         resolve_panel_layout, PanelAnimationDescriptor, PanelAnimationKind, PanelGeometryMetrics,
         PanelLayoutInput, PanelRect,
     };
-    use reef_ui::native_panel_ui::descriptor::{
+    use reef_ui::panel::ui::descriptor::{
         NativePanelHostWindowState, NativePanelPointerRegion, NativePanelPointerRegionKind,
         NativePanelTimelineDescriptor,
     };
@@ -112,8 +108,8 @@ mod tests {
     fn resolve_windows_panel_window_frame_uses_shared_host_window_helper() {
         let animation = PanelAnimationDescriptor {
             kind: PanelAnimationKind::Open,
-            canvas_height: reef_native_panel_core::native_panel_core::COLLAPSED_PANEL_HEIGHT,
-            visible_height: reef_native_panel_core::native_panel_core::COLLAPSED_PANEL_HEIGHT,
+            canvas_height: reef_ui::panel::core::COLLAPSED_PANEL_HEIGHT,
+            visible_height: reef_ui::panel::core::COLLAPSED_PANEL_HEIGHT,
             width_progress: 0.0,
             height_progress: 0.0,
             shoulder_progress: 0.0,
@@ -129,13 +125,10 @@ mod tests {
         let layout = resolve_panel_layout(PanelLayoutInput {
             screen_frame,
             metrics: PanelGeometryMetrics {
-                compact_height:
-                    reef_native_panel_core::native_panel_core::DEFAULT_COMPACT_PILL_HEIGHT,
-                compact_width:
-                    reef_native_panel_core::native_panel_core::DEFAULT_COMPACT_PILL_WIDTH,
-                expanded_width:
-                    reef_native_panel_core::native_panel_core::DEFAULT_EXPANDED_PILL_WIDTH,
-                panel_width: reef_native_panel_core::native_panel_core::DEFAULT_PANEL_CANVAS_WIDTH,
+                compact_height: reef_ui::panel::core::DEFAULT_COMPACT_PILL_HEIGHT,
+                compact_width: reef_ui::panel::core::DEFAULT_COMPACT_PILL_WIDTH,
+                expanded_width: reef_ui::panel::core::DEFAULT_EXPANDED_PILL_WIDTH,
+                panel_width: reef_ui::panel::core::DEFAULT_PANEL_CANVAS_WIDTH,
             },
             canvas_height: animation.canvas_height,
             visible_height: animation.visible_height,
@@ -143,22 +136,20 @@ mod tests {
             height_progress: animation.height_progress,
             drop_progress: animation.drop_progress,
             content_visibility: animation.cards_progress,
-            collapsed_height: reef_native_panel_core::native_panel_core::COLLAPSED_PANEL_HEIGHT,
-            drop_distance: reef_native_panel_core::native_panel_core::PANEL_DROP_DISTANCE,
-            content_top_gap: reef_native_panel_core::native_panel_core::EXPANDED_CONTENT_TOP_GAP,
-            content_bottom_inset:
-                reef_native_panel_core::native_panel_core::EXPANDED_CONTENT_BOTTOM_INSET,
-            cards_side_inset: reef_native_panel_core::native_panel_core::EXPANDED_CARDS_SIDE_INSET,
-            shoulder_size: reef_native_panel_core::native_panel_core::COMPACT_SHOULDER_SIZE,
-            separator_side_inset:
-                reef_native_panel_core::native_panel_core::EXPANDED_SEPARATOR_SIDE_INSET,
+            collapsed_height: reef_ui::panel::core::COLLAPSED_PANEL_HEIGHT,
+            drop_distance: reef_ui::panel::core::PANEL_DROP_DISTANCE,
+            content_top_gap: reef_ui::panel::core::EXPANDED_CONTENT_TOP_GAP,
+            content_bottom_inset: reef_ui::panel::core::EXPANDED_CONTENT_BOTTOM_INSET,
+            cards_side_inset: reef_ui::panel::core::EXPANDED_CARDS_SIDE_INSET,
+            shoulder_size: reef_ui::panel::core::COMPACT_SHOULDER_SIZE,
+            separator_side_inset: reef_ui::panel::core::EXPANDED_SEPARATOR_SIDE_INSET,
         });
 
         let frame = resolve_windows_panel_window_frame(
             animation,
             screen_frame,
-            reef_native_panel_core::native_panel_core::DEFAULT_COMPACT_PILL_WIDTH,
-            reef_native_panel_core::native_panel_core::DEFAULT_EXPANDED_PILL_WIDTH,
+            reef_ui::panel::core::DEFAULT_COMPACT_PILL_WIDTH,
+            reef_ui::panel::core::DEFAULT_EXPANDED_PILL_WIDTH,
         );
 
         assert!(frame.width >= layout.content_frame.width);

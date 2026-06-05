@@ -1,89 +1,128 @@
-pub use reef_native_panel_core::dynamic_island_page::{
-    DynamicIsland, DynamicIslandGesture, DynamicIslandPageModel, DynamicIslandRuntimeAction,
-    DynamicIslandRuntimeEffect, DynamicIslandTarget, DynamicIslandViewState,
-    RuntimeSnapshotDynamicIslandSource,
+use echoisland_runtime::RuntimeSnapshot;
+use reef_ui::panel::{
+    core::{PanelHitTarget, PanelPoint},
+    ui::{
+        descriptor::{
+            native_panel_pointer_state_at_point, NativePanelPlatformEvent, NativePanelPointerRegion,
+        },
+        render::NativePanelTransitionRequest,
+    },
 };
 
-pub fn build_dynamic_island_page_model(
-    snapshot: &echoisland_runtime::RuntimeSnapshot,
-    panel_expanded: bool,
-    settings_active: bool,
-) -> DynamicIslandPageModel {
-    reef_native_panel_core::dynamic_island_page::build_dynamic_island_page_model(
-        snapshot,
-        DynamicIslandViewState {
-            panel_expanded,
-            settings_active,
-        },
-    )
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub enum DynamicIslandGesture {
+    Click,
+    Swipe,
+    Hover,
 }
 
-pub fn dynamic_island_page(
-    model: &DynamicIslandPageModel,
-) -> DynamicIsland<DynamicIslandRuntimeAction> {
-    reef_native_panel_core::dynamic_island_page::dynamic_island_page(model)
+#[derive(Clone, Debug, PartialEq, Eq, Hash)]
+pub enum DynamicIslandTarget {
+    Session(String),
+}
+
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub enum DynamicIslandRuntimeEffect {
+    PlatformEvent(NativePanelPlatformEvent),
+    Transition(NativePanelTransitionRequest),
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct DynamicIslandInteractionContext<'a, Snapshot> {
+    pub snapshot: &'a Snapshot,
+    pub panel_expanded: bool,
+    pub settings_active: bool,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub enum DynamicIslandInteractionEffect<Event, Transition> {
+    PlatformEvent(Event),
+    Transition(Transition),
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct DynamicIslandSwipeSpec {
+    pub min_horizontal_distance: f64,
+    pub axis_bias: f64,
+}
+
+impl Default for DynamicIslandSwipeSpec {
+    fn default() -> Self {
+        Self {
+            min_horizontal_distance: 48.0,
+            axis_bias: 1.5,
+        }
+    }
 }
 
 pub fn resolve_dynamic_island_gesture_effect(
-    snapshot: &echoisland_runtime::RuntimeSnapshot,
-    panel_expanded: bool,
-    settings_active: bool,
+    _snapshot: &RuntimeSnapshot,
+    _panel_expanded: bool,
+    _settings_active: bool,
     gesture: DynamicIslandGesture,
 ) -> Option<DynamicIslandRuntimeEffect> {
-    let model = build_dynamic_island_page_model(snapshot, panel_expanded, settings_active);
-    let action = dynamic_island_page(&model)
-        .action_for_gesture(gesture)
-        .cloned()?;
-    resolve_dynamic_island_effect(snapshot, action)
+    match gesture {
+        DynamicIslandGesture::Swipe => Some(DynamicIslandRuntimeEffect::Transition(
+            NativePanelTransitionRequest::Close,
+        )),
+        DynamicIslandGesture::Click | DynamicIslandGesture::Hover => None,
+    }
 }
 
 pub fn resolve_dynamic_island_target_effect(
-    snapshot: &echoisland_runtime::RuntimeSnapshot,
-    panel_expanded: bool,
-    settings_active: bool,
-    target: &DynamicIslandTarget,
-    gesture: DynamicIslandGesture,
+    _snapshot: &RuntimeSnapshot,
+    _panel_expanded: bool,
+    _settings_active: bool,
+    _target: &DynamicIslandTarget,
+    _gesture: DynamicIslandGesture,
 ) -> Option<DynamicIslandRuntimeEffect> {
-    let _ = (snapshot, panel_expanded, settings_active, target, gesture);
     None
 }
 
 pub fn dynamic_island_target_for_hit_target(
-    target: &reef_native_panel_core::native_panel_core::PanelHitTarget,
+    _target: &PanelHitTarget,
 ) -> Option<DynamicIslandTarget> {
-    reef_native_panel_core::dynamic_island_page::dynamic_island_target_for_hit_target(target)
+    None
 }
 
-pub fn resolve_dynamic_island_effect(
-    snapshot: &echoisland_runtime::RuntimeSnapshot,
-    action: DynamicIslandRuntimeAction,
-) -> Option<DynamicIslandRuntimeEffect> {
-    reef_native_panel_core::dynamic_island_page::resolve_dynamic_island_effect(snapshot, action)
-}
-
-pub fn resolve_dynamic_island_source_gesture_effect<S>(
-    source: &S,
-    state: DynamicIslandViewState,
+pub fn resolve_dynamic_island_root_gesture_at_point<Snapshot, Event, Transition>(
+    pointer_regions: &[NativePanelPointerRegion],
+    point: PanelPoint,
+    context: DynamicIslandInteractionContext<'_, Snapshot>,
     gesture: DynamicIslandGesture,
-) -> Option<S::Effect>
-where
-    S: reef_native_panel_core::DynamicIslandSource,
-{
-    reef_native_panel_core::dynamic_island_page::resolve_dynamic_island_source_gesture_effect(
-        source, state, gesture,
-    )
+    resolve: impl FnOnce(
+        DynamicIslandInteractionContext<'_, Snapshot>,
+        DynamicIslandGesture,
+    ) -> Option<DynamicIslandInteractionEffect<Event, Transition>>,
+) -> Option<DynamicIslandInteractionEffect<Event, Transition>> {
+    let pointer_state = native_panel_pointer_state_at_point(pointer_regions, point);
+    if !pointer_state.inside
+        || pointer_state.platform_event.is_some()
+        || pointer_state.hit_target.is_some()
+    {
+        return None;
+    }
+
+    resolve(context, gesture)
 }
 
-pub fn resolve_dynamic_island_source_target_effect<S>(
-    source: &S,
-    state: DynamicIslandViewState,
-    target: &DynamicIslandTarget,
+pub fn resolve_dynamic_island_gesture<Snapshot, Event, Transition>(
+    context: DynamicIslandInteractionContext<'_, Snapshot>,
     gesture: DynamicIslandGesture,
-) -> Option<S::Effect>
-where
-    S: reef_native_panel_core::DynamicIslandSource,
-{
-    reef_native_panel_core::dynamic_island_page::resolve_dynamic_island_source_target_effect(
-        source, state, target, gesture,
-    )
+    resolve: impl FnOnce(
+        DynamicIslandInteractionContext<'_, Snapshot>,
+        DynamicIslandGesture,
+    ) -> Option<DynamicIslandInteractionEffect<Event, Transition>>,
+) -> Option<DynamicIslandInteractionEffect<Event, Transition>> {
+    resolve(context, gesture)
+}
+
+pub fn is_dynamic_island_horizontal_swipe(
+    start: PanelPoint,
+    end: PanelPoint,
+    spec: DynamicIslandSwipeSpec,
+) -> bool {
+    let dx = end.x - start.x;
+    let dy = end.y - start.y;
+    dx.abs() >= spec.min_horizontal_distance && dx.abs() >= dy.abs() * spec.axis_bias
 }

@@ -1,4 +1,4 @@
-use reef_native_panel_core::native_panel_core::{PanelDisplayGeometry, PanelRect};
+use reef_ui::panel::core::{PanelDisplayGeometry, PanelRect};
 
 use crate::dpi::WindowsDpiScale;
 

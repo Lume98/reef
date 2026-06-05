@@ -873,12 +873,10 @@ checksum = "d0881ea181b1df73ff77ffaaf9c7544ecc11e82fba9b5f27b262a3c73a332555"
 name = "dynamic_island"
 version = "0.1.0"
 dependencies = [
+ "chrono",
  "echoisland-runtime",
- "reef-core",
- "reef-native-panel-core",
  "reef-native-panel-windows",
- "reef-view",
- "reef-widgets",
+ "reef-ui",
 ]
 
 [[package]]
@@ -2800,11 +2798,7 @@ version = "0.1.0"
 dependencies = [
  "chrono",
  "echoisland-runtime",
- "log",
- "reef-ui",
- "reef-widgets",
  "tauri",
- "tauri-plugin-opener",
 ]
 
 [[package]]

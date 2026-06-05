@@ -6,12 +6,11 @@
 extern crate self as reef_native_panel_windows;
 
 pub use reef_native_panel_core as core;
-pub use reef_native_panel_core::native_panel_core;
-pub use reef_native_panel_core::native_panel_scene;
-pub use reef_native_panel_core::native_panel_ui;
+pub use reef_ui::panel::core as native_panel_core;
+pub use reef_ui::panel::scene as native_panel_scene;
+pub use reef_ui::panel::ui as native_panel_ui;
 
 use echoisland_runtime::RuntimeSnapshot;
-use reef_native_panel_core::DynamicIslandSource;
 
 pub mod direct2d;
 pub mod directwrite;
@@ -85,10 +84,7 @@ pub fn run_dynamic_island_preview_standalone() -> Result<(), String> {
 #[deprecated(
     note = "Windows standalone rendering is snapshot-backed; use run_dynamic_island_preview_standalone instead"
 )]
-pub fn run_dynamic_island_standalone<S>(_source: S) -> Result<(), String>
-where
-    S: DynamicIslandSource,
-{
+pub fn run_dynamic_island_standalone<S>(_source: S) -> Result<(), String> {
     run_dynamic_island_preview_standalone()
 }
 

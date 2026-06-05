@@ -8,7 +8,7 @@ use crate::{
 use reef_native_panel_windows::screen_geometry::{
     fallback_standalone_display_geometry, windows_standalone_screen_frame_with_scale,
 };
-use reef_ui::native_panel_ui::descriptor::NativePanelRuntimeInputDescriptor;
+use reef_ui::panel::ui::descriptor::NativePanelRuntimeInputDescriptor;
 
 use super::dpi::resolve_windows_system_dpi_scale;
 
@@ -17,21 +17,23 @@ pub(super) fn windows_platform_loop_runtime_input_descriptor(
     screen_frame: Option<PanelRect>,
 ) -> NativePanelRuntimeInputDescriptor {
     let settings = current_app_settings();
-    reef_native_panel_core::native_panel_runtime_input_descriptor_from_parts(
-        vec![crate::native_panel_scene::fallback_panel_display_option()],
-        panel_settings_state_from_app_settings(preferred_display_index, &settings),
+    NativePanelRuntimeInputDescriptor {
+        scene_input: reef_ui::panel::scene::PanelSceneBuildInput {
+            display_options: vec![crate::native_panel_scene::fallback_panel_display_option()],
+            settings: panel_settings_state_from_app_settings(preferred_display_index, &settings),
+            app_version: env!("CARGO_PKG_VERSION").to_string(),
+            update_status: crate::updater_service::current_update_status(),
+            interaction_profile: PanelInteractionProfile::Standalone,
+        },
         screen_frame,
-        env!("CARGO_PKG_VERSION").to_string(),
-        crate::updater_service::current_update_status(),
-        PanelInteractionProfile::Standalone,
-    )
+    }
 }
 
 fn panel_settings_state_from_app_settings(
     selected_display_index: usize,
     settings: &AppSettings,
-) -> reef_native_panel_core::native_panel_core::PanelSettingsState {
-    reef_native_panel_core::native_panel_core::PanelSettingsState {
+) -> reef_ui::panel::core::PanelSettingsState {
+    reef_ui::panel::core::PanelSettingsState {
         selected_display_index,
         island_width_preset: settings.island_width_preset,
         completion_sound_enabled: settings.completion_sound_enabled,
@@ -90,7 +92,7 @@ mod tests {
         native_panel_scene_input::native_panel_runtime_input_descriptor_from_context,
         windows_native_panel::dpi::WindowsDpiScale,
     };
-    use reef_ui::native_panel_ui::descriptor::NativePanelRuntimeInputContext;
+    use reef_ui::panel::ui::descriptor::NativePanelRuntimeInputContext;
 
     #[test]
     fn standalone_screen_frame_uses_logical_size_from_dpi_scale() {

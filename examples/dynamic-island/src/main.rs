@@ -1,142 +1,84 @@
-use reef_core::geometry::Size;
-use reef_native_panel_core::{DynamicIsland, DynamicIslandSource, DynamicIslandViewState};
-use reef_view::create_root;
-use reef_widgets::prelude::{Card, CardStyle, CompactBar, DisplayMode, MascotPose, MascotWidget};
-
-#[derive(Clone, Debug, PartialEq, Eq)]
-enum DemoAction {
-    Dismiss,
-}
-
-#[derive(Clone, Debug, PartialEq, Eq)]
-enum DemoEffect {
-    Close,
-}
-
-#[derive(Clone, Copy, Debug, Default)]
-struct DemoSource;
-
-impl DynamicIslandSource for DemoSource {
-    type Action = DemoAction;
-    type Effect = DemoEffect;
-
-    fn build(&self, state: DynamicIslandViewState) -> DynamicIsland<Self::Action> {
-        let mode = if state.panel_expanded {
-            DisplayMode::Expanded
-        } else {
-            DisplayMode::Compact
-        };
-        let mut island = DynamicIsland::new()
-            .mode(mode)
-            .child(
-                CompactBar::new()
-                    .headline("Reef")
-                    .counts("2", "5")
-                    .show_actions(state.panel_expanded),
-            )
-            .child(
-                Card::new(CardStyle::Default)
-                    .title(if state.settings_active {
-                        "Settings"
-                    } else {
-                        "Native Panel"
-                    })
-                    .subtitle(if state.settings_active {
-                        "Source-backed demo"
-                    } else {
-                        "Single-file example"
-                    })
-                    .action_hint("Swipe to dismiss")
-                    .height(96.0),
-            )
-            .child(
-                Card::new(CardStyle::PendingQuestion)
-                    .title("Question queue")
-                    .subtitle("2 pending")
-                    .height(88.0),
-            )
-            .on_swipe(DemoAction::Dismiss);
-
-        if !state.settings_active {
-            island = island.child(MascotWidget::new(200.0, 24.0, 14.0).pose(MascotPose::Running));
-        }
-
-        island
-    }
-
-    fn resolve_effect(
-        &self,
-        action: Self::Action,
-        _state: DynamicIslandViewState,
-    ) -> Option<Self::Effect> {
-        match action {
-            DemoAction::Dismiss => Some(DemoEffect::Close),
-        }
-    }
-}
+use chrono::Utc;
+use echoisland_runtime::RuntimeSnapshot;
+use reef_ui::panel::{
+    core::PanelState,
+    scene::{build_panel_scene, PanelSceneBuildInput},
+};
 
 fn main() -> Result<(), String> {
-    let source = DemoSource;
-    let state = DynamicIslandViewState::default();
-    let island = source.build(state);
-    let widget = island.to_widget();
-    let mut root = create_root(Size {
-        width: widget.width.max(1.0),
-        height: widget.expanded_height.max(widget.compact_height).max(1.0),
-    });
-    root.set_root(island);
-    let plan = root.render_current();
+    let snapshot = preview_snapshot();
+    let scene = build_panel_scene(
+        &PanelState::default(),
+        &snapshot,
+        &PanelSceneBuildInput::default(),
+    );
 
     println!(
-        "initial-plan hidden={} primitives={} layout={:.0}x{:.0} mode={:?}",
-        plan.hidden,
-        plan.primitives.len(),
-        widget.width,
-        widget.expanded_height.max(widget.compact_height),
-        widget.mode
+        "initial-scene compact='{}' cards={} hit_targets={}",
+        scene.compact_bar.headline.text,
+        scene.cards.len(),
+        scene.hit_targets.len()
     );
 
     reef_native_panel_windows::run_dynamic_island_preview_standalone()
 }
 
+fn preview_snapshot() -> RuntimeSnapshot {
+    RuntimeSnapshot {
+        status: "running".to_string(),
+        primary_source: "ui-preview".to_string(),
+        active_session_count: 1,
+        total_session_count: 1,
+        pending_permission_count: 0,
+        pending_question_count: 0,
+        pending_permission: None,
+        pending_question: None,
+        pending_permissions: Vec::new(),
+        pending_questions: Vec::new(),
+        sessions: vec![echoisland_runtime::SessionSnapshotView {
+            session_id: "preview-codex".to_string(),
+            source: "codex".to_string(),
+            project_name: Some("reef".to_string()),
+            cwd: Some("D:\\github\\reef".to_string()),
+            model: Some("gpt-5-codex".to_string()),
+            terminal_app: Some("Windows Terminal".to_string()),
+            terminal_bundle: None,
+            host_app: Some("Reef".to_string()),
+            window_title: Some("Reef preview".to_string()),
+            tty: None,
+            terminal_pid: None,
+            cli_pid: None,
+            iterm_session_id: None,
+            kitty_window_id: None,
+            tmux_env: None,
+            tmux_pane: None,
+            tmux_client_tty: None,
+            status: "Running".to_string(),
+            current_tool: Some("cargo test --workspace".to_string()),
+            tool_description: Some("构建 Native Panel 预览场景".to_string()),
+            last_user_prompt: Some("重构 framework UI 组件库边界".to_string()),
+            last_assistant_message: Some(
+                "Windows host consumes reef_ui::panel facade.".to_string(),
+            ),
+            tool_history_count: 0,
+            tool_history: Vec::new(),
+            last_activity: Utc::now(),
+        }],
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
-    use reef_native_panel_core::DynamicIslandGesture;
 
     #[test]
-    fn demo_source_builds_visible_island() {
-        let widget = DemoSource
-            .build(DynamicIslandViewState::default())
-            .to_widget();
-
-        assert_ne!(widget.mode, DisplayMode::Hidden);
-    }
-
-    #[test]
-    fn initial_plan_smoke_test() {
-        let source = DemoSource;
-        let state = DynamicIslandViewState::default();
-        let island = source.build(state);
-        let widget = island.to_widget();
-        let mut root = create_root(Size {
-            width: widget.width.max(1.0),
-            height: widget.expanded_height.max(widget.compact_height).max(1.0),
-        });
-        root.set_root(island);
-        let plan = root.render_current();
-
-        assert!(!plan.hidden);
-        assert!(!plan.primitives.is_empty());
-        assert_eq!(
-            source.resolve_effect(DemoAction::Dismiss, state),
-            Some(DemoEffect::Close)
+    fn example_builds_panel_scene_from_ui_facade() {
+        let scene = build_panel_scene(
+            &PanelState::default(),
+            &preview_snapshot(),
+            &PanelSceneBuildInput::default(),
         );
-        assert_eq!(
-            source
-                .build(state)
-                .action_for_gesture(DynamicIslandGesture::Swipe),
-            Some(&DemoAction::Dismiss)
-        );
+
+        assert!(!scene.compact_bar.headline.text.is_empty());
     }
 }

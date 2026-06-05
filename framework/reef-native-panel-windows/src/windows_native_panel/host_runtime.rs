@@ -53,14 +53,12 @@ use crate::{
         transition::NativePanelTransitionRequest,
     },
     page::{
-        dynamic_island_target_for_hit_target, resolve_dynamic_island_gesture_effect,
-        resolve_dynamic_island_target_effect, DynamicIslandRuntimeEffect,
+        dynamic_island_target_for_hit_target, is_dynamic_island_horizontal_swipe,
+        resolve_dynamic_island_gesture, resolve_dynamic_island_gesture_effect,
+        resolve_dynamic_island_root_gesture_at_point, resolve_dynamic_island_target_effect,
+        DynamicIslandInteractionContext, DynamicIslandInteractionEffect,
+        DynamicIslandRuntimeEffect, DynamicIslandSwipeSpec,
     },
-};
-use reef_native_panel_core::{
-    is_dynamic_island_horizontal_swipe, resolve_dynamic_island_gesture,
-    resolve_dynamic_island_root_gesture_at_point, DynamicIslandInteractionContext,
-    DynamicIslandInteractionEffect, DynamicIslandSwipeSpec,
 };
 
 #[derive(Default)]
@@ -81,8 +79,7 @@ pub(crate) struct WindowsNativePanelRuntime {
     pub(super) host: WindowsNativePanelHost,
     pub(super) platform_loop: WindowsNativePanelPlatformLoopState,
     pub(super) scene_cache: NativePanelRuntimeSceneCache,
-    pub(super) animation_scheduler:
-        reef_ui::native_panel_ui::render::NativePanelAnimationFrameScheduler,
+    pub(super) animation_scheduler: reef_ui::panel::ui::render::NativePanelAnimationFrameScheduler,
     pub(super) next_animation_wake_at: Option<Instant>,
     pub(super) last_animation_descriptor: Option<PanelAnimationDescriptor>,
     pub(super) last_transition_request: Option<NativePanelTransitionRequest>,
@@ -394,13 +391,13 @@ impl WindowsNativePanelRuntime {
     pub(super) fn advance_animation_frame_at(
         &mut self,
         now: Instant,
-    ) -> Result<Option<reef_ui::native_panel_ui::render::NativePanelAnimationFrame>, String> {
+    ) -> Result<Option<reef_ui::panel::ui::render::NativePanelAnimationFrame>, String> {
         self.advance_animation_frame_at_impl(now)
     }
 
     fn apply_animation_frame(
         &mut self,
-        frame: reef_ui::native_panel_ui::render::NativePanelAnimationFrame,
+        frame: reef_ui::panel::ui::render::NativePanelAnimationFrame,
     ) -> Result<(), String> {
         self.apply_animation_frame_impl(frame)
     }
@@ -408,7 +405,7 @@ impl WindowsNativePanelRuntime {
     fn resolve_animation_target(
         &self,
         request: NativePanelTransitionRequest,
-    ) -> reef_ui::native_panel_ui::render::NativePanelAnimationTarget {
+    ) -> reef_ui::panel::ui::render::NativePanelAnimationTarget {
         self.resolve_animation_target_impl(request)
     }
 

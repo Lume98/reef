@@ -15,7 +15,7 @@ use crate::{
     native_panel_core::{PanelIslandWidthPreset, PanelLanguage, PanelRect},
     native_panel_scene::panel_display_option_state,
 };
-use reef_ui::native_panel_ui::descriptor::NativePanelRuntimeInputContext;
+use reef_ui::panel::ui::descriptor::NativePanelRuntimeInputContext;
 
 use super::AppSettings;
 

@@ -66,26 +66,26 @@ pub fn show_dynamic_island_ui_preview(
 pub fn dynamic_island_ui_preview_snapshot() -> RuntimeSnapshot {
     let now = Utc::now();
     let sessions = vec![
-        preview_session(
-            "preview-codex",
-            "codex",
-            "ai-gateway",
-            "gpt-5-codex",
-            "Running",
-            Some("cargo test -p dynamic_island"),
-            Some("检查灵动岛原生面板布局与交互状态。"),
+        preview_session(PreviewSessionInput {
+            session_id: "preview-codex",
+            source: "codex",
+            project_name: "ai-gateway",
+            model: "gpt-5-codex",
+            status: "Running",
+            current_tool: Some("cargo test -p dynamic_island"),
+            last_assistant_message: Some("检查灵动岛原生面板布局与交互状态。"),
             now,
-        ),
-        preview_session(
-            "preview-claude",
-            "claude",
-            "desktop-shell",
-            "claude-sonnet",
-            "Idle",
-            None,
-            Some("等待下一次任务"),
+        }),
+        preview_session(PreviewSessionInput {
+            session_id: "preview-claude",
+            source: "claude",
+            project_name: "desktop-shell",
+            model: "claude-sonnet",
+            status: "Idle",
+            current_tool: None,
+            last_assistant_message: Some("等待下一次任务"),
             now,
-        ),
+        }),
     ];
 
     RuntimeSnapshot {
@@ -103,26 +103,28 @@ pub fn dynamic_island_ui_preview_snapshot() -> RuntimeSnapshot {
     }
 }
 
-fn preview_session(
-    session_id: &str,
-    source: &str,
-    project_name: &str,
-    model: &str,
-    status: &str,
-    current_tool: Option<&str>,
-    last_assistant_message: Option<&str>,
+struct PreviewSessionInput<'a> {
+    session_id: &'a str,
+    source: &'a str,
+    project_name: &'a str,
+    model: &'a str,
+    status: &'a str,
+    current_tool: Option<&'a str>,
+    last_assistant_message: Option<&'a str>,
     now: chrono::DateTime<chrono::Utc>,
-) -> SessionSnapshotView {
+}
+
+fn preview_session(input: PreviewSessionInput<'_>) -> SessionSnapshotView {
     SessionSnapshotView {
-        session_id: session_id.to_string(),
-        source: source.to_string(),
-        project_name: Some(project_name.to_string()),
+        session_id: input.session_id.to_string(),
+        source: input.source.to_string(),
+        project_name: Some(input.project_name.to_string()),
         cwd: Some("D:\\github\\ai-gateway".to_string()),
-        model: Some(model.to_string()),
+        model: Some(input.model.to_string()),
         terminal_app: Some("Windows Terminal".to_string()),
         terminal_bundle: None,
         host_app: Some("AI Gateway".to_string()),
-        window_title: Some(format!("{source} preview")),
+        window_title: Some(format!("{} preview", input.source)),
         tty: None,
         terminal_pid: None,
         cli_pid: None,
@@ -131,18 +133,18 @@ fn preview_session(
         tmux_env: None,
         tmux_pane: None,
         tmux_client_tty: None,
-        status: status.to_string(),
-        current_tool: current_tool.map(str::to_string),
-        tool_description: current_tool.map(|tool| format!("正在执行 {tool}")),
+        status: input.status.to_string(),
+        current_tool: input.current_tool.map(str::to_string),
+        tool_description: input.current_tool.map(|tool| format!("正在执行 {tool}")),
         last_user_prompt: Some("只测试灵动岛 UI".to_string()),
-        last_assistant_message: last_assistant_message.map(str::to_string),
+        last_assistant_message: input.last_assistant_message.map(str::to_string),
         tool_history_count: 1,
         tool_history: vec![ToolHistoryEntryView {
             tool: "preview".to_string(),
             description: Some("构造预览数据".to_string()),
             success: true,
-            timestamp: now,
+            timestamp: input.now,
         }],
-        last_activity: now,
+        last_activity: input.now,
     }
 }

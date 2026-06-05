@@ -185,7 +185,7 @@ mod tests {
         resolve_panel_layout, PanelAnimationDescriptor, PanelAnimationKind, PanelGeometryMetrics,
         PanelLayoutInput, PanelRect,
     };
-    use reef_ui::native_panel_ui::descriptor::{
+    use reef_ui::panel::ui::descriptor::{
         NativePanelHostWindowDescriptor, NativePanelHostWindowState, NativePanelPointerRegion,
         NativePanelPointerRegionKind, NativePanelTimelineDescriptor,
     };

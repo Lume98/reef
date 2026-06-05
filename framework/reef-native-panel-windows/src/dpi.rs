@@ -1,5 +1,5 @@
-use reef_native_panel_core::native_panel_core::{PanelPoint, PanelRect};
-use reef_ui::native_panel_ui::descriptor::NativePanelPointerRegion;
+use reef_ui::panel::core::{PanelPoint, PanelRect};
+use reef_ui::panel::ui::descriptor::NativePanelPointerRegion;
 
 const WINDOWS_BASE_DPI: u32 = 96;
 
@@ -115,10 +115,8 @@ pub fn resolve_windows_dpi_scale_for_window(_raw_window_handle: Option<isize>) -
 #[cfg(test)]
 mod tests {
     use super::{resolve_windows_dpi_scale_for_window, WindowsDpiScale, WindowsPhysicalRect};
-    use reef_native_panel_core::native_panel_core::PanelRect;
-    use reef_ui::native_panel_ui::descriptor::{
-        NativePanelPointerRegion, NativePanelPointerRegionKind,
-    };
+    use reef_ui::panel::core::PanelRect;
+    use reef_ui::panel::ui::descriptor::{NativePanelPointerRegion, NativePanelPointerRegionKind};
 
     #[test]
     fn dpi_scale_maps_logical_rect_at_100_percent() {
@@ -166,7 +164,7 @@ mod tests {
 
         assert_eq!(
             scale.point_to_logical(150, 75),
-            reef_native_panel_core::native_panel_core::PanelPoint { x: 120.0, y: 60.0 }
+            reef_ui::panel::core::PanelPoint { x: 120.0, y: 60.0 }
         );
     }
 

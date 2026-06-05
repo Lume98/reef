@@ -576,6 +576,7 @@ pub fn native_panel_presentation_model_input_from_scene(
     }
 }
 
+#[allow(clippy::too_many_arguments)]
 pub fn native_panel_presentation_model_from_input(
     input: NativePanelPresentationModelInput,
     panel_frame: PanelRect,

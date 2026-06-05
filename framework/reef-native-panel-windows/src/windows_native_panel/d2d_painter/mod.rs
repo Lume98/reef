@@ -9,7 +9,7 @@ use super::{
 use crate::native_panel_core::{PanelPoint, PanelRect};
 use reef_core::geometry::{Point, Rect};
 use reef_draw::primitive::DrawPrimitive;
-use reef_ui::native_panel_ui::rendering::native_panel_submit_visual_plan;
+use reef_ui::panel::ui::rendering::native_panel_submit_visual_plan;
 
 #[cfg(all(windows, not(test)))]
 use super::{
@@ -570,8 +570,7 @@ fn draw_completion_glow_image(
 ) {
     use windows::Win32::Graphics::Direct2D::D2D1_BITMAP_INTERPOLATION_MODE_LINEAR;
 
-    for slice in reef_ui::native_panel_ui::presentation::resolve_completion_glow_image_slices(frame)
-    {
+    for slice in reef_ui::panel::ui::presentation::resolve_completion_glow_image_slices(frame) {
         let dest = slice.dest;
         let source = slice.source;
         if dest.width <= 0.0 || dest.height <= 0.0 || source.width <= 0.0 || source.height <= 0.0 {

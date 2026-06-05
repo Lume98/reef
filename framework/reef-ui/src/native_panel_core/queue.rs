@@ -742,7 +742,7 @@ pub fn displayed_prompt_assist_sessions(snapshot: &RuntimeSnapshot) -> Vec<Sessi
         .filter(|session| is_prompt_assist_session(session, now))
         .cloned()
         .collect::<Vec<_>>();
-    sessions.sort_by(|left, right| right.last_activity.cmp(&left.last_activity));
+    sessions.sort_by_key(|session| std::cmp::Reverse(session.last_activity));
     sessions.truncate(1);
     sessions
 }

@@ -12,10 +12,13 @@ pub trait DrawBackend {
     fn submit_frame(&mut self, submission: &FrameSubmission) -> Result<(), Self::Error>;
 }
 
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+pub struct DrawSubmitError;
+
 pub fn submit_visual_plan(
-    backend: &mut dyn DrawBackend<Error = ()>,
+    backend: &mut dyn DrawBackend<Error = DrawSubmitError>,
     plan: &DrawPlan,
-) -> Result<(), ()> {
+) -> Result<(), DrawSubmitError> {
     let submission = FrameSubmission {
         hidden: plan.hidden,
         plans: vec![plan.clone()],

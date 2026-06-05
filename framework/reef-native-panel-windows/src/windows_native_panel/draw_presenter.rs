@@ -36,9 +36,7 @@ mod tests {
         native_panel_core::PanelRect,
         windows_native_panel::host_window::WindowsNativePanelDrawFrame,
     };
-    use reef_ui::native_panel_ui::descriptor::{
-        NativePanelHostWindowState, NativePanelPointerRegion,
-    };
+    use reef_ui::panel::ui::descriptor::{NativePanelHostWindowState, NativePanelPointerRegion};
 
     #[test]
     fn presenter_caches_frame_and_invalidates_once() {

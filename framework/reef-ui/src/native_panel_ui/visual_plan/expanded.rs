@@ -151,6 +151,7 @@ fn card_shell_fill_color(style: NativePanelVisualCardStyle) -> NativePanelVisual
     ))
 }
 
+#[allow(clippy::too_many_arguments)]
 fn text_primitive(
     role: NativePanelVisualTextRole,
     origin: PanelPoint,

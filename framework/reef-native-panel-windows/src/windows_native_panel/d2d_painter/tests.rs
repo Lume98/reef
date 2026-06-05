@@ -20,7 +20,7 @@ fn paint_job() -> WindowsNativePanelShellPaintJob {
         height: 0.0,
     };
     WindowsNativePanelShellPaintJob {
-        window_state: reef_ui::native_panel_ui::descriptor::NativePanelHostWindowState {
+        window_state: reef_ui::panel::ui::descriptor::NativePanelHostWindowState {
             frame: Some(PanelRect {
                 x: 0.0,
                 y: 0.0,
@@ -30,7 +30,7 @@ fn paint_job() -> WindowsNativePanelShellPaintJob {
             visible: true,
             preferred_display_index: 0,
         },
-        display_mode: reef_ui::native_panel_ui::presentation::NativePanelVisualDisplayMode::Compact,
+        display_mode: reef_ui::panel::ui::presentation::NativePanelVisualDisplayMode::Compact,
         surface: ExpandedSurface::Default,
         panel_frame: PanelRect {
             x: 0.0,

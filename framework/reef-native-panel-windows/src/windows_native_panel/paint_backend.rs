@@ -3,7 +3,7 @@ use reef_core::{
     geometry::{Point, Rect},
 };
 use reef_draw::primitive::{DrawPlan, DrawPrimitive, PathSegment, TextAlignment, TextWeight};
-use reef_ui::native_panel_ui::rendering::native_panel_submit_visual_plan;
+use reef_ui::panel::ui::rendering::native_panel_submit_visual_plan;
 
 use crate::native_panel_core::PanelRect;
 use crate::native_panel_renderer::facade::visual::resolve_native_panel_visual_plan;
@@ -159,8 +159,7 @@ pub(super) fn resolve_windows_native_panel_paint_operations(
 pub(super) fn resolve_windows_native_panel_hit_test_blocker_operations(
     job: &WindowsNativePanelShellPaintJob,
 ) -> Vec<WindowsNativePanelPaintOperation> {
-    if job.display_mode
-        != reef_ui::native_panel_ui::presentation::NativePanelVisualDisplayMode::Expanded
+    if job.display_mode != reef_ui::panel::ui::presentation::NativePanelVisualDisplayMode::Expanded
     {
         return Vec::new();
     }

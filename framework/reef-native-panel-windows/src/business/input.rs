@@ -6,7 +6,7 @@ use crate::{
         PanelInteractionProfile,
     },
 };
-use reef_ui::native_panel_ui::descriptor::{
+use reef_ui::panel::ui::descriptor::{
     NativePanelRuntimeInputContext, NativePanelRuntimeInputDescriptor,
 };
 
@@ -51,8 +51,8 @@ pub(crate) fn panel_scene_build_input_from_app_settings(
     display_options: Vec<PanelDisplayOptionState>,
     selected_display_index: usize,
     settings: &AppSettings,
-) -> reef_ui::native_panel_scene::PanelSceneBuildInput {
-    reef_native_panel_core::panel_scene_build_input_from_parts(
+) -> reef_ui::panel::scene::PanelSceneBuildInput {
+    panel_scene_build_input_from_parts(
         display_options,
         panel_settings_state_from_app_settings(selected_display_index, settings),
         env!("CARGO_PKG_VERSION").to_string(),
@@ -67,7 +67,7 @@ pub(crate) fn native_panel_runtime_input_descriptor_from_app_settings(
     settings: &AppSettings,
     screen_frame: Option<PanelRect>,
 ) -> NativePanelRuntimeInputDescriptor {
-    reef_native_panel_core::native_panel_runtime_input_descriptor_from_parts(
+    native_panel_runtime_input_descriptor_from_parts(
         display_options,
         panel_settings_state_from_app_settings(selected_display_index, settings),
         screen_frame,
@@ -82,7 +82,7 @@ pub(crate) fn native_panel_runtime_input_descriptor_from_context(
     context: NativePanelRuntimeInputContext,
 ) -> NativePanelRuntimeInputDescriptor {
     let selected_display_index = context.selected_display_index;
-    reef_native_panel_core::native_panel_runtime_input_descriptor_from_context(
+    native_panel_runtime_input_descriptor_from_context_parts(
         context,
         panel_settings_state_from_app_settings(selected_display_index, settings),
         env!("CARGO_PKG_VERSION").to_string(),
@@ -95,7 +95,7 @@ pub(crate) fn panel_scene_build_input_from_display_options(
     displays: &[DisplayOption],
     settings: &AppSettings,
     fallback_index: Option<usize>,
-) -> reef_ui::native_panel_scene::PanelSceneBuildInput {
+) -> reef_ui::panel::scene::PanelSceneBuildInput {
     let selected_display_index =
         resolve_selected_display_index_from_display_options(displays, settings, fallback_index);
     panel_scene_build_input_from_app_settings(
@@ -118,6 +118,69 @@ pub(crate) fn native_panel_runtime_input_descriptor_from_display_options_with_sc
         screen_frame_for_selected_index,
     );
     native_panel_runtime_input_descriptor_from_context(settings, context)
+}
+
+fn panel_scene_build_input_from_parts(
+    display_options: Vec<PanelDisplayOptionState>,
+    settings: PanelSettingsState,
+    app_version: String,
+    update_status: crate::updater_service::AppUpdateStatus,
+    interaction_profile: PanelInteractionProfile,
+) -> reef_ui::panel::scene::PanelSceneBuildInput {
+    reef_ui::panel::scene::PanelSceneBuildInput {
+        display_options: sanitize_panel_display_options(display_options),
+        settings,
+        app_version,
+        update_status,
+        interaction_profile,
+    }
+}
+
+fn native_panel_runtime_input_descriptor_from_parts(
+    display_options: Vec<PanelDisplayOptionState>,
+    settings: PanelSettingsState,
+    screen_frame: Option<PanelRect>,
+    app_version: String,
+    update_status: crate::updater_service::AppUpdateStatus,
+    interaction_profile: PanelInteractionProfile,
+) -> NativePanelRuntimeInputDescriptor {
+    NativePanelRuntimeInputDescriptor {
+        scene_input: panel_scene_build_input_from_parts(
+            display_options,
+            settings,
+            app_version,
+            update_status,
+            interaction_profile,
+        ),
+        screen_frame,
+    }
+}
+
+fn native_panel_runtime_input_descriptor_from_context_parts(
+    context: NativePanelRuntimeInputContext,
+    settings: PanelSettingsState,
+    app_version: String,
+    update_status: crate::updater_service::AppUpdateStatus,
+    interaction_profile: PanelInteractionProfile,
+) -> NativePanelRuntimeInputDescriptor {
+    native_panel_runtime_input_descriptor_from_parts(
+        context.display_options,
+        settings,
+        context.screen_frame,
+        app_version,
+        update_status,
+        interaction_profile,
+    )
+}
+
+fn sanitize_panel_display_options(
+    display_options: Vec<PanelDisplayOptionState>,
+) -> Vec<PanelDisplayOptionState> {
+    if display_options.is_empty() {
+        vec![reef_ui::panel::scene::fallback_panel_display_option()]
+    } else {
+        display_options
+    }
 }
 
 pub(crate) fn native_panel_runtime_input_context_from_display_options(

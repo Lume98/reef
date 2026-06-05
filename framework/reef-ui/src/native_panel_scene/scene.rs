@@ -85,6 +85,7 @@ pub struct PanelRuntimeRenderState {
 }
 
 #[derive(Clone, Debug)]
+#[allow(clippy::large_enum_variant)]
 pub enum SceneNode {
     Text(SceneText),
     Badge(SceneBadge),
