@@ -114,6 +114,21 @@ pub fn current_fiber_id() -> Option<FiberId> {
     HOOK_REGISTRY.with(|reg| reg.borrow().current_fiber)
 }
 
+// ── Reconciler integration API ───────────────────────────────────
+
+/// Begin rendering a fiber — resets the hook slot counter.
+///
+/// Called by the reconciler before processing a fiber's render phase.
+/// Must be paired with `end_fiber()`.
+pub fn begin_fiber(id: FiberId) {
+    HOOK_REGISTRY.with(|reg| reg.borrow_mut().begin_fiber(id));
+}
+
+/// End the current fiber's render phase.
+pub fn end_fiber() {
+    HOOK_REGISTRY.with(|reg| reg.borrow_mut().end_fiber());
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

@@ -8,6 +8,7 @@ members = [
     "framework/reef-layout",
     "framework/reef-native-panel-core",
     "framework/reef-native-panel-windows",
+    "framework/reef-reconciler",
     "framework/reef-draw",
     "framework/reef-hooks",
     "framework/reef-theme",

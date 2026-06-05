@@ -2840,6 +2840,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "reef-reconciler"
+version = "0.1.0"
+dependencies = [
+ "reef-component",
+ "reef-core",
+ "reef-hooks",
+ "reef-vnode",
+]
+
+[[package]]
 name = "reef-theme"
 version = "0.1.0"
 dependencies = [
