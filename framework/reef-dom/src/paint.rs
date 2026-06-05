@@ -21,7 +21,7 @@ fn paint_node(node: &SceneNode, out: &mut Vec<DrawPrimitive>) {
         "label" => paint_label(node, out),
         "row" | "column" | "stack" => paint_layout_container(node, out),
         "#text" => {} // Text-only nodes are handled by parent
-        "$component" | "$context_provider" => {
+        "$component" | "$context_provider" | "$root" => {
             // Transparent — paint children directly
             for child in &node.children {
                 paint_node(child, out);

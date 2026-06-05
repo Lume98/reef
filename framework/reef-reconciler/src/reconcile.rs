@@ -54,6 +54,7 @@ pub fn reconcile_children(
                 let el_key = el.key.clone();
                 let el_ty = &el.ty;
                 let el_props = el.props.clone();
+                let el_children = el.children.clone();
 
                 // Try to find a matching old fiber by key, then by type
                 let old_id = old_map.remove(&el_key).or_else(|| {
@@ -74,15 +75,19 @@ pub fn reconcile_children(
                         arena.get_mut(old_id).effect_tag = EffectTag::Update;
                         arena.get_mut(old_id).key = el_key;
                         arena.get_mut(old_id).return_to = Some(wip_id);
+                        // Store children for later reconciliation
+                        if !el_children.is_empty() {
+                            arena.get_mut(old_id).pending_vnode_children = Some(el_children);
+                        }
                         old_id
                     } else {
                         // Type mismatch — delete old, create new
                         arena.get_mut(old_id).effect_tag = EffectTag::Deletion;
-                        create_element_fiber(arena, el_ty, el_props, el_key, wip_id, new_index)
+                        create_element_fiber_with_children(arena, el_ty, el_props, el_key, el_children, wip_id, new_index)
                     }
                 } else {
                     // PLACEMENT: create new fiber
-                    create_element_fiber(arena, el_ty, el_props, el_key, wip_id, new_index)
+                    create_element_fiber_with_children(arena, el_ty, el_props, el_key, el_children, wip_id, new_index)
                 };
 
                 remaining_old.retain(|id| *id != new_fiber);
@@ -112,7 +117,7 @@ pub fn reconcile_children(
                             inner_prev = Some(f);
                         }
                         VNode::VElement(el) => {
-                            let f = create_element_fiber(arena, &el.ty, el.props, el.key, wip_id, new_index);
+                            let f = create_element_fiber_with_children(arena, &el.ty, el.props, el.key, el.children, wip_id, new_index);
                             remaining_old.retain(|id| *id != f);
                             if let Some(prev) = inner_prev {
                                 arena.get_mut(prev).sibling = Some(f);
@@ -207,6 +212,23 @@ fn create_element_fiber(
     fiber.effect_tag = EffectTag::Placement;
     let id = arena.alloc(fiber);
     arena.get_mut(id).id = id;
+    id
+}
+
+/// Create an element fiber and store its VNode children for later reconciliation.
+fn create_element_fiber_with_children(
+    arena: &mut FiberArena,
+    ty: &ElementType,
+    props: reef_vnode::PropsMap,
+    key: Option<String>,
+    children: Vec<VNode>,
+    parent_id: FiberId,
+    _index: usize,
+) -> FiberId {
+    let id = create_element_fiber(arena, ty, props, key, parent_id, _index);
+    if !children.is_empty() {
+        arena.get_mut(id).pending_vnode_children = Some(children);
+    }
     id
 }
 

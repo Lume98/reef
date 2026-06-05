@@ -1,5 +1,6 @@
+use crate::host_config::HostInstanceId;
 use reef_hooks::FiberId;
-use reef_vnode::{ElementType, PropsMap};
+use reef_vnode::{ElementType, PropsMap, VNode};
 
 /// Simplified element type for storage in fiber nodes.
 /// Avoids storing function pointers inline — instead uses a stable ref.
@@ -56,6 +57,15 @@ pub struct FiberNode {
 
     // ── Alternate (previous-frame fiber for diffing) ──────────────
     pub alternate: Option<FiberId>,
+
+    // ── Host instance (set during commit) ─────────────────────────
+    /// The host platform instance ID, set during commit phase.
+    pub host_instance_id: Option<HostInstanceId>,
+
+    // ── Pending VNode children (set during reconciliation) ─────────
+    /// Children VNodes pending reconciliation when this fiber is processed
+    /// by the work loop. Supports multi-level fiber tree construction.
+    pub pending_vnode_children: Option<Vec<VNode>>,
 }
 
 impl FiberNode {
@@ -75,6 +85,8 @@ impl FiberNode {
             last_effect: None,
             next_effect: None,
             alternate: None,
+            host_instance_id: None,
+            pending_vnode_children: None,
         }
     }
 

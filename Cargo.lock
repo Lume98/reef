@@ -2794,6 +2794,7 @@ dependencies = [
  "reef-hooks",
  "reef-layout",
  "reef-reconciler",
+ "reef-view-macros",
  "reef-vnode",
 ]
 

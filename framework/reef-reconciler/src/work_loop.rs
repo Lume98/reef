@@ -55,11 +55,12 @@ impl WorkLoop {
         // Set current fiber for hooks
         begin_fiber(fiber_id);
 
-        // Reconcile this fiber's children
-        match ty {
-            ElementTypeRef::Native(_) | ElementTypeRef::Function => {
-                // For now: reconcile with empty children (reconciler driver
-                // provides the actual VNode children via a separate method)
+        // Reconcile pending VNode children if any
+        let has_pending = arena.get(fiber_id).pending_vnode_children.is_some();
+        if has_pending {
+            let children = arena.get_mut(fiber_id).pending_vnode_children.take().unwrap_or_default();
+            if !children.is_empty() {
+                reconcile_children(arena, fiber_id, children, ty);
             }
         }
 
@@ -139,67 +140,102 @@ impl WorkLoop {
     }
 
     /// Walk the effect list and apply mutations to the host.
+    ///
+    /// Uses a DFS traversal of the fiber tree to apply effects in order.
+    /// For Placement: creates host instance, stores ID on fiber, appends to parent.
+    /// For Update: calls update_instance on the host.
+    /// For Deletion: calls remove_instance on the host.
     fn commit_root(
         &mut self,
         arena: &mut FiberArena,
         root_id: FiberId,
         host: &mut dyn HostConfig,
     ) {
-        let _root = arena.get(root_id);
+        self.commit_fiber(arena, root_id, host);
+    }
 
-        // Collect effect fibers (DFS, collecting Placement/Update/Deletion)
-        let mut effects: Vec<FiberId> = Vec::new();
-        collect_effects(arena, root_id, &mut effects);
+    fn commit_fiber(
+        &mut self,
+        arena: &mut FiberArena,
+        fiber_id: FiberId,
+        host: &mut dyn HostConfig,
+    ) {
+        let (effect_tag, element_type) = {
+            let f = arena.get(fiber_id);
+            (f.effect_tag, f.element_type.clone())
+        };
 
-        // Apply effects
-        for &effect_id in &effects {
-            let fiber = arena.get(effect_id);
-            match fiber.effect_tag {
-                EffectTag::Placement => {
-                    let ty = match &fiber.element_type {
-                        ElementTypeRef::Native(name) => ElementType::Native(name),
-                        ElementTypeRef::Function => {
-                            // Function components aren't directly placed as host instances
-                            continue;
+        match effect_tag {
+            EffectTag::Placement => {
+                match &element_type {
+                    ElementTypeRef::Native(_) => {
+                        let (ty, props, return_to) = {
+                            let f = arena.get(fiber_id);
+                            (ElementType::Native(
+                                if let ElementTypeRef::Native(n) = &f.element_type { n } else { "" }
+                            ), f.pending_props.clone(), f.return_to)
+                        };
+                        let inst = host.create_instance(&ty, &props);
+                        arena.get_mut(fiber_id).host_instance_id = Some(inst);
+
+                        // Append to parent's host instance
+                        if let Some(rt) = return_to {
+                            if let Some(parent_inst) = find_parent_host_instance(arena, rt) {
+                                host.append_child(parent_inst, inst);
+                            }
                         }
-                    };
-                    let inst = host.create_instance(&ty, &fiber.pending_props);
-                    let _ = inst;
-
-                    // Append to parent
-                    if let Some(_parent_id) = fiber.return_to {
-                        // Find parent's host instance
-                        // In a full implementation, we'd store HostInstanceId in the fiber
+                    }
+                    ElementTypeRef::Function => {
+                        // Function components don't produce host instances
                     }
                 }
-                EffectTag::Update => {
-                    let ty = match &fiber.element_type {
-                        ElementTypeRef::Native(name) => ElementType::Native(name),
-                        ElementTypeRef::Function => continue,
-                    };
-                    // For updates, we'd look up the existing host instance
-                    // and call update_instance
-                    let _ = ty;
-                }
-                EffectTag::Deletion => {
-                    // Remove from host
-                }
-                EffectTag::NoEffect => {}
+                self.commit_children(arena, fiber_id, host);
             }
+            EffectTag::Update => {
+                let props = arena.get(fiber_id).pending_props.clone();
+                if let Some(inst) = arena.get(fiber_id).host_instance_id {
+                    match &element_type {
+                        ElementTypeRef::Native(_) => {
+                            host.update_instance(inst, &props);
+                        }
+                        ElementTypeRef::Function => {}
+                    }
+                }
+                self.commit_children(arena, fiber_id, host);
+            }
+            EffectTag::Deletion => {
+                if let Some(inst) = arena.get(fiber_id).host_instance_id {
+                    host.remove_instance(inst);
+                }
+                // Don't recurse into deleted subtree
+            }
+            EffectTag::NoEffect => {
+                self.commit_children(arena, fiber_id, host);
+            }
+        }
+    }
+
+    fn commit_children(&mut self, arena: &mut FiberArena, fiber_id: FiberId, host: &mut dyn HostConfig) {
+        let child = arena.get(fiber_id).child;
+        let mut cursor = child;
+        while let Some(cid) = cursor {
+            self.commit_fiber(arena, cid, host);
+            cursor = arena.get(cid).sibling;
         }
     }
 }
 
-fn collect_effects(arena: &FiberArena, fiber_id: FiberId, out: &mut Vec<FiberId>) {
-    let fiber = arena.get(fiber_id);
-    if fiber.effect_tag != EffectTag::NoEffect {
-        out.push(fiber_id);
-    }
-    // Recurse into children
-    let mut cursor = fiber.child;
-    while let Some(child_id) = cursor {
-        collect_effects(arena, child_id, out);
-        cursor = arena.get(child_id).sibling;
+/// Walk up the fiber tree to find the nearest ancestor with a host instance.
+fn find_parent_host_instance(arena: &FiberArena, mut fiber_id: FiberId) -> Option<HostInstanceId> {
+    loop {
+        let f = arena.get(fiber_id);
+        if let Some(inst) = f.host_instance_id {
+            return Some(inst);
+        }
+        match f.return_to {
+            Some(parent) => fiber_id = parent,
+            None => return None,
+        }
     }
 }
 

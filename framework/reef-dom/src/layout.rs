@@ -16,10 +16,12 @@ pub fn layout_scene(node: &mut SceneNode, constraints: Constraints) -> Size {
         "column" => layout_column(node, constraints),
         "stack" => layout_stack(node, constraints),
         "#text" => layout_leaf(node, constraints),
-        "$component" | "$context_provider" => {
+        "$component" | "$context_provider" | "$root" => {
             // Pass through — delegate to first child
             if let Some(first) = node.children.first_mut() {
-                layout_scene(first, constraints)
+                let size = layout_scene(first, constraints);
+                node.frame = first.frame;
+                size
             } else {
                 constraints.constrain(Size { width: 0.0, height: 0.0 })
             }

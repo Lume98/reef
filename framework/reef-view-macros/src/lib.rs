@@ -14,7 +14,6 @@ enum RsxNode {
         name: String,
         attrs: Vec<RsxAttr>,
         children: Vec<RsxNode>,
-        self_closing: bool,
     },
     Text(String),
     Expr(TokenStream2),
@@ -108,7 +107,6 @@ impl Parse for RsxNode {
                 name: tag_name,
                 attrs,
                 children,
-                self_closing,
             })
         } else if input.peek(token::Brace) {
             // ── Expression interpolation: {expr} ──
@@ -182,7 +180,6 @@ fn gen_node(node: &RsxNode) -> TokenStream2 {
             name,
             attrs,
             children,
-            self_closing: _,
         } => {
             let child_code: Vec<TokenStream2> = children.iter().map(|c| gen_node(c)).collect();
 
