@@ -109,7 +109,17 @@ fn paint_label(node: &SceneNode, out: &mut Vec<DrawPrimitive>) {
         None => return,
     };
 
-    let frame = node.frame;
+    // Support explicit frame overrides via props (for hybrid opaque+VNode rendering)
+    let frame = if let (Some(x), Some(y), Some(w), Some(h)) = (
+        node.prop_f64("frame_x"),
+        node.prop_f64("frame_y"),
+        node.prop_f64("frame_w"),
+        node.prop_f64("frame_h"),
+    ) {
+        Rect { x, y, width: w, height: h }
+    } else {
+        node.frame
+    };
     let color = node.prop_color("color").unwrap_or(Color::WHITE);
     let font_size = node.prop_i32("font_size").unwrap_or(14);
     let alpha = node.prop_f64("alpha").unwrap_or(1.0);

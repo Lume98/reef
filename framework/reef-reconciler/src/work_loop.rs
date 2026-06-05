@@ -55,6 +55,26 @@ impl WorkLoop {
         // Set current fiber for hooks
         begin_fiber(fiber_id);
 
+        match ty {
+            ElementTypeRef::Function => {
+                // Function component: call the stored fn ptr to get VNode tree
+                let fn_ptr = arena.get(fiber_id).component_fn;
+                if let Some(f) = fn_ptr {
+                    let props = arena.get(fiber_id).pending_props.clone();
+                    let vnode = f(&props);
+                    // Store the ENTIRE returned VNode as a single child fiber
+                    // This ensures the returned Native element gets a fiber + host instance
+                    match &vnode {
+                        reef_vnode::VNode::VEmpty => {}
+                        _ => {
+                            arena.get_mut(fiber_id).pending_vnode_children = Some(vec![vnode]);
+                        }
+                    }
+                }
+            }
+            ElementTypeRef::Native(_) => {}
+        }
+
         // Reconcile pending VNode children if any
         let has_pending = arena.get(fiber_id).pending_vnode_children.is_some();
         if has_pending {

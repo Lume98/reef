@@ -132,31 +132,32 @@ fn layout_column(node: &mut SceneNode, constraints: Constraints) -> Size {
     constrained
 }
 
-fn layout_row(node: &mut SceneNode, _constraints: Constraints) -> Size {
-    // Simplified row layout — arrange children horizontally
+fn layout_row(node: &mut SceneNode, constraints: Constraints) -> Size {
     let gap = node.prop_f64("gap").unwrap_or(0.0);
     let mut x = 0.0_f64;
     let mut max_h = 0.0_f64;
 
     for child in node.children.iter_mut() {
-        // Measure child with loose constraints
-        let child_size = layout_scene(child, Constraints::loose(Size { width: 0.0, height: 0.0 }));
+        // Each child gets the remaining width
+        let remaining_w = (constraints.max_width - x).max(0.0);
+        let child_cx = Constraints { min_width: 0.0, max_width: remaining_w, min_height: 0.0, max_height: constraints.max_height };
+        let child_size = layout_scene(child, child_cx);
         child.frame = Rect {
             x,
             y: 0.0,
-            width: child_size.width,
+            width: child_size.width.min(remaining_w),
             height: child_size.height,
         };
-        x += child_size.width + gap;
+        x += child_size.width.min(remaining_w) + gap;
         max_h = max_h.max(child_size.height);
     }
 
-    let total_w = if x > 0.0 { x - gap } else { 0.0 };
+    let total_w = if x > gap { x - gap } else { 0.0 };
     node.frame = Rect {
         x: 0.0,
         y: 0.0,
-        width: total_w,
-        height: max_h,
+        width: total_w.min(constraints.max_width),
+        height: max_h.min(constraints.max_height),
     };
     Size {
         width: total_w,

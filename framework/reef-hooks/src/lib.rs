@@ -6,7 +6,9 @@ pub mod context;
 pub use fiber::FiberId;
 pub use state::use_state;
 pub use effect::use_effect;
+pub mod animation;
 pub use context::{create_context, use_context, Context};
+pub use animation::use_animation;
 
 use std::cell::RefCell;
 use std::collections::HashMap;

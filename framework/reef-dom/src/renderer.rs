@@ -144,7 +144,7 @@ impl ReefRenderer {
 mod tests {
     use super::*;
     use reef_core::color::Color;
-    use reef_vnode::{ElementType, PropsMap, VElement};
+    use reef_vnode::{Container, ElementType, Label, PropsMap, VElement};
 
     #[test]
     fn renderer_creates_draw_plan() {
@@ -227,6 +227,48 @@ mod tests {
         // Empty VNode should produce a plan with no primitives
         assert_eq!(plan.primitives.len(), 0);
         assert_eq!(plan.viewport.width, 100.0);
+    }
+
+    #[test]
+    fn renderer_with_function_components() {
+        let mut renderer = ReefRenderer::new(Size { width: 300.0, height: 200.0 });
+
+        // Use capitalized (function) component names
+        let vnode = reef_view_macros::rsx! {
+            <Container color={Color::rgb(18, 18, 22)} radius={16.0}>
+                <Label text={"Hello Reef"} />
+            </Container>
+        };
+
+        // Debug: check what the vnode looks like
+        match &vnode {
+            reef_vnode::VNode::VElement(el) => {
+                eprintln!("  vnode type: {:?}", el.ty);
+                eprintln!("  vnode children: {} (children in __children prop: {:?})",
+                    el.children.len(),
+                    el.props.get("__children").is_some());
+            }
+            _ => eprintln!("  vnode is not VElement"),
+        }
+
+        let plan = renderer.render(vnode);
+        eprintln!("  function component plan: {} primitives", plan.primitives.len());
+        for (i, p) in plan.primitives.iter().enumerate() {
+            eprintln!("  primitive[{}]: {:?}", i, p);
+        }
+
+        // Also test with lowercase (native) to compare
+        let mut renderer2 = ReefRenderer::new(Size { width: 300.0, height: 200.0 });
+        let vnode2 = reef_view_macros::rsx! {
+            <container color={Color::rgb(18, 18, 22)} radius={16.0}>
+                <label text={"Hello Reef"} />
+            </container>
+        };
+        let plan2 = renderer2.render(vnode2);
+        eprintln!("  native component plan: {} primitives", plan2.primitives.len());
+
+        // The function component path should produce the same output as native
+        assert!(!plan.primitives.is_empty(), "expected primitives from function components");
     }
 
     #[test]

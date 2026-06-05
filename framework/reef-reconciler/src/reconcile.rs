@@ -210,6 +210,10 @@ fn create_element_fiber(
     fiber.key = key;
     fiber.return_to = Some(parent_id);
     fiber.effect_tag = EffectTag::Placement;
+    // Store function pointer for Function types
+    if let ElementType::Function(f) = ty {
+        fiber.component_fn = Some(*f);
+    }
     let id = arena.alloc(fiber);
     arena.get_mut(id).id = id;
     id

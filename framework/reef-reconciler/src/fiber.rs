@@ -1,3 +1,4 @@
+use std::ptr::fn_addr_eq;
 use crate::host_config::HostInstanceId;
 use reef_hooks::FiberId;
 use reef_vnode::{ElementType, PropsMap, VNode};
@@ -66,6 +67,10 @@ pub struct FiberNode {
     /// Children VNodes pending reconciliation when this fiber is processed
     /// by the work loop. Supports multi-level fiber tree construction.
     pub pending_vnode_children: Option<Vec<VNode>>,
+
+    // ── Component function pointer ─────────────────────────────────
+    /// For Function fibers, stores the actual function to call during render.
+    pub component_fn: Option<fn(&PropsMap) -> VNode>,
 }
 
 impl FiberNode {
@@ -87,6 +92,7 @@ impl FiberNode {
             alternate: None,
             host_instance_id: None,
             pending_vnode_children: None,
+            component_fn: None,
         }
     }
 
@@ -105,6 +111,13 @@ impl From<&ElementType> for ElementTypeRef {
             ElementType::Native(name) => ElementTypeRef::Native(name),
             ElementType::Function(_) => ElementTypeRef::Function,
         }
+    }
+}
+
+impl ElementTypeRef {
+    /// Returns true if this is a Function variant.
+    pub fn is_function(&self) -> bool {
+        matches!(self, ElementTypeRef::Function)
     }
 }
 

@@ -66,7 +66,18 @@ impl Parse for RsxNode {
                 if input.is_empty() {
                     return Err(input.error(format!("unterminated tag `<{}>` — expected `>` or `/>`", tag_name)));
                 }
-                attrs.push(input.parse::<RsxAttr>()?);
+                // Support spread attributes: {ident} expands to merge from another PropsMap
+                if input.peek(token::Brace) && input.peek2(Ident) {
+                    let content;
+                    braced!(content in input);
+                    let ident: Ident = content.parse()?;
+                    attrs.push(RsxAttr {
+                        name: format!("__spread_{}", ident),
+                        value: RsxAttrValue::Expr(quote! { #ident }),
+                    });
+                } else {
+                    attrs.push(input.parse::<RsxAttr>()?);
+                }
             }
 
             // Self-closing?
@@ -189,6 +200,23 @@ fn gen_prop_value(value: &RsxAttrValue) -> TokenStream2 {
     }
 }
 
+fn build_attr_stmts(attrs: &[RsxAttr]) -> Vec<TokenStream2> {
+    attrs.iter().map(|a| {
+        if a.name.starts_with("__spread_") {
+            let src_name: Ident = Ident::new(&a.name[10..], proc_macro2::Span::call_site());
+            quote! {
+                for (__k, __v) in #src_name.iter() {
+                    __props.insert(__k, __v.clone());
+                }
+            }
+        } else {
+            let key = &a.name;
+            let val = gen_prop_value(&a.value);
+            quote! { __props.insert(#key, #val); }
+        }
+    }).collect()
+}
+
 fn gen_node(node: &RsxNode) -> TokenStream2 {
     match node {
         RsxNode::Element {
@@ -200,27 +228,65 @@ fn gen_node(node: &RsxNode) -> TokenStream2 {
             let is_component = name.starts_with(|c: char| c.is_uppercase());
 
             if is_component {
-                // Capitalized name → function component call: ComponentName(props, children)
+                // Capitalized name → ElementType::Function component
+                // The reconciler calls this function during the work loop.
+                // Children are stored as a VNodeList prop for the component to use.
                 let name_ident = Ident::new(name, proc_macro2::Span::call_site());
-                if attrs.is_empty() {
-                    quote! {
-                        #name_ident(&::reef_vnode::PropsMap::new(), vec![#(#child_code),*])
+                if child_code.is_empty() {
+                    // No children — simple function reference
+                    if attrs.is_empty() {
+                        quote! {
+                            ::reef_vnode::VNode::VElement(::reef_vnode::VElement {
+                                ty: ::reef_vnode::ElementType::Function(#name_ident),
+                                props: ::reef_vnode::PropsMap::new(),
+                                children: ::std::vec![],
+                                key: ::std::option::Option::None,
+                            })
+                        }
+                    } else {
+                        let attr_stmts: Vec<TokenStream2> = build_attr_stmts(attrs);
+                        quote! {
+                            {
+                                let mut __props = ::reef_vnode::PropsMap::new();
+                                #(#attr_stmts)*
+                                ::reef_vnode::VNode::VElement(::reef_vnode::VElement {
+                                    ty: ::reef_vnode::ElementType::Function(#name_ident),
+                                    props: __props,
+                                    children: ::std::vec![],
+                                    key: ::std::option::Option::None,
+                                })
+                            }
+                        }
                     }
                 } else {
-                    let attr_stmts: Vec<TokenStream2> = attrs
-                        .iter()
-                        .map(|a| {
-                            let key = &a.name;
-                            let val = gen_prop_value(&a.value);
-                            quote! { __props.insert(#key, #val); }
-                        })
-                        .collect();
-
-                    quote! {
-                        {
-                            let mut __props = ::reef_vnode::PropsMap::new();
-                            #(#attr_stmts)*
-                            #name_ident(&__props, vec![#(#child_code),*])
+                    // Has children — store as VNodeList prop
+                    if attrs.is_empty() {
+                        quote! {
+                            {
+                                let mut __props = ::reef_vnode::PropsMap::new();
+                                __props.insert("__children", ::reef_vnode::PropValue::VNodeList(::std::vec![#(#child_code),*]));
+                                ::reef_vnode::VNode::VElement(::reef_vnode::VElement {
+                                    ty: ::reef_vnode::ElementType::Function(#name_ident),
+                                    props: __props,
+                                    children: ::std::vec![],
+                                    key: ::std::option::Option::None,
+                                })
+                            }
+                        }
+                    } else {
+                        let attr_stmts: Vec<TokenStream2> = build_attr_stmts(attrs);
+                        quote! {
+                            {
+                                let mut __props = ::reef_vnode::PropsMap::new();
+                                #(#attr_stmts)*
+                                __props.insert("__children", ::reef_vnode::PropValue::VNodeList(::std::vec![#(#child_code),*]));
+                                ::reef_vnode::VNode::VElement(::reef_vnode::VElement {
+                                    ty: ::reef_vnode::ElementType::Function(#name_ident),
+                                    props: __props,
+                                    children: ::std::vec![],
+                                    key: ::std::option::Option::None,
+                                })
+                            }
                         }
                     }
                 }
@@ -231,15 +297,7 @@ fn gen_node(node: &RsxNode) -> TokenStream2 {
                         ::reef_vnode::element(#name, ::reef_vnode::PropsMap::new(), vec![#(#child_code),*])
                     }
                 } else {
-                    let attr_stmts: Vec<TokenStream2> = attrs
-                        .iter()
-                        .map(|a| {
-                            let key = &a.name;
-                            let val = gen_prop_value(&a.value);
-                            quote! { __props.insert(#key, #val); }
-                        })
-                        .collect();
-
+                    let attr_stmts = build_attr_stmts(attrs);
                     quote! {
                         {
                             let mut __props = ::reef_vnode::PropsMap::new();

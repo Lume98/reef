@@ -13,7 +13,8 @@ use crate::scene_bridge::compare_draw_plans;
 use reef_core::geometry::Size;
 use reef_dom::opaque::{register_opaque_plan, clear_opaque_plans};
 use reef_dom::ReefRenderer;
-use reef_draw::primitive::DrawPlan;
+use reef_draw::primitive::{DrawPlan, DrawPrimitive};
+use reef_draw::{TextAlignment, TextWeight};
 use reef_vnode::{ElementType, PropValue, PropsMap, VElement, VNode};
 
 /// 控制哪些灵动岛子组件使用新 VNode 管线渲染。
@@ -199,7 +200,79 @@ impl PanelRenderer {
     // ── 各组件 VNode 渲染（随迁移进度逐步实现）──
 
     fn render_compact_bar_vnode(&self, input: &NativePanelPaintInput) -> VNode {
-        render_opaque_component(input, resolve_native_panel_compact_bar_visual_plan)
+        let plan = resolve_native_panel_compact_bar_visual_plan(input);
+        if plan.primitives.is_empty() {
+            return VNode::VEmpty;
+        }
+
+        // Split primitives: background (paths) vs foreground (texts)
+        let mut background_prims = Vec::new();
+        let mut text_vnodes = Vec::new();
+
+        for prim in plan.primitives {
+            match &prim {
+                DrawPrimitive::Path { .. } => {
+                    background_prims.push(prim.clone());
+                }
+                DrawPrimitive::Text { frame, text, color, size, weight, alignment, .. } => {
+                    // Convert each Text primitive to a VNode Label with exact positioning
+                    let mut props = PropsMap::new();
+                    props.insert("text", text.as_str());
+                    props.insert("color", *color);
+                    props.insert("font_size", *size as i32);
+                    let weight_str = match weight {
+                        reef_draw::TextWeight::Bold => "bold",
+                        reef_draw::TextWeight::Semibold => "semibold",
+                        _ => "normal",
+                    };
+                    props.insert("weight", weight_str);
+                    let align_str = match alignment {
+                        reef_draw::TextAlignment::Center => "center",
+                        reef_draw::TextAlignment::Right => "right",
+                        _ => "left",
+                    };
+                    props.insert("alignment", align_str);
+                    // Store exact frame for positioning
+                    props.insert("frame_x", frame.x);
+                    props.insert("frame_y", frame.y);
+                    props.insert("frame_w", frame.width);
+                    props.insert("frame_h", frame.height);
+
+                    text_vnodes.push(VNode::VElement(VElement {
+                        ty: ElementType::Native("label"),
+                        props,
+                        children: vec![],
+                        key: None,
+                    }));
+                }
+                _ => {
+                    background_prims.push(prim.clone());
+                }
+            }
+        }
+
+        // Combine: opaque background + VNode texts
+        let mut children: Vec<VNode> = Vec::new();
+
+        // Background as opaque
+        if !background_prims.is_empty() {
+            let bg_id = register_opaque_plan(background_prims);
+            children.push(VNode::VElement(VElement {
+                ty: ElementType::Native("$opaque_draw_plan"),
+                props: {
+                    let mut p = PropsMap::new();
+                    p.insert("__opaque_id", bg_id);
+                    p
+                },
+                children: vec![],
+                key: None,
+            }));
+        }
+
+        // Text as real VNodes
+        children.extend(text_vnodes);
+
+        VNode::VFragment(children)
     }
 
     fn render_card_stack_vnode(&self, input: &NativePanelPaintInput) -> VNode {
