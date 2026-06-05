@@ -2906,6 +2906,7 @@ dependencies = [
  "insta",
  "log",
  "reef-core",
+ "reef-dom",
  "reef-draw",
  "reef-theme",
  "reef-vnode",

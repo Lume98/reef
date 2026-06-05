@@ -15,6 +15,7 @@ reef-core = { path = "../reef-core" }
 reef-draw = { path = "../reef-draw" }
 reef-theme = { path = "../reef-theme" }
 reef-vnode = { path = "../reef-vnode" }
+reef-dom = { path = "../reef-dom" }
 serde = { workspace = true }
 serde_json = { workspace = true }
 chrono = { version = "0.4", features = ["serde"] }

@@ -197,26 +197,55 @@ fn gen_node(node: &RsxNode) -> TokenStream2 {
             children,
         } => {
             let child_code: Vec<TokenStream2> = children.iter().map(|c| gen_node(c)).collect();
+            let is_component = name.starts_with(|c: char| c.is_uppercase());
 
-            if attrs.is_empty() {
-                quote! {
-                    ::reef_vnode::element(#name, ::reef_vnode::PropsMap::new(), vec![#(#child_code),*])
+            if is_component {
+                // Capitalized name → function component call: ComponentName(props, children)
+                let name_ident = Ident::new(name, proc_macro2::Span::call_site());
+                if attrs.is_empty() {
+                    quote! {
+                        #name_ident(&::reef_vnode::PropsMap::new(), vec![#(#child_code),*])
+                    }
+                } else {
+                    let attr_stmts: Vec<TokenStream2> = attrs
+                        .iter()
+                        .map(|a| {
+                            let key = &a.name;
+                            let val = gen_prop_value(&a.value);
+                            quote! { __props.insert(#key, #val); }
+                        })
+                        .collect();
+
+                    quote! {
+                        {
+                            let mut __props = ::reef_vnode::PropsMap::new();
+                            #(#attr_stmts)*
+                            #name_ident(&__props, vec![#(#child_code),*])
+                        }
+                    }
                 }
             } else {
-                let attr_stmts: Vec<TokenStream2> = attrs
-                    .iter()
-                    .map(|a| {
-                        let key = &a.name;
-                        let val = gen_prop_value(&a.value);
-                        quote! { __props.insert(#key, #val); }
-                    })
-                    .collect();
+                // Lowercase name → native element
+                if attrs.is_empty() {
+                    quote! {
+                        ::reef_vnode::element(#name, ::reef_vnode::PropsMap::new(), vec![#(#child_code),*])
+                    }
+                } else {
+                    let attr_stmts: Vec<TokenStream2> = attrs
+                        .iter()
+                        .map(|a| {
+                            let key = &a.name;
+                            let val = gen_prop_value(&a.value);
+                            quote! { __props.insert(#key, #val); }
+                        })
+                        .collect();
 
-                quote! {
-                    {
-                        let mut __props = ::reef_vnode::PropsMap::new();
-                        #(#attr_stmts)*
-                        ::reef_vnode::element(#name, __props, vec![#(#child_code),*])
+                    quote! {
+                        {
+                            let mut __props = ::reef_vnode::PropsMap::new();
+                            #(#attr_stmts)*
+                            ::reef_vnode::element(#name, __props, vec![#(#child_code),*])
+                        }
                     }
                 }
             }

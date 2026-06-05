@@ -20,15 +20,20 @@ fn paint_node(node: &SceneNode, out: &mut Vec<DrawPrimitive>) {
         "container" => paint_container(node, out),
         "label" => paint_label(node, out),
         "row" | "column" | "stack" => paint_layout_container(node, out),
-        "#text" => {} // Text-only nodes are handled by parent
+        "image" => paint_image(node, out),
+        "icon" => paint_icon(node, out),
+        "button" => paint_container(node, out),
+        "divider" => paint_divider(node, out),
+        "codeblock" => paint_codeblock(node, out),
+        "badge" => paint_badge(node, out),
+        "spacer" => {} // No visual output
+        "#text" => {}
         "$component" | "$context_provider" | "$root" => {
-            // Transparent — paint children directly
             for child in &node.children {
                 paint_node(child, out);
             }
         }
         _ => {
-            // Unknown type — paint children as fallback
             if node.clip_children {
                 paint_clipped_children(node, out);
             } else {
@@ -126,6 +131,135 @@ fn paint_label(node: &SceneNode, out: &mut Vec<DrawPrimitive>) {
         alignment,
         alpha,
     });
+}
+
+fn paint_image(node: &SceneNode, out: &mut Vec<DrawPrimitive>) {
+    let key = match node.prop_str("key") {
+        Some(k) => k,
+        None => return,
+    };
+    let frame = node.frame;
+    let opacity = node.prop_f64("opacity").unwrap_or(1.0);
+    let is_sprite = node.prop_bool("sprite").unwrap_or(false);
+
+    if is_sprite {
+        out.push(DrawPrimitive::SpriteImage {
+            key,
+            source_rect: Rect { x: 0.0, y: 0.0, width: frame.width, height: frame.height },
+            frame,
+            opacity,
+        });
+    } else {
+        out.push(DrawPrimitive::Image {
+            key,
+            source_rect: Rect { x: 0.0, y: 0.0, width: frame.width, height: frame.height },
+            frame,
+            opacity,
+        });
+    }
+
+    paint_clipped_children(node, out);
+}
+
+fn paint_icon(node: &SceneNode, out: &mut Vec<DrawPrimitive>) {
+    let icon_name = match node.prop_str("icon") {
+        Some(n) => n,
+        None => return,
+    };
+    let frame = node.frame;
+    let opacity = node.prop_f64("opacity").unwrap_or(1.0);
+
+    out.push(DrawPrimitive::Image {
+        key: format!("icon/{}", icon_name),
+        source_rect: Rect { x: 0.0, y: 0.0, width: frame.width, height: frame.height },
+        frame,
+        opacity,
+    });
+
+    for child in &node.children {
+        paint_node(child, out);
+    }
+}
+
+fn paint_divider(node: &SceneNode, out: &mut Vec<DrawPrimitive>) {
+    let frame = node.frame;
+    let color = node.prop_color("color").unwrap_or(Color::rgba(128, 128, 128, 80));
+    let thickness = node.prop_f64("thickness").unwrap_or(1.0);
+
+    // Center the line vertically in the frame
+    let line_y = frame.y + frame.height / 2.0 - thickness / 2.0;
+    out.push(DrawPrimitive::RoundRect {
+        frame: Rect { x: frame.x, y: line_y, width: frame.width, height: thickness },
+        radius: thickness / 2.0,
+        color,
+        alpha: 1.0,
+    });
+}
+
+fn paint_codeblock(node: &SceneNode, out: &mut Vec<DrawPrimitive>) {
+    let frame = node.frame;
+    let bg = node.prop_color("background").unwrap_or(Color::rgba(40, 40, 50, 200));
+    let radius = node.prop_f64("radius").unwrap_or(4.0);
+
+    // Background pill
+    out.push(DrawPrimitive::RoundRect {
+        frame,
+        radius,
+        color: bg,
+        alpha: 1.0,
+    });
+
+    // Text label inside
+    if let Some(text) = node.prop_str("text") {
+        let color = node.prop_color("color").unwrap_or(Color::rgb(200, 210, 230));
+        out.push(DrawPrimitive::Text {
+            frame: Rect {
+                x: frame.x + 6.0,
+                y: frame.y + 2.0,
+                width: frame.width - 12.0,
+                height: frame.height - 4.0,
+            },
+            text,
+            color,
+            size: 11,
+            weight: TextWeight::Normal,
+            alignment: TextAlignment::Left,
+            alpha: 1.0,
+        });
+    }
+}
+
+fn paint_badge(node: &SceneNode, out: &mut Vec<DrawPrimitive>) {
+    let frame = node.frame;
+    let color = node.prop_color("color").unwrap_or(Color::WHITE);
+    let bg = node.prop_color("background").unwrap_or(Color::rgba(255, 255, 255, 30));
+    let radius = node.prop_f64("radius").unwrap_or(8.0);
+
+    // Background pill
+    out.push(DrawPrimitive::RoundRect {
+        frame,
+        radius,
+        color: bg,
+        alpha: 1.0,
+    });
+
+    // Text label inside
+    if let Some(text) = node.prop_str("text") {
+        out.push(DrawPrimitive::Text {
+            frame: Rect {
+                x: frame.x + 8.0,
+                y: frame.y + 2.0,
+                width: frame.width - 16.0,
+                height: frame.height - 4.0,
+            },
+            text,
+            color,
+            size: 10,
+            weight: TextWeight::Semibold,
+            alignment: TextAlignment::Center,
+            alpha: 1.0,
+        });
+    }
 }
 
 fn paint_layout_container(node: &SceneNode, out: &mut Vec<DrawPrimitive>) {

@@ -42,4 +42,7 @@ pub mod updater_service;
 // 场景桥接：将 PanelScene 转换为 VNode 树，并提供 DrawPlan 对比验证。
 pub mod scene_bridge;
 
+// 面板渲染器：逐组件迁移灵动岛到新 VNode 管线。
+pub mod panel_renderer;
+
 pub use updater_service::{AppUpdatePhase, AppUpdateStatus};
