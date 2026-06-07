@@ -8,8 +8,11 @@ pub use crate::native_panel_ui as ui;
 
 pub use crate::native_panel_ui::components;
 pub use crate::native_panel_ui::descriptor;
+pub use crate::native_panel_ui::migration;
 pub use crate::native_panel_ui::presentation;
 pub use crate::native_panel_ui::render;
 pub use crate::native_panel_ui::rendering;
 pub use crate::native_panel_ui::visual;
+pub use crate::native_panel_ui::visual_plan;
+pub use crate::native_panel_ui::widgets;
 pub use crate::updater_service::{AppUpdatePhase, AppUpdateStatus};

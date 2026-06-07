@@ -3,7 +3,6 @@ members = [
     "echoisland-runtime",
     "framework/reef-app",
     "framework/reef-backend-d2d",
-    "framework/reef-component",
     "framework/reef-core",
     "framework/reef-layout",
     "framework/reef-native-panel-core",

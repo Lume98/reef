@@ -7,5 +7,4 @@ description = "Fiber-based reconciler for the Reef UI framework — VNode diffin
 [dependencies]
 reef-core = { path = "../reef-core" }
 reef-vnode = { path = "../reef-vnode" }
-reef-component = { path = "../reef-component" }
 reef-hooks = { path = "../reef-hooks" }

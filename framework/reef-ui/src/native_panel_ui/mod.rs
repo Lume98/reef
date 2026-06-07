@@ -17,7 +17,7 @@ mod presentation_model;
 mod render_bundle;
 mod rendering_backend;
 mod transition_controller;
-mod visual_plan;
+pub mod visual_plan;
 mod visual_primitives;
 mod widget_bridge;
 mod widget_migration;
@@ -42,4 +42,18 @@ pub mod rendering {
 
 pub mod visual {
     pub use super::render::visual::*;
+}
+
+pub mod widgets {
+    pub use super::widget_bridge::{
+        native_panel_island_widget_from_paint_input, resolve_native_panel_widget_draw_plan,
+    };
+}
+
+pub mod migration {
+    pub use super::widget_migration::{
+        compare_draw_plans, resolve_native_panel_widget_migration_draw_plan,
+        resolve_native_panel_widget_migration_result, DrawPlanComparison,
+        NativePanelWidgetMigrationResult, PrimitiveDiff,
+    };
 }

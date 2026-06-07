@@ -2759,9 +2759,10 @@ name = "reef-app"
 version = "0.1.0"
 dependencies = [
  "reef-core",
+ "reef-dom",
  "reef-draw",
- "reef-layout",
- "reef-view",
+ "reef-view-macros",
+ "reef-vnode",
 ]
 
 [[package]]
@@ -2772,13 +2773,6 @@ dependencies = [
  "reef-draw",
  "windows 0.58.0",
  "windows-sys 0.59.0",
-]
-
-[[package]]
-name = "reef-component"
-version = "0.1.0"
-dependencies = [
- "reef-vnode",
 ]
 
 [[package]]
@@ -2809,10 +2803,7 @@ dependencies = [
 name = "reef-hello"
 version = "0.1.0"
 dependencies = [
- "reef-core",
- "reef-dom",
- "reef-draw",
- "reef-view-macros",
+ "reef-app",
  "reef-vnode",
 ]
 
@@ -2874,7 +2865,6 @@ dependencies = [
 name = "reef-reconciler"
 version = "0.1.0"
 dependencies = [
- "reef-component",
  "reef-core",
  "reef-hooks",
  "reef-vnode",
@@ -2884,7 +2874,6 @@ dependencies = [
 name = "reef-router"
 version = "0.1.0"
 dependencies = [
- "reef-component",
  "reef-core",
  "reef-hooks",
  "reef-vnode",

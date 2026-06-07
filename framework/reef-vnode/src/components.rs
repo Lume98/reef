@@ -19,10 +19,59 @@
 
 use crate::props::{PropValue, PropsMap};
 use crate::vnode::{ElementType, VElement, VNode};
+use std::ptr::fn_addr_eq;
+
+/// A typed component interface for user-defined declarative components.
+///
+/// The renderer stores function components as `ElementType::Function`; this
+/// trait is an optional typed wrapper for code that wants a named component
+/// object with explicit props.
+pub trait Component: Send + 'static {
+    type Props: Send + 'static;
+
+    fn render(&self, props: &Self::Props) -> VNode;
+}
+
+/// A type-erased function component pointer.
+#[derive(Clone, Copy, Debug)]
+pub struct FunctionComponent(pub fn(&PropsMap) -> VNode);
+
+impl FunctionComponent {
+    pub fn call(&self, props: &PropsMap) -> VNode {
+        (self.0)(props)
+    }
+}
+
+impl PartialEq for FunctionComponent {
+    fn eq(&self, other: &Self) -> bool {
+        fn_addr_eq(self.0, other.0)
+    }
+}
+
+impl From<FunctionComponent> for ElementType {
+    fn from(component: FunctionComponent) -> Self {
+        ElementType::Function(component.0)
+    }
+}
+
+/// Create a `FunctionComponent` from a named function.
+#[macro_export]
+macro_rules! component_fn {
+    ($fn:path) => {
+        $crate::FunctionComponent($fn)
+    };
+}
 
 fn children_from_props(props: &PropsMap) -> Vec<VNode> {
-    props.get("__children")
-        .and_then(|v| if let PropValue::VNodeList(c) = v { Some(c.clone()) } else { None })
+    props
+        .get("__children")
+        .and_then(|v| {
+            if let PropValue::VNodeList(c) = v {
+                Some(c.clone())
+            } else {
+                None
+            }
+        })
         .unwrap_or_default()
 }
 
@@ -186,9 +235,10 @@ mod tests {
     fn container_with_children_from_props() {
         let mut props = PropsMap::new();
         props.insert("color", Color::rgb(18, 18, 22));
-        props.insert("__children", PropValue::VNodeList(vec![
-            VNode::VText("child".into()),
-        ]));
+        props.insert(
+            "__children",
+            PropValue::VNodeList(vec![VNode::VText("child".into())]),
+        );
 
         let vnode = Container(&props);
         match vnode {
@@ -208,5 +258,44 @@ mod tests {
             VNode::VElement(ref el) => assert!(el.children.is_empty()),
             _ => panic!("expected VElement"),
         }
+    }
+
+    fn noop_component(_props: &PropsMap) -> VNode {
+        VNode::VEmpty
+    }
+
+    #[test]
+    fn function_component_call() {
+        let component = FunctionComponent(noop_component);
+        assert_eq!(component.call(&PropsMap::new()), VNode::VEmpty);
+    }
+
+    #[test]
+    fn component_macro_creates_function_component() {
+        let component = component_fn!(noop_component);
+        assert_eq!(component, FunctionComponent(noop_component));
+    }
+
+    struct Greeting;
+
+    struct GreetingProps {
+        text: String,
+    }
+
+    impl Component for Greeting {
+        type Props = GreetingProps;
+
+        fn render(&self, props: &Self::Props) -> VNode {
+            VNode::VText(props.text.clone())
+        }
+    }
+
+    #[test]
+    fn component_trait_render() {
+        let component = Greeting;
+        let vnode = component.render(&GreetingProps {
+            text: "Hello".into(),
+        });
+        assert_eq!(vnode, VNode::VText("Hello".into()));
     }
 }

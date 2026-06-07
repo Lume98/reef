@@ -1,80 +1,132 @@
 use reef_core::geometry::Size;
-use reef_draw::draw_backend::DrawBackend;
+use reef_dom::ReefRenderer;
+use reef_draw::draw_backend::{DrawBackend, FrameSubmission};
+use reef_draw::primitive::DrawPlan;
+use reef_vnode::VNode;
 
-use reef_view::{widget_host::Widget, WidgetRoot};
-
-/// 应用程序主结构体，负责管理渲染后端和控件树。
+/// Reef 的 React-like 顶层入口。
 ///
-/// `App` 是 Reef 框架的顶层入口，持有渲染后端 `B` 和根组件宿主 `WidgetRoot`，
-/// 通过 `render` 方法驱动整个 UI 的布局与绘制。
+/// `App` 持有平台绘制后端和 VNode renderer，主路径为：
+/// `rsx! -> VNode -> Reconciler -> HostConfig -> DrawPlan -> DrawBackend`。
 pub struct App<B: DrawBackend> {
-    /// 渲染后端，负责将渲染指令提交到目标平台。
     backend: B,
-    /// 根组件宿主，管理控件树及其布局。
-    root: WidgetRoot,
+    renderer: ReefRenderer,
 }
 
 impl<B: DrawBackend> App<B> {
-    /// 使用给定的渲染后端创建新的 `App` 实例。
-    pub fn new(backend: B) -> Self {
+    /// 使用给定后端和视口尺寸创建应用。
+    pub fn new(backend: B, viewport: Size) -> Self {
         Self {
             backend,
-            root: WidgetRoot::new(Size {
-                width: 800.0,
-                height: 600.0,
-            }),
+            renderer: ReefRenderer::new(viewport),
         }
     }
 
-    /// 设置应用程序窗口的逻辑尺寸。
-    ///
-    /// 采用建造者模式，便于链式调用。
-    pub fn with_size(mut self, width: f64, height: f64) -> Self {
-        self.root.set_size(Size { width, height });
-        self
-    }
-
-    /// 设置根组件，供后续 `render` 复用。
-    pub fn set_root<W: Widget + 'static>(&mut self, widget: W) {
-        self.root.set_root(widget);
-    }
-
-    /// 将根组件与当前状态一起渲染一次。
-    pub fn render_root<W: Widget + 'static>(&mut self, widget: W) -> Result<(), B::Error> {
-        self.root.set_root(widget);
-        self.render()
-    }
-
-    /// 执行一帧的布局计算和渲染提交。
-    ///
-    /// 先通过 `WidgetHost` 生成渲染计划，再将其封装为 `FrameSubmission`
-    /// 提交给渲染后端进行实际绘制。
-    pub fn render(&mut self) -> Result<(), B::Error> {
-        let plan = self.root.render_current();
-        let submission = reef_draw::draw_backend::FrameSubmission {
+    /// 渲染 VNode 并提交到绘制后端。
+    pub fn render(&mut self, vnode: VNode) -> Result<(), B::Error> {
+        let plan = self.render_plan(vnode);
+        let submission = FrameSubmission {
             hidden: plan.hidden,
             plans: vec![plan],
         };
         self.backend.submit_frame(&submission)
     }
 
-    /// 获取 `WidgetRoot` 的不可变引用。
-    pub fn root(&self) -> &WidgetRoot {
-        &self.root
+    /// 渲染 VNode 并返回 DrawPlan，不提交后端。
+    pub fn render_plan(&mut self, vnode: VNode) -> DrawPlan {
+        self.renderer.render(vnode)
     }
 
-    /// 获取 `WidgetRoot` 的可变引用。
-    pub fn root_mut(&mut self) -> &mut WidgetRoot {
-        &mut self.root
+    /// 设置当前逻辑视口尺寸。
+    pub fn set_viewport(&mut self, size: Size) {
+        self.renderer.set_viewport(size);
     }
 
-    /// 兼容旧调用方的宿主访问器。
-    pub fn host(&self) -> &WidgetRoot {
-        &self.root
+    pub fn viewport(&self) -> Size {
+        self.renderer.viewport()
     }
 
-    /// 兼容旧调用方的宿主可变访问器。
-    pub fn host_mut(&mut self) -> &mut WidgetRoot {
-        &mut self.root
+    pub fn renderer(&self) -> &ReefRenderer {
+        &self.renderer
+    }
+
+    pub fn renderer_mut(&mut self) -> &mut ReefRenderer {
+        &mut self.renderer
+    }
+
+    pub fn backend(&self) -> &B {
+        &self.backend
+    }
+
+    pub fn backend_mut(&mut self) -> &mut B {
+        &mut self.backend
+    }
+
+    pub fn into_backend(self) -> B {
+        self.backend
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use reef_core::color::Color;
+    use reef_draw::draw_backend::FrameSubmission;
+    use reef_vnode::{Container, Label};
+
+    #[derive(Default)]
+    struct RecordingBackend {
+        submissions: Vec<FrameSubmission>,
+    }
+
+    impl DrawBackend for RecordingBackend {
+        type Error = ();
+
+        fn submit_frame(&mut self, submission: &FrameSubmission) -> Result<(), Self::Error> {
+            self.submissions.push(submission.clone());
+            Ok(())
+        }
+    }
+
+    #[test]
+    fn render_plan_uses_vnode_pipeline() {
+        let mut app = App::new(
+            RecordingBackend::default(),
+            Size {
+                width: 320.0,
+                height: 180.0,
+            },
+        );
+
+        let vnode = reef_view_macros::rsx! {
+            <Container color={Color::rgb(18, 18, 22)} radius={16.0}>
+                <Label text={"Hello"} color={Color::WHITE} />
+            </Container>
+        };
+
+        let plan = app.render_plan(vnode);
+
+        assert_eq!(plan.viewport.width, 320.0);
+        assert!(!plan.primitives.is_empty());
+    }
+
+    #[test]
+    fn render_submits_frame_to_backend() {
+        let mut app = App::new(
+            RecordingBackend::default(),
+            Size {
+                width: 320.0,
+                height: 180.0,
+            },
+        );
+
+        let vnode = reef_view_macros::rsx! {
+            <container color={Color::rgb(18, 18, 22)} />
+        };
+
+        app.render(vnode).unwrap();
+
+        assert_eq!(app.backend().submissions.len(), 1);
+        assert_eq!(app.backend().submissions[0].plans.len(), 1);
     }
 }

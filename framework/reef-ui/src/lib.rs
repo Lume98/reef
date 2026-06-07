@@ -32,6 +32,18 @@ pub mod visual {
     pub use crate::render::visual::*;
 }
 
+pub mod visual_plan {
+    pub use crate::native_panel_ui::visual_plan::*;
+}
+
+pub mod widgets {
+    pub use crate::native_panel_ui::widgets::*;
+}
+
+pub mod migration {
+    pub use crate::native_panel_ui::migration::*;
+}
+
 pub mod render {
     pub use crate::native_panel_ui::render::*;
 }
