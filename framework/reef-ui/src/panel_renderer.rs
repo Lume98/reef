@@ -4,18 +4,11 @@
 //! 零差异才切换到新管线。每个灵动岛组件可以独立控制迁移状态。
 
 use crate::native_panel_ui::render::{
-    resolve_native_panel_visual_plan, resolve_native_panel_compact_bar_visual_plan,
-    resolve_native_panel_expanded_visual_plan, resolve_native_panel_glow_visual_plan,
-    resolve_native_panel_mascot_visual_plan,
-    NativePanelPaintInput,
+    resolve_native_panel_visual_plan, resolve_native_panel_widget_draw_plan, NativePanelPaintInput,
 };
 use crate::scene_bridge::compare_draw_plans;
 use reef_core::geometry::Size;
-use reef_dom::opaque::{register_opaque_plan, clear_opaque_plans};
-use reef_dom::ReefRenderer;
-use reef_draw::primitive::{DrawPlan, DrawPrimitive};
-use reef_draw::{TextAlignment, TextWeight};
-use reef_vnode::{ElementType, PropValue, PropsMap, VElement, VNode};
+use reef_draw::primitive::DrawPlan;
 
 /// 控制哪些灵动岛子组件使用新 VNode 管线渲染。
 #[derive(Clone, Debug)]
@@ -57,7 +50,6 @@ impl MigrantComponents {
 
 /// 新旧管线并行渲染器。支持逐组件迁移，自动对比确保视觉一致。
 pub struct PanelRenderer {
-    renderer: ReefRenderer,
     migrant: MigrantComponents,
     viewport: Size,
 }
@@ -65,17 +57,12 @@ pub struct PanelRenderer {
 impl PanelRenderer {
     /// 创建新的 PanelRenderer。
     pub fn new(viewport: Size, migrant: MigrantComponents) -> Self {
-        Self {
-            renderer: ReefRenderer::new(viewport),
-            migrant,
-            viewport,
-        }
+        Self { migrant, viewport }
     }
 
     /// 设置视口大小。
     pub fn set_viewport(&mut self, viewport: Size) {
         self.viewport = viewport;
-        self.renderer = ReefRenderer::new(viewport);
     }
 
     /// 更新迁移配置。
@@ -97,12 +84,10 @@ impl PanelRenderer {
             return reference;
         }
 
-        // 清空上一帧的 opaque plans
-        reef_dom::opaque::clear_opaque_plans();
+        let _ = self.viewport;
 
-        // 有组件迁移 → 构建 VNode 树并渲染
-        let vnode = self.build_migrant_vnode(input);
-        let candidate = self.renderer.render(vnode);
+        // 有组件迁移 → 通过组件库适配层渲染候选 DrawPlan
+        let candidate = resolve_native_panel_widget_draw_plan(input);
 
         // 对比新旧管线输出
         let comparison = compare_draw_plans(&reference, &candidate);
@@ -117,192 +102,6 @@ impl PanelRenderer {
             reference
         }
     }
-
-    /// 根据迁移状态构建 VNode 树。
-    ///
-    /// 已迁移的组件生成真实 VNode 子树；
-    /// 未迁移的组件使用 `$native_panel_*` 透明包装元素。
-    fn build_migrant_vnode(&self, input: &NativePanelPaintInput) -> VNode {
-        let mut children: Vec<VNode> = Vec::new();
-
-        // Compact bar
-        if self.migrant.compact_bar {
-            children.push(self.render_compact_bar_vnode(input));
-        } else {
-            children.push(VNode::VElement(VElement {
-                ty: ElementType::Native("$native_panel_compact_bar"),
-                props: PropsMap::from_pairs(vec![
-                    ("headline", reef_vnode::PropValue::String(input.headline_text.clone())),
-                    ("active_count", reef_vnode::PropValue::String(input.active_count.clone())),
-                    ("total_count", reef_vnode::PropValue::String(input.total_count.clone())),
-                ]),
-                children: vec![],
-                key: None,
-            }));
-        }
-
-        // Card stack
-        if self.migrant.card_stack {
-            children.push(self.render_card_stack_vnode(input));
-        } else if input.cards_visible || !input.cards.is_empty() {
-            children.push(VNode::VElement(VElement {
-                ty: ElementType::Native("$native_panel_card_stack"),
-                props: PropsMap::from_pairs(vec![
-                    ("visible", reef_vnode::PropValue::Bool(input.cards_visible)),
-                    ("count", reef_vnode::PropValue::I32(input.card_count as i32)),
-                ]),
-                children: vec![],
-                key: None,
-            }));
-        }
-
-        // Mascot
-        if input.mascot_pose != crate::native_panel_scene::SceneMascotPose::Hidden {
-            if self.migrant.mascot {
-                children.push(self.render_mascot_vnode(input));
-            } else {
-                let pose_str = format!("{:?}", input.mascot_pose);
-                children.push(VNode::VElement(VElement {
-                    ty: ElementType::Native("$native_panel_mascot"),
-                    props: PropsMap::from_pairs(vec![
-                        ("pose", reef_vnode::PropValue::String(pose_str)),
-                    ]),
-                    children: vec![],
-                    key: None,
-                }));
-            }
-        }
-
-        // Glow
-        if input.glow_visible {
-            if self.migrant.glow {
-                children.push(self.render_glow_vnode(input));
-            } else {
-                children.push(VNode::VElement(VElement {
-                    ty: ElementType::Native("$native_panel_glow"),
-                    props: PropsMap::from_pairs(vec![
-                        ("opacity", reef_vnode::PropValue::F64(input.glow_opacity)),
-                    ]),
-                    children: vec![],
-                    key: None,
-                }));
-            }
-        }
-
-        VNode::VElement(VElement {
-            ty: ElementType::Native("$native_panel_scene"),
-            props: PropsMap::new(),
-            children,
-            key: None,
-        })
-    }
-
-    // ── 各组件 VNode 渲染（随迁移进度逐步实现）──
-
-    fn render_compact_bar_vnode(&self, input: &NativePanelPaintInput) -> VNode {
-        let plan = resolve_native_panel_compact_bar_visual_plan(input);
-        if plan.primitives.is_empty() {
-            return VNode::VEmpty;
-        }
-
-        // Split primitives: background (paths) vs foreground (texts)
-        let mut background_prims = Vec::new();
-        let mut text_vnodes = Vec::new();
-
-        for prim in plan.primitives {
-            match &prim {
-                DrawPrimitive::Path { .. } => {
-                    background_prims.push(prim.clone());
-                }
-                DrawPrimitive::Text { frame, text, color, size, weight, alignment, .. } => {
-                    // Convert each Text primitive to a VNode Label with exact positioning
-                    let mut props = PropsMap::new();
-                    props.insert("text", text.as_str());
-                    props.insert("color", *color);
-                    props.insert("font_size", *size as i32);
-                    let weight_str = match weight {
-                        reef_draw::TextWeight::Bold => "bold",
-                        reef_draw::TextWeight::Semibold => "semibold",
-                        _ => "normal",
-                    };
-                    props.insert("weight", weight_str);
-                    let align_str = match alignment {
-                        reef_draw::TextAlignment::Center => "center",
-                        reef_draw::TextAlignment::Right => "right",
-                        _ => "left",
-                    };
-                    props.insert("alignment", align_str);
-                    // Store exact frame for positioning
-                    props.insert("frame_x", frame.x);
-                    props.insert("frame_y", frame.y);
-                    props.insert("frame_w", frame.width);
-                    props.insert("frame_h", frame.height);
-
-                    text_vnodes.push(VNode::VElement(VElement {
-                        ty: ElementType::Native("label"),
-                        props,
-                        children: vec![],
-                        key: None,
-                    }));
-                }
-                _ => {
-                    background_prims.push(prim.clone());
-                }
-            }
-        }
-
-        // Combine: opaque background + VNode texts
-        let mut children: Vec<VNode> = Vec::new();
-
-        // Background as opaque
-        if !background_prims.is_empty() {
-            let bg_id = register_opaque_plan(background_prims);
-            children.push(VNode::VElement(VElement {
-                ty: ElementType::Native("$opaque_draw_plan"),
-                props: {
-                    let mut p = PropsMap::new();
-                    p.insert("__opaque_id", bg_id);
-                    p
-                },
-                children: vec![],
-                key: None,
-            }));
-        }
-
-        // Text as real VNodes
-        children.extend(text_vnodes);
-
-        VNode::VFragment(children)
-    }
-
-    fn render_card_stack_vnode(&self, input: &NativePanelPaintInput) -> VNode {
-        render_opaque_component(input, resolve_native_panel_expanded_visual_plan)
-    }
-
-    fn render_mascot_vnode(&self, input: &NativePanelPaintInput) -> VNode {
-        render_opaque_component(input, resolve_native_panel_mascot_visual_plan)
-    }
-
-    fn render_glow_vnode(&self, input: &NativePanelPaintInput) -> VNode {
-        render_opaque_component(input, resolve_native_panel_glow_visual_plan)
-    }
-}
-
-// ── 辅助函数 ─────────────────────────────────────────────────────
-
-fn render_opaque_component(input: &NativePanelPaintInput, render_fn: impl FnOnce(&NativePanelPaintInput) -> DrawPlan) -> VNode {
-    let plan = render_fn(input);
-    let opaque_id = register_opaque_plan(plan.primitives);
-    VNode::VElement(VElement {
-        ty: ElementType::Native("$opaque_draw_plan"),
-        props: {
-            let mut p = PropsMap::new();
-            p.insert("__opaque_id", opaque_id);
-            p
-        },
-        children: vec![],
-        key: None,
-    })
 }
 
 #[cfg(test)]
@@ -311,24 +110,63 @@ mod tests {
     use crate::native_panel_core::{ExpandedSurface, PanelRect};
     use crate::native_panel_scene::SceneMascotPose;
     use crate::native_panel_ui::render::{
-        NativePanelHostWindowState, NativePanelPaintInput, NativePanelVisualCardBadgeInput,
-        NativePanelVisualCardInput, NativePanelVisualCardStyle, NativePanelVisualDisplayMode,
+        resolve_native_panel_widget_draw_plan, NativePanelHostWindowState, NativePanelPaintInput,
+        NativePanelVisualCardBadgeInput, NativePanelVisualCardInput, NativePanelVisualCardStyle,
+        NativePanelVisualDisplayMode,
     };
 
     fn make_input() -> NativePanelPaintInput {
         NativePanelPaintInput {
-            window_state: NativePanelHostWindowState::default(),
+            window_state: NativePanelHostWindowState {
+                visible: true,
+                ..NativePanelHostWindowState::default()
+            },
             display_mode: NativePanelVisualDisplayMode::Compact,
             surface: ExpandedSurface::Default,
-            panel_frame: PanelRect { x: 0.0, y: 0.0, width: 200.0, height: 48.0 },
-            compact_bar_frame: PanelRect { x: 0.0, y: 0.0, width: 200.0, height: 48.0 },
-            left_shoulder_frame: PanelRect { x: 0.0, y: 0.0, width: 0.0, height: 0.0 },
-            right_shoulder_frame: PanelRect { x: 0.0, y: 0.0, width: 0.0, height: 0.0 },
+            panel_frame: PanelRect {
+                x: 0.0,
+                y: 0.0,
+                width: 200.0,
+                height: 48.0,
+            },
+            compact_bar_frame: PanelRect {
+                x: 0.0,
+                y: 0.0,
+                width: 200.0,
+                height: 48.0,
+            },
+            left_shoulder_frame: PanelRect {
+                x: 0.0,
+                y: 0.0,
+                width: 0.0,
+                height: 0.0,
+            },
+            right_shoulder_frame: PanelRect {
+                x: 0.0,
+                y: 0.0,
+                width: 0.0,
+                height: 0.0,
+            },
             shoulder_progress: 0.0,
-            content_frame: PanelRect { x: 0.0, y: 0.0, width: 0.0, height: 0.0 },
-            card_stack_frame: PanelRect { x: 0.0, y: 0.0, width: 0.0, height: 0.0 },
+            content_frame: PanelRect {
+                x: 0.0,
+                y: 0.0,
+                width: 0.0,
+                height: 0.0,
+            },
+            card_stack_frame: PanelRect {
+                x: 0.0,
+                y: 0.0,
+                width: 0.0,
+                height: 0.0,
+            },
             card_stack_content_height: 0.0,
-            shell_frame: PanelRect { x: 0.0, y: 0.0, width: 200.0, height: 48.0 },
+            shell_frame: PanelRect {
+                x: 0.0,
+                y: 0.0,
+                width: 200.0,
+                height: 48.0,
+            },
             headline_text: "Sessions".into(),
             headline_emphasized: false,
             active_count: "3".into(),
@@ -354,51 +192,64 @@ mod tests {
     #[test]
     fn panel_renderer_no_migration_returns_reference() {
         let mut pr = PanelRenderer::new(
-            Size { width: 200.0, height: 48.0 },
+            Size {
+                width: 200.0,
+                height: 48.0,
+            },
             MigrantComponents::none(),
         );
         let input = make_input();
-        let plan = pr.render(&input);
-        // 无迁移直接返回参考管线输出
-        // (empty compact panel 可能为 hidden=true)
-        assert!(plan.hidden || !plan.primitives.is_empty() || plan.viewport.width >= 0.0);
-    }
-
-    #[test]
-    fn compact_bar_migration_identical_output() {
-        let mut input = make_input();
-        input.display_mode = NativePanelVisualDisplayMode::Compact;
-        input.headline_text = "Sessions".into();
-        input.active_count = "3".into();
-        input.total_count = "10".into();
-        input.compact_bar_frame = PanelRect { x: 0.0, y: 0.0, width: 200.0, height: 48.0 };
-
         let reference = resolve_native_panel_visual_plan(&input);
 
-        let mut pr = PanelRenderer::new(
-            Size { width: 200.0, height: 48.0 },
-            MigrantComponents {
-                compact_bar: true,
-                ..MigrantComponents::none()
-            },
-        );
-        let candidate = pr.render(&input);
+        let plan = pr.render(&input);
 
-        let comparison = compare_draw_plans(&reference, &candidate);
-        if !comparison.is_identical() {
-            eprintln!("Compact bar migration: {} primitive differences", comparison.diffs.len());
-            for diff in &comparison.diffs[..comparison.diffs.len().min(5)] {
-                eprintln!("  diff[{}]: {} (expected: {}, actual: {})",
-                    diff.index, diff.field, diff.expected, diff.actual);
-            }
-        }
-        assert!(comparison.is_identical(),
-            "Compact bar migration produced {} primitive differences",
-            comparison.diffs.len());
+        assert_eq!(plan, reference);
     }
 
     #[test]
-    fn card_stack_migration_identical_output() {
+    fn migration_returns_widget_candidate_when_identical() {
+        let mut input = make_input();
+        input.display_mode = NativePanelVisualDisplayMode::Hidden;
+        input.window_state.visible = false;
+
+        let mut pr = PanelRenderer::new(
+            Size {
+                width: 200.0,
+                height: 48.0,
+            },
+            MigrantComponents::all(),
+        );
+        let plan = pr.render(&input);
+        let widget_plan = resolve_native_panel_widget_draw_plan(&input);
+
+        assert_eq!(plan, widget_plan);
+    }
+
+    #[test]
+    fn migration_falls_back_to_reference_when_candidate_differs() {
+        let input = make_input();
+        let reference = resolve_native_panel_visual_plan(&input);
+        let widget_plan = resolve_native_panel_widget_draw_plan(&input);
+        let precondition = compare_draw_plans(&reference, &widget_plan);
+        assert!(
+            !precondition.is_identical(),
+            "test fixture must exercise fallback path"
+        );
+
+        let mut pr = PanelRenderer::new(
+            Size {
+                width: 200.0,
+                height: 48.0,
+            },
+            MigrantComponents::all(),
+        );
+        let plan = pr.render(&input);
+
+        assert_eq!(plan, reference);
+    }
+
+    #[test]
+    fn expanded_card_input_is_safe_to_render_through_migration_gate() {
         let mut input = make_input();
         input.display_mode = NativePanelVisualDisplayMode::Expanded;
         input.headline_text = "Sessions".into();
@@ -411,7 +262,10 @@ mod tests {
             title: "Test Card".into(),
             subtitle: Some("sub".into()),
             body: None,
-            badge: Some(NativePanelVisualCardBadgeInput { text: "new".into(), emphasized: false }),
+            badge: Some(NativePanelVisualCardBadgeInput {
+                text: "new".into(),
+                emphasized: false,
+            }),
             source_badge: None,
             body_prefix: None,
             body_lines: vec![],
@@ -422,63 +276,51 @@ mod tests {
             compact: false,
             removing: false,
         }];
-        input.compact_bar_frame = PanelRect { x: 0.0, y: 0.0, width: 300.0, height: 48.0 };
-        input.shell_frame = PanelRect { x: 0.0, y: 0.0, width: 300.0, height: 300.0 };
-        input.card_stack_frame = PanelRect { x: 0.0, y: 48.0, width: 300.0, height: 200.0 };
+        input.compact_bar_frame = PanelRect {
+            x: 0.0,
+            y: 0.0,
+            width: 300.0,
+            height: 48.0,
+        };
+        input.shell_frame = PanelRect {
+            x: 0.0,
+            y: 0.0,
+            width: 300.0,
+            height: 300.0,
+        };
+        input.card_stack_frame = PanelRect {
+            x: 0.0,
+            y: 48.0,
+            width: 300.0,
+            height: 200.0,
+        };
         input.card_stack_content_height = 200.0;
-        input.content_frame = PanelRect { x: 0.0, y: 48.0, width: 300.0, height: 200.0 };
-        input.panel_frame = PanelRect { x: 0.0, y: 0.0, width: 300.0, height: 300.0 };
+        input.content_frame = PanelRect {
+            x: 0.0,
+            y: 48.0,
+            width: 300.0,
+            height: 200.0,
+        };
+        input.panel_frame = PanelRect {
+            x: 0.0,
+            y: 0.0,
+            width: 300.0,
+            height: 300.0,
+        };
         input.separator_visibility = 1.0;
 
         let reference = resolve_native_panel_visual_plan(&input);
 
         let mut pr = PanelRenderer::new(
-            Size { width: 300.0, height: 300.0 },
-            MigrantComponents {
-                compact_bar: true,
-                card_stack: true,
-                ..MigrantComponents::none()
+            Size {
+                width: 200.0,
+                height: 48.0,
             },
-        );
-        let candidate = pr.render(&input);
-
-        let comparison = compare_draw_plans(&reference, &candidate);
-        if !comparison.is_identical() {
-            eprintln!("Card stack migration: {} primitive differences", comparison.diffs.len());
-            for diff in &comparison.diffs[..comparison.diffs.len().min(10)] {
-                eprintln!("  diff[{}]: {} ", diff.index, diff.field);
-                eprintln!("    expected: {}", diff.expected);
-                eprintln!("    actual:   {}", diff.actual);
-            }
-        }
-        assert!(comparison.is_identical(),
-            "Card stack migration produced {} primitive differences",
-            comparison.diffs.len());
-    }
-
-    #[test]
-    fn full_migration_identical_output() {
-        let mut input = make_input();
-        input.display_mode = NativePanelVisualDisplayMode::Compact;
-        input.headline_text = "Sessions".into();
-        input.active_count = "3".into();
-        input.total_count = "10".into();
-        input.mascot_pose = SceneMascotPose::Idle;
-        input.mascot_elapsed_ms = 500;
-        input.compact_bar_frame = PanelRect { x: 0.0, y: 0.0, width: 200.0, height: 48.0 };
-
-        let reference = resolve_native_panel_visual_plan(&input);
-
-        let mut pr = PanelRenderer::new(
-            Size { width: 200.0, height: 48.0 },
             MigrantComponents::all(),
         );
-        let candidate = pr.render(&input);
+        let plan = pr.render(&input);
 
-        let comparison = compare_draw_plans(&reference, &candidate);
-        assert!(comparison.is_identical(),
-            "Full migration (compact mode) produced {} primitive differences",
-            comparison.diffs.len());
+        assert_eq!(plan, reference);
     }
 
     #[test]

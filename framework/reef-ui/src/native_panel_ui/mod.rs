@@ -19,6 +19,7 @@ mod rendering_backend;
 mod transition_controller;
 mod visual_plan;
 mod visual_primitives;
+mod widget_bridge;
 
 pub mod render;
 

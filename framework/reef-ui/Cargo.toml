@@ -14,6 +14,7 @@ echoisland-runtime = { path = "../../echoisland-runtime" }
 reef-core = { path = "../reef-core" }
 reef-draw = { path = "../reef-draw" }
 reef-theme = { path = "../reef-theme" }
+reef-widgets = { path = "../reef-widgets" }
 reef-vnode = { path = "../reef-vnode" }
 reef-dom = { path = "../reef-dom" }
 serde = { workspace = true }
