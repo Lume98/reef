@@ -42,6 +42,11 @@ pub use super::visual_primitives::{
 pub use super::widget_bridge::{
     native_panel_island_widget_from_paint_input, resolve_native_panel_widget_draw_plan,
 };
+pub use super::widget_migration::{
+    compare_draw_plans, resolve_native_panel_widget_migration_draw_plan,
+    resolve_native_panel_widget_migration_result, DrawPlanComparison,
+    NativePanelWidgetMigrationResult, PrimitiveDiff,
+};
 
 pub mod descriptor {
     pub use super::super::descriptors::*;
