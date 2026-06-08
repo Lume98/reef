@@ -6,16 +6,6 @@
 
 #![allow(dead_code, unused_imports)]
 
-// UI 计算来自 reef；本 crate 只保留运行时、宿主和平台协调。
-pub(crate) use crate::presentation::{
-    descriptor as descriptors, presentation as action_button_visual_spec,
-    presentation as card_visual_spec, presentation as completion_glow_visual_spec,
-    presentation as mascot_sprite_spec, presentation as mascot_visual_spec,
-    presentation as presentation_model, render as animation_plan, render as animation_scheduler,
-    render as render_commands, render as transition_controller, rendering as rendering_backend,
-    visual as visual_primitives,
-};
-
 mod close_preservation;
 mod env_flags;
 mod host_runtime_command;

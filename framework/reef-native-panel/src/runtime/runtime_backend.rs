@@ -5,7 +5,7 @@ use crate::{
     state::{PanelSnapshotSyncResult, PanelState},
 };
 
-use super::descriptors::NativePanelRuntimeInputDescriptor;
+use crate::presentation::render::NativePanelRuntimeInputDescriptor;
 use super::host_runtime_facade::native_panel_host_display_reposition_from_input_descriptor;
 use super::runtime_scene_cache::{
     cache_runtime_scene_with_key, native_panel_runtime_scene_cache_key,
@@ -224,22 +224,20 @@ mod tests {
         sync_and_apply_runtime_scene_from_input_descriptor,
         sync_runtime_scene_bundle_from_input_descriptor,
     };
+    use crate::presentation::render::{
+        NativePanelHostWindowDescriptor, NativePanelHostWindowState,
+        NativePanelRuntimeInputDescriptor,
+    };
     use crate::{
-        runtime::{
-            descriptors::{
-                NativePanelHostWindowDescriptor, NativePanelHostWindowState,
-                NativePanelRuntimeInputDescriptor,
-            },
-            runtime_scene_cache::{
-                native_panel_runtime_scene_cache_key, NativePanelRuntimeSceneCache,
-            },
-            traits::{NativePanelHost, NativePanelRuntime, NativePanelSceneHost},
-        },
         scene::{
             PanelInteractionProfile, PanelRuntimeRenderState, PanelScene, PanelSceneBuildInput,
         },
         state::{ExpandedSurface, PanelRect, PanelState},
     };
+    use super::super::runtime_scene_cache::{
+        native_panel_runtime_scene_cache_key, NativePanelRuntimeSceneCache,
+    };
+    use super::super::traits::{NativePanelHost, NativePanelRuntime, NativePanelSceneHost};
     use chrono::Utc;
     use echoisland_runtime::{RuntimeSnapshot, SessionSnapshotView};
 

@@ -2,14 +2,14 @@ use std::time::Instant;
 
 use crate::state::{HoverTransition, PanelPoint};
 
-use super::descriptors::{NativePanelPointerInput, NativePanelRuntimeInputDescriptor};
+use crate::presentation::render::{NativePanelPointerInput, NativePanelRuntimeInputDescriptor};
 use super::runtime_interaction::{
     NativePanelCoreStateBridge, NativePanelHoverInteractionHost, NativePanelHoverSyncResult,
 };
 use super::runtime_scene_cache::NativePanelRuntimeSceneCache;
 use super::runtime_scene_sync::rerender_runtime_scene_sync_result_to_host_for_state_with_input_descriptor;
 use super::traits::NativePanelSceneHost;
-use super::transition_controller::{
+use crate::presentation::render::{
     native_panel_transition_request_for_hover_transition, NativePanelTransitionRequest,
 };
 

@@ -2,6 +2,7 @@ use crate::presentation::descriptor::{
     NativePanelRuntimeInputContext, NativePanelRuntimeInputDescriptor,
 };
 use crate::{
+    app_settings::AppSettings,
     display_settings::DisplayOption,
     scene::{
         panel_display_option_state_with_width_support, PanelDisplayOptionState,
@@ -12,7 +13,6 @@ use crate::{
 
 use super::{
     resolve_panel_selected_display_index, resolve_selected_display_index_from_display_options,
-    AppSettings,
 };
 
 pub(crate) fn panel_settings_state_from_app_settings(

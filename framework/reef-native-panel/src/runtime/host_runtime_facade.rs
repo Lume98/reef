@@ -18,7 +18,7 @@ mod tests {
         NativePanelRuntimeHostController, NativePanelRuntimeHostState,
     };
     use crate::{
-        runtime::descriptors::{
+        presentation::render::{
             NativePanelHostWindowDescriptor, NativePanelPointerRegion,
             NativePanelRuntimeInputDescriptor,
         },

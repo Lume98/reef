@@ -8,28 +8,8 @@ pub fn show_without_app(snapshot: &echoisland_runtime::RuntimeSnapshot) -> Resul
     Ok(())
 }
 
-#[cfg(target_os = "windows")]
-pub fn hide() -> Result<(), String> {
-    crate::platform_windows_host::hide_native_panel_without_app()
-}
-
-#[cfg(target_os = "windows")]
-pub fn snap() -> Result<(), String> {
-    Ok(())
-}
-
 #[cfg(not(target_os = "windows"))]
 pub fn show_without_app(_snapshot: &echoisland_runtime::RuntimeSnapshot) -> Result<(), String> {
-    Ok(())
-}
-
-#[cfg(not(target_os = "windows"))]
-pub fn hide() -> Result<(), String> {
-    Ok(())
-}
-
-#[cfg(not(target_os = "windows"))]
-pub fn snap() -> Result<(), String> {
     Ok(())
 }
 

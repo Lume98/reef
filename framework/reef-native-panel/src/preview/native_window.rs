@@ -20,11 +20,3 @@ pub fn show_without_app(_snapshot: &RuntimeSnapshot) -> Result<(), String> {
 pub fn show_without_app(_snapshot: &RuntimeSnapshot) -> Result<(), String> {
     Ok(())
 }
-
-pub fn hide() -> Result<(), String> {
-    Ok(())
-}
-
-pub fn snap() -> Result<(), String> {
-    Ok(())
-}

@@ -8,19 +8,17 @@ use crate::{
     state::{ExpandedSurface, PanelLayout, PanelRect, PanelRenderState, PanelState},
 };
 
-use super::descriptors::{
-    NativePanelPointerRegion, NativePanelPointerRegionInput, NativePanelRuntimeInputDescriptor,
+use crate::presentation::render::{
+    NativePanelPointerRegion, NativePanelPointerRegionInput, NativePanelPresentationModel,
+    NativePanelRenderBundle, NativePanelResolvedPresentation, NativePanelRuntimeInputDescriptor,
+    NativePanelSnapshotRenderPlan, resolve_native_panel_presentation,
+    resolve_native_panel_presentation_model_for_scene,
+    resolve_native_panel_snapshot_render_plan_for_scene,
 };
 use super::host_runtime_facade::{
     native_panel_host_display_reposition,
     native_panel_host_display_reposition_from_input_descriptor,
 };
-use super::presentation_model::{
-    resolve_native_panel_presentation, resolve_native_panel_presentation_model_for_scene,
-    resolve_native_panel_snapshot_render_plan_for_scene, NativePanelPresentationModel,
-    NativePanelResolvedPresentation, NativePanelSnapshotRenderPlan,
-};
-use super::render_commands::NativePanelRenderBundle;
 use super::runtime_interaction::NativePanelCoreStateBridge;
 use super::traits::NativePanelSceneHost;
 
@@ -540,19 +538,12 @@ mod tests {
         resolve_panel_scene_for_state_bridge_and_snapshot_with_input, NativePanelRuntimeSceneCache,
         NativePanelRuntimeSceneMutableStateBridge, NativePanelRuntimeSceneStateBridge,
     };
+    use crate::presentation::render::{
+        resolve_native_panel_render_command_bundle, NativePanelHostWindowDescriptor,
+        NativePanelHostWindowState, NativePanelPointerRegion, NativePanelPointerRegionInput,
+        NativePanelRenderBundle, NativePanelRuntimeInputDescriptor,
+    };
     use crate::{
-        runtime::{
-            descriptors::{
-                NativePanelHostWindowDescriptor, NativePanelHostWindowState,
-                NativePanelPointerRegion, NativePanelPointerRegionInput,
-                NativePanelRuntimeInputDescriptor,
-            },
-            render_commands::{
-                resolve_native_panel_render_command_bundle, NativePanelRenderBundle,
-            },
-            runtime_interaction::NativePanelCoreStateBridge,
-            traits::{NativePanelHost, NativePanelRuntime, NativePanelSceneHost},
-        },
         scene::{
             build_panel_scene, build_settings_surface_scene, surface_scene_mode, CompactBarScene,
             PanelRuntimeRenderState, PanelRuntimeSceneBundle, PanelScene, PanelSceneBuildInput,
@@ -561,6 +552,8 @@ mod tests {
         },
         state::{ExpandedSurface, PanelRect, PanelSettingsState, PanelState},
     };
+    use super::super::runtime_interaction::NativePanelCoreStateBridge;
+    use super::super::traits::{NativePanelHost, NativePanelRuntime, NativePanelSceneHost};
     use echoisland_runtime::RuntimeSnapshot;
 
     #[derive(Clone, Copy, Debug, PartialEq, Eq)]

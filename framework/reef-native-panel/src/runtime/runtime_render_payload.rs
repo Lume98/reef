@@ -1,6 +1,6 @@
 use echoisland_runtime::RuntimeSnapshot;
 
-use super::animation_plan::NativePanelAnimationPlan;
+use crate::presentation::render::NativePanelAnimationPlan;
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub(crate) struct NativePanelRuntimeRenderPayloadState {

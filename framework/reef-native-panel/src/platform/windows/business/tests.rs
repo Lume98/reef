@@ -17,7 +17,7 @@ use crate::{
     state::{PanelIslandWidthPreset, PanelLanguage, PanelRect},
 };
 
-use super::AppSettings;
+use crate::app_settings::AppSettings;
 
 fn settings() -> AppSettings {
     AppSettings::default()

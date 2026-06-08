@@ -1,6 +1,6 @@
 use std::time::Instant;
 
-use super::descriptors::{
+use crate::presentation::render::{
     NativePanelPointerInput, NativePanelPointerInputOutcome, NativePanelRuntimeCommandHandler,
     NativePanelRuntimeInputDescriptor,
 };

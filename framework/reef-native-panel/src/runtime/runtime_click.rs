@@ -4,7 +4,7 @@ use crate::state::{
     resolve_panel_click_action, PanelClickInput, PanelInteractionCommand, PanelPoint,
 };
 
-use super::descriptors::{
+use crate::presentation::render::{
     dispatch_native_panel_platform_event, dispatch_native_panel_platform_events,
     native_panel_platform_event_for_interaction_command, NativePanelPlatformEvent,
     NativePanelPointerPointState, NativePanelRuntimeCommandHandler,

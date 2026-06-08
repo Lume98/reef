@@ -1,6 +1,7 @@
-use crate::{display_settings::DisplayOption, state::resolve_preferred_panel_display_index};
-
-use super::AppSettings;
+use crate::{
+    app_settings::AppSettings, display_settings::DisplayOption,
+    state::resolve_preferred_panel_display_index,
+};
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub(crate) struct NativePanelDisplaySelectionUpdate {

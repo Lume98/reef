@@ -2,7 +2,7 @@
 
 // 平台事件和运行时命令派发。
 pub(crate) mod command {
-    pub(crate) use super::super::descriptors::{
+    pub(crate) use crate::presentation::render::{
         dispatch_native_panel_platform_event, NativePanelPlatformEvent, NativePanelPointerInput,
         NativePanelPointerInputOutcome, NativePanelRuntimeCommandCapability,
         NativePanelRuntimeCommandHandler,
@@ -24,7 +24,7 @@ pub(crate) mod command {
 
 // 宿主窗口、指针区域和时间线描述符。
 pub(crate) mod descriptor {
-    pub(crate) use super::super::descriptors::{
+    pub(crate) use crate::presentation::render::{
         native_panel_host_window_descriptor, native_panel_host_window_frame,
         native_panel_pointer_inside_for_input, native_panel_pointer_inside_regions,
         native_panel_pointer_state_at_point, native_panel_timeline_descriptor,
@@ -66,7 +66,7 @@ pub(crate) mod host {
 
 // Hover、click、轮询和设置面板交互。
 pub(crate) mod interaction {
-    pub(crate) use super::super::descriptors::NativePanelRuntimeCommandHandler;
+    pub(crate) use crate::presentation::render::NativePanelRuntimeCommandHandler;
     pub(crate) use super::super::runtime_click::resolve_native_panel_click_command_for_pointer_state;
     pub(crate) use super::super::runtime_click::{
         dispatch_native_panel_click_command_at_point_with_handler,
@@ -115,11 +115,8 @@ pub(crate) mod interaction {
 
 // 场景到表现模型/视觉规格的转换。
 pub(crate) mod presentation {
-    pub(crate) use super::super::action_button_visual_spec::{
+    pub(crate) use crate::presentation::render::{
         action_button_transition_progress_from_compact_width, action_button_visual_frame_for_phase,
-        resolve_action_button_visibility_spec, ActionButtonVisibilitySpecInput,
-    };
-    pub(crate) use super::super::card_visual_spec::{
         card_visual_action_hint_layout, card_visual_badge_layout, card_visual_body_layout,
         card_visual_body_line_paint_spec, card_visual_content_layout,
         card_visual_content_visibility_phase, card_visual_header_text_paint_spec,
@@ -129,25 +126,18 @@ pub(crate) mod presentation {
         card_visual_tool_pill_layout, CardVisualAnimationSpec, CardVisualBadgeRole,
         CardVisualBadgeSpec, CardVisualBodyRole, CardVisualBodySpec, CardVisualColorSpec,
         CardVisualRowSpec, CardVisualShellSpec, CardVisualSpec, CardVisualStyle,
-    };
-    pub(crate) use super::super::completion_glow_visual_spec::{
         resolve_completion_glow_image_slices, resolve_completion_glow_visual_spec,
         CompletionGlowImageSliceSpec, CompletionGlowVisualSpecInput, COMPLETION_GLOW_IMAGE_HEIGHT,
         COMPLETION_GLOW_IMAGE_RADIUS, COMPLETION_GLOW_IMAGE_WIDTH, COMPLETION_GLOW_SLICE_LEFT,
         COMPLETION_GLOW_SLICE_RIGHT, COMPLETION_GLOW_VISIBLE_THRESHOLD,
-    };
-    pub(crate) use super::super::mascot_sprite_spec::{
         parse_mascot_sprite_manifest, resolve_mascot_sprite_animation_key,
         resolve_mascot_sprite_frame, validate_mascot_sprite_manifest, MascotSpriteAnimationKey,
         MascotSpriteAnimationManifest, MascotSpriteFrameInput, MascotSpriteFrameSpec,
         MascotSpriteManifest, MascotSpriteSheetSpec,
-    };
-    pub(crate) use super::super::mascot_visual_spec::{
         resolve_mascot_visual_spec, MascotCompletionBadgeVisualSpec, MascotEllipseVisualSpec,
         MascotMessageBubbleVisualSpec, MascotTextVisualSpec, MascotVisualSpec,
         MascotVisualSpecInput,
-    };
-    pub(crate) use super::super::presentation_model::{
+        resolve_action_button_visibility_spec, ActionButtonVisibilitySpecInput,
         estimated_scene_card_height, estimated_scene_content_height_for_card_width,
         native_panel_visual_display_mode_from_presentation,
         native_panel_visual_plan_input_from_presentation, resolve_native_panel_presentation,
@@ -159,10 +149,10 @@ pub(crate) mod presentation {
         NativePanelPresentationModel, NativePanelResolvedPresentation,
         NativePanelShellPresentation, NativePanelSnapshotRenderPlan,
     };
-    pub(crate) use super::super::render_commands::{
+    pub(crate) use crate::presentation::render::{
         NativePanelActionButtonCommand, NativePanelCardStackCommand, NativePanelCompactBarCommand,
+        NativePanelVisualColor,
     };
-    pub(crate) use super::super::visual_primitives::NativePanelVisualColor;
     pub(crate) use crate::presentation::visual::{
         native_panel_visual_card_input_from_scene_card,
         native_panel_visual_card_input_from_scene_card_with_height,
@@ -176,7 +166,7 @@ pub(crate) mod presentation {
 
 // 动画计划、渲染命令和场景缓存。
 pub(crate) mod renderer {
-    pub(crate) use super::super::animation_plan::{
+    pub(crate) use crate::presentation::render::{
         resolve_native_panel_animation_plan, resolve_native_panel_close_presentation_plan,
         resolve_native_panel_status_close_preservation_plan,
         resolve_native_panel_transition_lifecycle_plan, NativePanelAnimationPlan,
@@ -184,9 +174,8 @@ pub(crate) mod renderer {
         NativePanelClosePresentationPlan, NativePanelCloseTrigger,
         NativePanelStatusClosePreservationInput, NativePanelStatusClosePreservationPlan,
         NativePanelTransitionCardPhase, NativePanelTransitionLifecyclePlan,
-    };
-    pub(crate) use super::super::animation_scheduler::{
         NativePanelAnimationFrame, NativePanelAnimationFrameScheduler, NativePanelAnimationTarget,
+        resolve_native_panel_render_command_bundle, NativePanelRenderBundle,
     };
     pub(crate) use super::super::close_preservation::{
         apply_native_panel_preserved_close_presentation_slots,
@@ -194,9 +183,6 @@ pub(crate) mod renderer {
         native_panel_status_close_preservation_active, native_panel_status_close_scene_has_cards,
         resolve_native_panel_preserved_status_close_scene,
         resolve_native_panel_preserved_status_close_scene_for_snapshot,
-    };
-    pub(crate) use super::super::render_commands::{
-        resolve_native_panel_render_command_bundle, NativePanelRenderBundle,
     };
     pub(crate) use super::super::renderer_backend::{
         cache_host_window_descriptor_on_renderer, cache_host_window_state_on_renderer,
@@ -275,7 +261,7 @@ pub(crate) mod shell {
 
 // 过渡请求的排队、派发和完成清理。
 pub(crate) mod transition {
-    pub(crate) use super::super::transition_controller::{
+    pub(crate) use crate::presentation::render::{
         clear_pending_native_panel_transition_request,
         dispatch_native_panel_transition_request_or_fallback_via,
         dispatch_native_panel_transition_request_with_snapshot_via,

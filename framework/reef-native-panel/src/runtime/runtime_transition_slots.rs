@@ -1,6 +1,6 @@
 use crate::state::{HoverTransition, PanelSnapshotSyncResult};
 
-use super::descriptors::NativePanelRuntimeInputDescriptor;
+use crate::presentation::render::NativePanelRuntimeInputDescriptor;
 use super::host_runtime_facade::NativePanelRuntimeDispatchMode;
 use super::runtime_backend::{
     apply_runtime_scene_sync_result_to_host, NativePanelRuntimeSceneSyncResult,
@@ -11,7 +11,7 @@ use super::runtime_interaction::{
 };
 use super::runtime_scene_cache::NativePanelRuntimeSceneCache;
 use super::traits::{NativePanelHost, NativePanelSceneHost};
-use super::transition_controller::{
+use crate::presentation::render::{
     native_panel_transition_request_for_snapshot_sync, NativePanelTransitionRequest,
 };
 

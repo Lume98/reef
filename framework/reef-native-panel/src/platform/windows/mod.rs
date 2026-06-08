@@ -49,7 +49,6 @@ pub(crate) mod native_window;
 pub(crate) mod notification_sound;
 pub mod page;
 pub(crate) mod panel_scene_input;
-mod panel_scene_service;
 pub(crate) mod platform_windows_host;
 mod updater_service;
 
@@ -71,13 +70,6 @@ pub fn run_dynamic_island_preview_standalone() -> Result<(), String> {
     {
         Ok(())
     }
-}
-
-#[deprecated(
-    note = "Windows standalone rendering is snapshot-backed; use run_dynamic_island_preview_standalone instead"
-)]
-pub fn run_dynamic_island_standalone<S>(_source: S) -> Result<(), String> {
-    run_dynamic_island_preview_standalone()
 }
 
 pub fn create_native_panel() -> Result<(), String> {

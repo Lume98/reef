@@ -3,7 +3,7 @@ use std::time::Instant;
 
 use crate::state::{point_in_rect, PanelPoint, PanelRect};
 
-use super::descriptors::{
+use crate::presentation::render::{
     NativePanelInteractionPlan, NativePanelPlatformEvent, NativePanelPointerPointState,
 };
 use super::facade::presentation::{NativePanelPaintInput, NativePanelVisualDisplayMode};
@@ -17,7 +17,7 @@ use super::runtime_interaction::{
     NativePanelPollingInteractionInput, NativePanelPollingInteractionResult,
     NativePanelPrimaryPointerStateBridge,
 };
-use super::transition_controller::native_panel_transition_request_for_surface_change;
+use crate::presentation::render::native_panel_transition_request_for_surface_change;
 
 pub(crate) fn resolve_native_panel_hover_fallback_frames(
     input: &NativePanelPaintInput,

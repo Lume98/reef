@@ -1,6 +1,6 @@
 use crate::state::PanelRect;
 
-use super::descriptors::{
+use crate::presentation::render::{
     native_panel_runtime_input_descriptor_with_screen_frame, NativePanelPlatformEvent,
     NativePanelPointerInputOutcome, NativePanelQueuedRuntimeCommandHandler,
     NativePanelRuntimeCommandHandler, NativePanelRuntimeInputDescriptor,
@@ -73,7 +73,7 @@ mod tests {
         NativePanelPlatformWindowMessagePump,
     };
     use crate::{
-        runtime::descriptors::{
+        presentation::render::{
             NativePanelPlatformEvent, NativePanelPointerInputOutcome,
             NativePanelRuntimeCommandHandler, NativePanelRuntimeInputDescriptor,
         },

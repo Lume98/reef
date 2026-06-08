@@ -66,9 +66,9 @@ where
 
 fn native_panel_settings_surface_transition_request(
     expanded: bool,
-) -> Option<super::transition_controller::NativePanelTransitionRequest> {
+) -> Option<crate::presentation::render::NativePanelTransitionRequest> {
     // Settings clicks can arrive while the panel is already animating; keep this
     // as a surface transition so platform runtimes can queue it behind the
     // active open/close animation.
-    expanded.then_some(super::transition_controller::NativePanelTransitionRequest::SurfaceSwitch)
+    expanded.then_some(crate::presentation::render::NativePanelTransitionRequest::SurfaceSwitch)
 }

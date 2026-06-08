@@ -452,7 +452,7 @@ impl WindowsPanelRuntime {
 
         match effect {
             Some(DynamicIslandInteractionEffect::PlatformEvent(event)) => {
-                crate::runtime::descriptors::dispatch_native_panel_platform_event(
+                crate::presentation::render::dispatch_native_panel_platform_event(
                     handler,
                     event.clone(),
                 )?;

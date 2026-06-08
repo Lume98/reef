@@ -1,6 +1,6 @@
 use crate::state::PanelRect;
 
-use super::descriptors::{
+use crate::presentation::render::{
     sync_native_panel_host_window_screen_frame, sync_native_panel_host_window_shared_body_height,
     sync_native_panel_host_window_timeline, sync_native_panel_host_window_visibility,
     NativePanelHostWindowDescriptor, NativePanelHostWindowState, NativePanelPointerRegion,

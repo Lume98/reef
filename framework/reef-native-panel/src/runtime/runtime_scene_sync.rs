@@ -3,7 +3,7 @@ use echoisland_runtime::RuntimeSnapshot;
 
 use crate::state::{PanelSnapshotSyncResult, PanelState};
 
-use super::descriptors::NativePanelRuntimeInputDescriptor;
+use crate::presentation::render::NativePanelRuntimeInputDescriptor;
 use super::runtime_backend::{
     apply_runtime_scene_sync_result_to_host, sync_runtime_scene_bundle_from_input_descriptor,
     NativePanelRuntimeSceneSyncResult,

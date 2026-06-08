@@ -5,19 +5,6 @@
 mod display_selection;
 mod input;
 
-pub use crate::app_settings::{
-    app_settings_path, current_app_settings, update_completion_sound_enabled,
-    update_debug_mode_enabled, update_island_width_preset, update_language, update_mascot_enabled,
-    update_preferred_display_selection, AppSettings,
-};
-pub use crate::config::get_app_config_dir;
-pub use crate::display_settings::{
-    display_key_for_panel_geometry, display_option_from_panel_geometry,
-    display_option_from_panel_geometry_with_width_support, panel_rect_from_panel_geometry,
-    DisplayOption,
-};
-pub use crate::updater_service::{current_update_status, AppUpdatePhase, AppUpdateStatus};
-
 pub(crate) use display_selection::{
     resolve_next_display_selection_update_from_display_options,
     resolve_panel_selected_display_index, resolve_selected_display_index_from_display_options,

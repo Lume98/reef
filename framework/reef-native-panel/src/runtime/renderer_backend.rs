@@ -3,15 +3,12 @@ use crate::{
     state::{PanelLayout, PanelRenderState},
 };
 
-use super::descriptors::{
-    NativePanelHostWindowDescriptor, NativePanelHostWindowState, NativePanelPointerRegion,
-    NativePanelPointerRegionInput, NativePanelTimelineDescriptor,
-};
-use super::presentation_model::{
+use crate::presentation::render::{
     resolve_native_panel_presentation, resolve_native_panel_presentation_model,
-    NativePanelPresentationModel, NativePanelResolvedPresentation,
+    NativePanelHostWindowDescriptor, NativePanelHostWindowState, NativePanelPointerRegion,
+    NativePanelPointerRegionInput, NativePanelPresentationModel, NativePanelRenderBundle,
+    NativePanelResolvedPresentation, NativePanelTimelineDescriptor,
 };
-use super::render_commands::NativePanelRenderBundle;
 use super::runtime_scene_cache::{
     cache_render_command_bundle, cache_scene_runtime, cached_presentation_model,
     cached_runtime_render_state, cached_scene, NativePanelRuntimeSceneCache,
@@ -215,24 +212,20 @@ mod tests {
         resolve_and_cache_presentation_from_scene_cache_on_renderer,
         resolve_cached_presentation_model, sync_cached_presentation_model_slot,
     };
+    use crate::presentation::render::{
+        build_native_panel_presentation_model, NativePanelHostWindowDescriptor,
+        NativePanelHostWindowState, NativePanelPointerRegion, NativePanelPresentationModel,
+        NativePanelTimelineDescriptor,
+    };
     use crate::{
-        runtime::{
-            descriptors::{
-                NativePanelHostWindowDescriptor, NativePanelHostWindowState,
-                NativePanelPointerRegion, NativePanelTimelineDescriptor,
-            },
-            presentation_model::{
-                build_native_panel_presentation_model, NativePanelPresentationModel,
-            },
-            renderer_backend::NativePanelCachedRendererBackend,
-            runtime_scene_cache::{cache_scene_runtime, NativePanelRuntimeSceneCache},
-        },
         scene::{build_panel_scene, PanelRuntimeRenderState, PanelSceneBuildInput},
         state::{
             resolve_panel_layout, resolve_panel_render_state, PanelGeometryMetrics,
             PanelLayoutInput, PanelRect, PanelRenderStateInput, PanelState,
         },
     };
+    use super::super::runtime_scene_cache::{cache_scene_runtime, NativePanelRuntimeSceneCache};
+    use super::NativePanelCachedRendererBackend;
 
     fn snapshot() -> echoisland_runtime::RuntimeSnapshot {
         echoisland_runtime::RuntimeSnapshot {

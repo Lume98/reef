@@ -5,7 +5,7 @@ use echoisland_runtime::RuntimeSnapshot;
 
 use crate::state::{HoverTransition, PanelInteractionCommand, PanelPoint, PanelRect, PanelState};
 
-use super::descriptors::{
+use crate::presentation::render::{
     NativePanelPlatformEvent, NativePanelPointerInput, NativePanelPointerInputOutcome,
     NativePanelPointerPointState, NativePanelPointerRegion, NativePanelRuntimeCommandHandler,
     NativePanelRuntimeInputDescriptor,
@@ -69,7 +69,7 @@ use super::runtime_transition_slots::{
     apply_native_panel_settings_surface_toggle_result_slot,
 };
 use super::traits::{NativePanelHost, NativePanelRuntime, NativePanelSceneHost};
-use super::transition_controller::native_panel_transition_request_for_surface_change;
+use crate::presentation::render::native_panel_transition_request_for_surface_change;
 
 #[cfg(test)]
 mod tests {
@@ -104,18 +104,17 @@ mod tests {
         NativePanelPrimaryPointerStateBridge, NativePanelQueuedPlatformEventBridge,
         NativePanelQueuedPlatformEventSource,
     };
+    use crate::presentation::render::{
+        NativePanelHostWindowDescriptor, NativePanelHostWindowState, NativePanelPlatformEvent,
+        NativePanelPointerInput, NativePanelPointerPointState, NativePanelPointerRegion,
+        NativePanelPointerRegionKind, NativePanelRuntimeCommandCapability,
+        NativePanelRuntimeCommandHandler, NativePanelRuntimeInputDescriptor,
+        NativePanelTimelineDescriptor, NativePanelTransitionRequest,
+    };
     use crate::runtime::{
-        descriptors::{
-            NativePanelHostWindowDescriptor, NativePanelHostWindowState, NativePanelPlatformEvent,
-            NativePanelPointerInput, NativePanelPointerPointState, NativePanelPointerRegion,
-            NativePanelPointerRegionKind, NativePanelRuntimeCommandCapability,
-            NativePanelRuntimeCommandHandler, NativePanelRuntimeInputDescriptor,
-            NativePanelTimelineDescriptor,
-        },
         facade::presentation::{NativePanelPaintInput, NativePanelVisualDisplayMode},
         runtime_scene_cache::NativePanelRuntimeSceneCache,
         traits::{NativePanelHost, NativePanelSceneHost},
-        transition_controller::NativePanelTransitionRequest,
     };
     use crate::scene::{
         PanelRuntimeRenderState, PanelScene, PanelSceneBuildInput, SceneMascotPose,
@@ -1058,7 +1057,7 @@ mod tests {
                         height: 40.0,
                     },
                     kind: NativePanelPointerRegionKind::EdgeAction(
-                        crate::runtime::descriptors::NativePanelEdgeAction::Quit,
+                        crate::presentation::render::NativePanelEdgeAction::Quit,
                     ),
                 },
             ],
@@ -1663,7 +1662,7 @@ mod tests {
 
         assert_eq!(
             outcome,
-            crate::runtime::descriptors::NativePanelPointerInputOutcome::Hover(Some(
+            crate::presentation::render::NativePanelPointerInputOutcome::Hover(Some(
                 HoverTransition::Expand
             ))
         );
@@ -1787,7 +1786,7 @@ mod tests {
 
         assert_eq!(
             outcome,
-            crate::runtime::descriptors::NativePanelPointerInputOutcome::Click(Some(
+            crate::presentation::render::NativePanelPointerInputOutcome::Click(Some(
                 NativePanelPlatformEvent::QuitApplication
             ))
         );

@@ -1,4 +1,4 @@
-use super::descriptors::NativePanelHostWindowState;
+use crate::presentation::render::NativePanelHostWindowState;
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub(crate) enum NativePanelHostShellCommand {
@@ -92,7 +92,7 @@ mod tests {
         apply_native_panel_host_shell_command, NativePanelHostShellCommand,
         NativePanelHostShellCommandBackend,
     };
-    use crate::{runtime::descriptors::NativePanelHostWindowState, state::PanelRect};
+    use crate::{presentation::render::NativePanelHostWindowState, state::PanelRect};
 
     fn window_state() -> NativePanelHostWindowState {
         NativePanelHostWindowState {

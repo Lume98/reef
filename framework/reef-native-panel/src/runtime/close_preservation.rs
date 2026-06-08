@@ -5,10 +5,8 @@ use crate::{
     state::ExpandedSurface,
 };
 
-use super::{
-    presentation_model::NativePanelPresentationModel, render_commands::NativePanelRenderBundle,
-    runtime_scene_cache::NativePanelRuntimeSceneCache,
-};
+use crate::presentation::render::{NativePanelPresentationModel, NativePanelRenderBundle};
+use super::runtime_scene_cache::NativePanelRuntimeSceneCache;
 
 pub(crate) fn native_panel_status_close_preservation_active(
     transitioning: bool,

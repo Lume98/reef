@@ -3,7 +3,7 @@ use crate::{
     state::{PanelAnimationDescriptor, PanelRect},
 };
 
-use super::descriptors::{
+use crate::presentation::render::{
     dispatch_native_panel_platform_events, native_panel_timeline_descriptor_for_animation,
     sync_native_panel_host_window_shared_body_height, sync_native_panel_host_window_timeline,
     NativePanelHostWindowDescriptor, NativePanelHostWindowState, NativePanelPlatformEvent,
@@ -14,7 +14,7 @@ use super::host_runtime_facade::{
     native_panel_host_display_reposition, sync_native_panel_host_display_reposition,
     NativePanelHostDisplayReposition,
 };
-use super::render_commands::NativePanelRenderBundle;
+use crate::presentation::render::NativePanelRenderBundle;
 
 pub(crate) trait NativePanelRuntime {
     type Error;

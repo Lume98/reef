@@ -9,8 +9,8 @@ use crate::{
     state::{next_island_width_preset_for_display, next_panel_language},
 };
 
+use crate::presentation::render::NativePanelTransitionRequest;
 use super::runtime_interaction::NativePanelSettingsSurfaceSnapshotUpdate;
-use super::transition_controller::NativePanelTransitionRequest;
 
 const DEBUG_MODE_TRIGGER_CLICK_THRESHOLD: u8 = 10;
 static DEBUG_MODE_TRIGGER_CLICK_COUNT: AtomicU8 = AtomicU8::new(0);

@@ -1,4 +1,5 @@
-use super::{descriptors::NativePanelHostWindowState, shell_command::NativePanelHostShellCommand};
+use crate::presentation::render::NativePanelHostWindowState;
+use super::shell_command::NativePanelHostShellCommand;
 
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub(crate) enum NativePanelHostShellLifecycle {
@@ -129,12 +130,8 @@ impl NativePanelHostShellState {
 #[cfg(test)]
 mod tests {
     use super::{NativePanelHostShellLifecycle, NativePanelHostShellState};
-    use crate::{
-        runtime::{
-            descriptors::NativePanelHostWindowState, shell_command::NativePanelHostShellCommand,
-        },
-        state::PanelRect,
-    };
+    use crate::{presentation::render::NativePanelHostWindowState, state::PanelRect};
+    use super::NativePanelHostShellCommand;
 
     fn window_state() -> NativePanelHostWindowState {
         NativePanelHostWindowState {

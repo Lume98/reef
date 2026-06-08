@@ -6,7 +6,7 @@ use crate::state::{
     HoverTransition, LastFocusClick, PanelInteractionCommand, PanelPoint, PanelRect, PanelState,
 };
 
-use super::descriptors::{
+use crate::presentation::render::{
     queue_native_panel_platform_event, queue_native_panel_platform_event_for_pointer_region,
     NativePanelInteractionPlan, NativePanelPlatformEvent, NativePanelPointerInput,
     NativePanelPointerPointState, NativePanelPointerRegion, NativePanelRuntimeCommandHandler,
@@ -14,7 +14,7 @@ use super::descriptors::{
 };
 use super::runtime_scene_cache::NativePanelRuntimeSceneCache;
 use super::traits::{NativePanelHost, NativePanelSceneHost};
-use super::transition_controller::NativePanelTransitionRequest;
+use crate::presentation::render::NativePanelTransitionRequest;
 
 pub(crate) trait NativePanelCoreStateBridge {
     fn snapshot_core_panel_state(&self) -> PanelState;
