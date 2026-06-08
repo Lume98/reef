@@ -1,4 +1,4 @@
-use reef_app::prelude::*;
+use reef::prelude::*;
 
 #[derive(Default)]
 struct NoopBackend;
@@ -83,5 +83,5 @@ fn main() {
         .primitives
         .iter()
         .any(|p| matches!(p, DrawPrimitive::Text { .. })));
-    println!("✅ All assertions passed!");
+    println!("All assertions passed!");
 }

@@ -1,7 +1,0 @@
-[package]
-name = "reef-layout"
-version = "0.1.0"
-edition = "2021"
-
-[dependencies]
-reef-core = { path = "../reef-core" }

@@ -1,0 +1,59 @@
+---
+source: framework/reef-native-panel/src/runtime/snapshot_tests.rs
+assertion_line: 159
+expression: snapshot
+---
+scenario: card_stacked_2
+primitives:
+  - type: RoundRect
+    frame:
+      x: 0
+      y: 0
+      width: 400
+      height: 300
+    radius: 16
+    color: "rgb(12, 12, 15)"
+  - type: RoundRect
+    frame:
+      x: 20
+      y: 70
+      width: 360
+      height: 70
+    radius: 8
+    color: "rgb(24, 24, 27)"
+  - type: Text
+    role: CardTitle
+    origin:
+      x: 30
+      y: 85
+    max_width: 340
+    text: Session 1
+    color: "rgb(255, 255, 255)"
+    size: 13
+    weight: Semibold
+    alignment: Left
+    alpha: 1
+  - type: RoundRect
+    frame:
+      x: 20
+      y: 150
+      width: 360
+      height: 70
+    radius: 8
+    color: "rgb(24, 24, 27)"
+  - type: Text
+    role: CardTitle
+    origin:
+      x: 30
+      y: 165
+    max_width: 340
+    text: Session 2
+    color: "rgb(255, 255, 255)"
+    size: 13
+    weight: Semibold
+    alignment: Left
+    alpha: 1
+metadata:
+  timestamp: 2026-05-30
+  display_mode: Expanded
+  animation_progress: 1

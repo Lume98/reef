@@ -1,9 +1,0 @@
-[package]
-name = "reef-hooks"
-version.workspace = true
-edition.workspace = true
-description = "Hook system for the Reef UI framework — useState, useEffect, useContext"
-
-[dependencies]
-reef-core = { path = "../reef-core" }
-reef-vnode = { path = "../reef-vnode" }

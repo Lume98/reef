@@ -5,5 +5,4 @@ edition.workspace = true
 description = "Minimal example showing the full rsx! → ReefRenderer → DrawPlan pipeline"
 
 [dependencies]
-reef-app = { path = "../../framework/reef-app" }
-reef-vnode = { path = "../../framework/reef-vnode" }
+reef = { path = "../../framework/reef" }

@@ -1,110 +1,39 @@
 # Dynamic Island UI Notes
 
-灵动岛 UI 主要写在 Rust 原生扩展里，不在 React 前端组件里。
+灵动岛原生 UI 现在收口在 `framework/reef-native-panel`。
 
-## 主要入口
+## 模块结构
 
-- `src/lib.rs`
-  - `enter_dynamic_island_mode` 负责进入灵动岛模式。
-  - 进入后会保存主窗口快照、显示原生灵动岛窗口，并隐藏主窗口。
+- `reef_native_panel::state`
+  - 面板状态、布局常量、交互状态和刷新队列等纯逻辑。
+- `reef_native_panel::scene`
+  - 将 `RuntimeSnapshot` 和面板状态转换成 Surface、Card、Settings 等场景模型。
+- `reef_native_panel::presentation`
+  - 宿主窗口描述、表现模型、视觉计划和渲染命令。
+- `reef_native_panel::runtime`
+  - 平台无关的运行时协调逻辑。
+- `reef_native_panel::platform::windows`
+  - Windows 窗口、Direct2D、DirectWrite 和平台事件循环实现。
 
-- `src/native_window.rs`
-  - Windows 下当前 `show()` 会委托到 `windows_native_panel`：
-    - `spawn_platform_loops`
-    - `create_native_panel`
-    - `update_native_panel_snapshot`
+## 示例入口
 
-## UI 结构与绘制
+`examples/dynamic-island` 只依赖：
 
-- `src/business/`
-  - 业务规则、显示器选择、面板输入构造和测试。
-  - 这里不处理窗口绘制，只负责把应用设置和显示器信息归一化。
+- `echoisland-runtime`
+- `reef-native-panel`
 
-- `src/native_panel_renderer/`
-  - 原生渲染协调层。
-  - `visual_plan.rs` 负责把场景模型转换为 visual plan。
-  - `facade.rs` 负责向 Windows 平台层集中导出命令、描述符、运行时和视觉能力。
-  - 共享契约后续抽到了 `framework/reef-native-panel-core`，Windows 适配层对应 `framework/reef-native-panel-windows`。
-
-- `framework/reef-ui/src/native_panel_ui/`
-  - 共享的场景、表现模型、视觉计划和渲染计划定义。
-  - `dynamic-island` 只消费这些模型，不在这里重复实现布局规则。
-
-- `src/windows_native_panel/d2d_painter.rs`
-  - Windows Direct2D 绘制实现。
-  - 负责把 visual plan 转成实际窗口上的图形。
-
-## 场景数据
-
-- `src/native_panel_scene/build.rs`
-  - 根据运行时状态构建面板场景。
-
-- `src/native_panel_scene/`
-  - 维护设置、状态、会话、卡片等场景结构。
-
-- `src/native_panel_scene_input.rs`
-  - 从 `business` 层薄封装而来的场景输入适配层。
-  - 主要用于保留旧调用路径，同时让入口更集中。
-
-## 前端关系
-
-React 前端只负责监听和切换灵动岛状态，不是灵动岛 UI 的主要实现位置：
-
-- `../../src/app.tsx`
-- `../../src/api/system/dynamic-island.ts`
-- `../../src/index.css`
-
-## 声明式搭建
-
-现在 `examples/dynamic-island` 采用 page 风格装配：page 先准备状态，再返回组件树，最后交给 root 渲染，入口风格接近 `const page = () => <Component />`：
+示例先构建一份 preview snapshot 和 scene，用于验证状态到场景的转换；随后调用
+`reef_native_panel::run_dynamic_island_preview_standalone()` 启动 Windows standalone 预览。
 
 ```rust
-use dynamic_island::page::{build_dynamic_island_page_model, dynamic_island_page};
-use echoisland_runtime::RuntimeSnapshot;
-use reef_core::geometry::Size;
-use reef_view::create_root;
-use reef_widgets::IslandRenderOverrides;
-
-let mut root = create_root(Size {
-    width: 400.0,
-    height: 300.0,
-});
-
-let snapshot = RuntimeSnapshot {
-    status: "running".into(),
-    primary_source: "reef".into(),
-    active_session_count: 2,
-    total_session_count: 5,
-    pending_permission_count: 0,
-    pending_question_count: 0,
-    pending_permission: None,
-    pending_question: None,
-    pending_permissions: vec![],
-    pending_questions: vec![],
-    sessions: vec![],
+use reef_native_panel::{
+    scene::{build_panel_scene, PanelSceneBuildInput},
+    state::PanelState,
 };
 
-let model = build_dynamic_island_page_model(&snapshot, true, false);
-let island = dynamic_island_page(&model).render_overrides(IslandRenderOverrides::new(
-    400.0,
-    48.0,
-    300.0,
-    reef_widgets::ChromeVisibility::expanded(),
-    1.0,
-    true,
-));
-root.set_root(island);
-let plan = root.render_current();
+let scene = build_panel_scene(
+    &PanelState::default(),
+    &snapshot,
+    &PanelSceneBuildInput::default(),
+);
 ```
-
-运行时路径和这个 page 入口复用同一棵 `DynamicIsland` 声明树；page 只负责 `RuntimeSnapshot -> page model -> DynamicIsland<Action>`，尺寸和动画参数仍由 renderer 在最后一跳注入。
-
-## 旧胶囊绘制代码
-
-`src/native_window.rs` 中还保留了一套旧的胶囊绘制代码，例如：
-
-- `paint_capsule`
-- `draw_capsule_text`
-- `render_capsule_pixels`
-
-这部分属于较早的原生胶囊实现。当前 Windows 实现优先看 `windows_native_panel` 和 `native_panel_renderer` 这一套。

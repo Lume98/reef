@@ -1,8 +1,8 @@
 use chrono::Utc;
 use echoisland_runtime::RuntimeSnapshot;
-use reef_ui::panel::{
-    core::PanelState,
+use reef_native_panel::{
     scene::{build_panel_scene, PanelSceneBuildInput},
+    state::PanelState,
 };
 
 fn main() -> Result<(), String> {
@@ -20,7 +20,7 @@ fn main() -> Result<(), String> {
         scene.hit_targets.len()
     );
 
-    reef_native_panel_windows::run_dynamic_island_preview_standalone()
+    reef_native_panel::run_dynamic_island_preview_standalone()
 }
 
 fn preview_snapshot() -> RuntimeSnapshot {
@@ -58,7 +58,7 @@ fn preview_snapshot() -> RuntimeSnapshot {
             tool_description: Some("构建 Native Panel 预览场景".to_string()),
             last_user_prompt: Some("重构 framework UI 组件库边界".to_string()),
             last_assistant_message: Some(
-                "Windows host consumes reef_ui::panel facade.".to_string(),
+                "Windows host consumes reef-native-panel facade.".to_string(),
             ),
             tool_history_count: 0,
             tool_history: Vec::new(),

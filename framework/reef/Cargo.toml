@@ -1,0 +1,8 @@
+[package]
+name = "reef"
+version.workspace = true
+edition.workspace = true
+description = "Reef UI framework"
+
+[dependencies]
+reef-macros = { path = "../reef-macros" }
